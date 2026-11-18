@@ -184,6 +184,8 @@ export default defineStrings({
     en: 'You donate via our project page on Betterplace.',
     fr: 'Vous faites un don via notre page de projet sur Betterplace.',
   },
+  /** Link from the betterplace step to the form further down the page. */
+  'spenden.once.toForm': { de: 'Zum Spendenformular', en: 'Go to the donation form', fr: 'Aller au formulaire de don' },
 
   // /spenden/monatlich/
   'spenden.monthly.seo.title': { de: 'Monatlich spenden', en: 'Donate monthly', fr: 'Donation mensuelle' },
