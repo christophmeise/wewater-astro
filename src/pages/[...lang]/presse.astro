@@ -65,13 +65,13 @@ const contactCard = cardVariants({ variant: 'secondary' });
       </ul>
     </div>
 
-    <section class:list={[contactCard.base(), 'items-start gap-5 p-5 sm:flex-row sm:items-center md:p-6']} aria-labelledby="presse-contact">
+    <section class:list={[contactCard.base(), 'items-start gap-4 p-5 min-[22.5rem]:flex-row min-[22.5rem]:items-center sm:gap-5 md:p-6']} aria-labelledby="presse-contact">
       <Image
         src={contactPhoto}
         alt={CONTACT.name}
         width={144}
         densities={[1, 2]}
-        class="aspect-square w-24 shrink-0 rounded-2xl object-cover sm:w-36"
+        class="aspect-square w-20 shrink-0 rounded-2xl object-cover sm:w-36"
       />
       <div class="flex min-w-0 flex-col gap-1">
         <h2 id="presse-contact" class="eyebrow">{t('presse.contact')}</h2>
