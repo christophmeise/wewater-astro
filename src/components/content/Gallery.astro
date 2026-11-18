@@ -39,13 +39,13 @@ const items = await Promise.all(
   images.map(async (img) => {
     const meta = await resolveImage(img.src);
     const large = await getImage({ src: meta, width: Math.min(meta.width, 1600), format: 'webp' });
-    const thumbWidths = [320, 480, 640, 960].filter((w) => w < meta.width);
+    const thumbWidths = [240, 360, 480, 720, 960].filter((w) => w < meta.width);
     return { ...img, meta, large, thumbWidths: thumbWidths.length ? thumbWidths : [meta.width] };
   }),
 );
 ---
 
-<figure class="not-prose my-8 flex flex-col gap-3" data-gallery>
+<figure class="gallery not-prose my-8 flex flex-col gap-3" data-gallery>
   <ul
     class:list={[
       'grid grid-cols-2 gap-3',
@@ -66,8 +66,8 @@ const items = await Promise.all(
               src={item.meta}
               alt={item.alt}
               widths={item.thumbWidths}
-              quality={65}
-              sizes="(min-width: 75rem) 24rem, (min-width: 48rem) 33vw, 50vw"
+              quality={60}
+              sizes="(min-width: 75rem) 24rem, (min-width: 48rem) 33vw, calc(50vw - 1.5rem)"
               class="aspect-4/3 w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </a>
@@ -116,6 +116,15 @@ const items = await Promise.all(
 </figure>
 
 <style>
+  /*
+   * Skip rendering galleries far below the fold: their (lazy) thumbnails then only load when the
+   * reader gets close, instead of competing with the hero image during page load.
+   */
+  .gallery {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 30rem;
+  }
+
   .gallery-dialog::backdrop {
     background: transparent;
   }
