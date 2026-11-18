@@ -247,7 +247,7 @@
    * Project pages: text centred at a comfortable reading width, like the photos; intro tiles,
    * galleries and columns use the full page width.
    */
-  .project-content > :where(p, ul, ol, h2, h3, h4, blockquote, table, hr) {
+  .project-content > :where(p, ul, ol, h2, h3, h4, blockquote, table, .table-scroll, hr) {
     @apply mx-auto max-w-(--container-prose);
   }
 }
