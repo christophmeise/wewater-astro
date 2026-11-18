@@ -39,8 +39,96 @@ Before opening a pull request, `npm run check` and `npm run build` must pass.
 | Files served as-is (PDFs, favicon) | `public/` |
 | Redirects, headers, CSP | `netlify.toml` |
 | Pages checked by Lighthouse/visual CI | `tests/routes.json` |
+| Blog posts, projects, team, FAQ, press list | `src/content/` (schemas in `src/content.config.ts`), see [Content](#content) |
+| Components for use inside posts and projects | `src/components/content/` |
+| Categories, authors, document links | `src/data/categories.ts`, `src/data/authors.ts`, `src/data/docs.ts` |
+| Photos used in posts and projects | `src/assets/wp/<yyyy>/<mm>/` (migrated), `src/assets/team/`, `src/assets/authors/` |
+| PDFs, videos | `public/docs/`, `public/media/` |
+| Redirects of old content URLs | `public/_redirects` |
 
-Blog posts, projects, team members and FAQ move into `src/content/` in phase 2. This guide gets a section for each when they land.
+## Content
+
+All content is in `src/content/`. Every file is checked against the schemas in `src/content.config.ts` when you run `npm run check` or `npm run build`. A wrong category, a missing image or a missing field fails the build with the file name.
+
+Until cutover, `npm run migrate:wp` regenerates everything in `src/content/`, `src/assets/{wp,team,authors}/`, `public/docs/`, `public/media/`, `src/data/*.ts` and `public/_redirects` from WordPress, and overwrites hand edits there. After cutover the script is deleted and these files are edited by hand.
+
+### Blog post
+
+1. Create `src/content/blog/<lang>/<slug>.mdx`, for example `src/content/blog/de/neuer-brunnen-in-kenia.mdx`. The file name is the URL: `/blog/neuer-brunnen-in-kenia/` (German), `/en/blog/<slug>/`, `/fr/blog/<slug>/`. Use lowercase, hyphens, no umlauts (`ue` for `ü`).
+2. Frontmatter:
+
+   ```yaml
+   ---
+   title: Neuer Brunnen in Kenia
+   date: 2027-03-01T10:00:00Z
+   lang: de                       # must match the folder
+   translationKey: neuer-brunnen-in-kenia   # same value in every translation (the German slug)
+   author: thilo                  # key in src/data/authors.ts
+   categories: [kenia-projekte-2021, aqqacube-projekt]   # keys in src/data/categories.ts; the first 3 show on cards
+   hero: ../../../assets/blog/2027/03/brunnen.jpg       # path relative to this file
+   heroAlt: Kinder holen Wasser am neuen Brunnen         # in the post's language
+   excerpt: Ein, zwei Sätze für die Karte in der Blog-Übersicht.
+   description: Meta description for search results, about 150 characters.
+   ---
+   ```
+
+3. Write the text in Markdown below the frontmatter. Use `##` for section headings (the page title is the only `h1`), then `###`; don't skip levels.
+4. Put new photos in `src/assets/blog/<yyyy>/<mm>/` (at most 2400 px wide, under about 1 MB). Show them with `![Alt text](../../../assets/blog/2027/03/foto.jpg)` or, with a caption, with `<Figure>` (see below).
+5. `comments` (frozen WordPress comments) only exist on migrated posts; there is no comment form.
+
+### Project
+
+`src/content/projects/<lang>/<slug>.mdx` -> `/projekte/<slug>/`. Same `title`, `date`, `lang`, `translationKey`, `hero`, `heroAlt`, `description` as a post, plus:
+
+```yaml
+status: in-progress            # or completed: drives the filter on /projekte/
+filters: [aqqacube]            # aqqabag and/or aqqacube: lists the project on that filter page
+categories: [dr-kongo]         # region/campaign categories
+blogCategory: dr-kongo         # optional: posts in this category appear as "Projektupdates im Blog"
+```
+
+A project usually starts with `<IntroTiles>`, then text, images, a `<Gallery>`, the cost table (a Markdown table) and a `<DonationForm>`. Copy an existing project as a template, for example `src/content/projects/de/sauberes-trinkwasser-fuer-die-schule-uvira.mdx`.
+
+### Translations
+
+A translation is a second file with the same `translationKey` in another language folder, for example `src/content/blog/en/new-well-in-kenya.mdx` with `lang: en` and `translationKey: neuer-brunnen-in-kenia`. The slug can differ per language. Files with the same key are linked by the language switcher and hreflang tags. A post without a translation only exists in its own language. Never add a second file with the same key in the same language (the build fails).
+
+When you rename or delete a post or project, add a 301 line to `public/_redirects` from the old URL to the new one.
+
+### Components in posts and projects
+
+Import them at the top of the `.mdx` file (after the frontmatter), for example `import Figure from '@/components/content/Figure.astro';`. Image `src` values are paths below `src/assets/`.
+
+| Component | Use |
+|---|---|
+| `<Figure src="wp/2026/11/foo.jpg" alt="…">Caption with **Markdown**</Figure>` | Image with optional caption; `href="…"` makes it a link |
+| `<Gallery columns={3} images={[{ src: "…", alt: "…", caption: "…" }]} />` | Photo grid with a lightbox |
+| `<IntroTiles subtitle="Projektdetails" title="Ort, Land" tiles={[{ title: "Land", text: "…" }, …]} />` | The four project detail tiles (icons: pin, map, list, people) |
+| `<Columns>` + `<Column>` | Side-by-side blocks; leave a blank line around Markdown inside each `<Column>` |
+| `<YouTube id="qHDE8HboDBk" title="…" />` | YouTube video (loads only on click) |
+| `<DonationForm src="https://www.betterplace.org/de/donate/iframe/projects/68773?…" />` | betterplace donation form, loaded when the reader scrolls near it |
+| `<FacebookPost href="https://www.facebook.com/…" />` | Link card to a Facebook post |
+| `<Video src="/media/clip.mp4" poster="wp/…-poster.jpg" width={…} height={…} />` | Self-hosted video from `public/media/` |
+
+### Team member
+
+One file for all languages: `src/content/team/<slug>.md`. Frontmatter: `name`, `order` (position on /team/, ascending), `photo` (`../../assets/team/<slug>.jpg`), `photoAlt`, `role: { de, en, fr }`, `description: { de, en, fr }` (plain text; blank line between paragraphs) and optional `links: { email, website, linkedin, instagram, facebook, twitter }`. If the person also writes blog posts, add them to `src/data/authors.ts`.
+
+### FAQ
+
+One file per question: `src/content/faq/<lang>/<nn>-<slug>.md`. Frontmatter: `question`, `section` (heading it is grouped under), `order` (ascending, steps of 10 leave room to insert), `lang`. The answer is the Markdown body. The English and French FAQ still contain the German text from WordPress and are marked `contentLang: de`; when you translate an entry, replace the text and remove `contentLang`.
+
+### Press
+
+- The press coverage list ("Pressespiegel") is `src/content/press/<lang>.md`: add a line to the list in each language.
+- Press releases are blog posts with the category `presse`.
+- Documents (PDFs) go in `public/docs/`. Link them as `/docs/<file>.pdf`; pages that need a fixed document use `src/data/docs.ts`.
+
+### Categories and authors
+
+- Categories: `src/data/categories.ts`. Each key has a label per language and an optional dot colour.
+- Authors: `src/data/authors.ts`. Each key has a name, an optional portrait and an "about the author" text per language.
+- Add a new key there before using it in frontmatter.
 
 ## Rules for editing
 
