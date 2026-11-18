@@ -1,0 +1,65 @@
+---
+/**
+ * FAQ accordion: native <details>/<summary> (works without JavaScript, opens on find-in-page)
+ * styled with HeroUI's accordion classes, surface variant. Opening a question closes the others
+ * in the same accordion group (`name`).
+ *
+ *   <FaqAccordion entries={faqEntries} locale={locale} />
+ *
+ * Entries come from the `faq` collection; each answer's Markdown is rendered. Entries whose
+ * `contentLang` differs from the page language get lang="…" (en/fr pages show German answers).
+ */
+import { render, type CollectionEntry } from 'astro:content';
+import { accordionVariants } from '@heroui/styles';
+import Icon from '@/components/ui/Icon.astro';
+import type { Locale } from '@/i18n';
+
+interface Props {
+  entries: CollectionEntry<'faq'>[];
+  /** Page language. */
+  locale: Locale;
+  /** Accordion group: only one question per group is open at a time. Default "faq". */
+  name?: string | undefined;
+  class?: string | undefined;
+}
+
+const { entries, locale, name = 'faq', class: className } = Astro.props;
+const accordion = accordionVariants({ variant: 'surface' });
+
+const items = await Promise.all(
+  entries.map(async (entry) => ({
+    question: entry.data.question,
+    Content: (await render(entry)).Content,
+    lang: entry.data.contentLang && entry.data.contentLang !== locale ? entry.data.contentLang : undefined,
+  })),
+);
+---
+
+<div class:list={[accordion.base(), 'shadow-surface', className]}>
+  {
+    items.map(({ question, Content, lang }) => (
+      <details class:list={[accordion.item(), 'faq-item group']} name={name} lang={lang}>
+        <summary
+          class:list={[accordion.trigger(), 'gap-4 px-5 text-base md:px-6 [&::-webkit-details-marker]:hidden']}
+          data-slot="accordion-trigger"
+        >
+          <span>{question}</span>
+          <Icon name="chevron-right" class:list={[accordion.indicator(), 'text-link group-open:rotate-90']} />
+        </summary>
+        <div class:list={[accordion.bodyInner(), 'px-5 md:px-6']}>
+          <div class="prose text-foreground max-w-none">
+            <Content />
+          </div>
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  /* An open last question keeps square bottom corners on its trigger (HeroUI keys this on aria-expanded). */
+  .faq-item[open] > summary {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+</style>
