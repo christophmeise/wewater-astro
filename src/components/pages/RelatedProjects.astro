@@ -24,16 +24,24 @@ const { filter, locale, limit = 4 } = Astro.props;
 const t = useTranslations(locale);
 const projects = (await projectsWithFilter(filter, locale)).slice(0, limit);
 const headingId = `${filter}-projects`;
+// The grid follows the number of projects, so two or three cards fill the row instead of leaving
+// empty columns (the AQQAbag has two projects, the AQQAcube four).
+const layout =
+  projects.length >= 4
+    ? { grid: 'sm:grid-cols-2 xl:grid-cols-4', sizes: '(min-width: 1280px) 18rem, (min-width: 640px) 45vw, 100vw' }
+    : projects.length === 3
+      ? { grid: 'sm:grid-cols-2 lg:grid-cols-3', sizes: '(min-width: 1024px) 24rem, (min-width: 640px) 45vw, 100vw' }
+      : { grid: 'sm:grid-cols-2', sizes: '(min-width: 1200px) 36rem, (min-width: 640px) 50vw, 100vw' };
 ---
 
 {
   projects.length > 0 && (
     <Section aria-labelledby={headingId}>
       <SectionHeading id={headingId} title={t(`${filter}.projects.title`)} />
-      <ul class="related-projects grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      <ul class:list={['related-projects grid gap-6', layout.grid]}>
         {projects.map((project) => (
           <li class="flex">
-            <ProjectCard project={project} sizes="(min-width: 1280px) 18rem, (min-width: 640px) 45vw, 100vw" />
+            <ProjectCard project={project} sizes={layout.sizes} />
           </li>
         ))}
       </ul>
@@ -47,7 +55,7 @@ const headingId = `${filter}-projects`;
 }
 
 <style>
-  /* Four narrow cards per row: only hyphenate long compounds (Binnen-vertriebene), not "sau-berem". */
+  /* Narrow cards (four per row): only hyphenate long compounds (Binnen-vertriebene), not "sau-berem". */
   .related-projects :global(:is(h2, h3, h4)) {
     hyphenate-limit-chars: 12 5 5;
   }
