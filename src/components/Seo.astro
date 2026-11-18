@@ -33,7 +33,7 @@ const fullTitle = title === 'WeWater' ? title : `${title} | WeWater`;
 
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonical} />
+{!noindex && <link rel="canonical" href={canonical} />}
 {noindex && <meta name="robots" content="noindex" />}
 {
   Object.entries(alternates).map(([l, path]) => (
