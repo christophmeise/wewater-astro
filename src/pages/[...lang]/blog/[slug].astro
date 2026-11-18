@@ -64,7 +64,8 @@ const commentDepth = (id: number | undefined, depth = 0): number => {
   <article>
     <HeroOverlay image={data.hero} alt={data.heroAlt} inset size="medium" position="bottom" overlay="dark" width="full">
       <CategoryChips slot="eyebrow" categories={data.categories} locale={locale} tone="light" inline />
-      <span slot="title" class="heading-1 block text-white">{data.title}</span>
+      {/* Hyphenate only long words, so product names such as "AQQAcube" are not split on phones. */}
+      <span slot="title" class="heading-1 block text-white [hyphenate-limit-chars:10_4_4]">{data.title}</span>
       <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-white/90">
         <span>{t('content.by')} {author.name}</span>
         <span aria-hidden="true">·</span>
@@ -74,7 +75,8 @@ const commentDepth = (id: number | undefined, depth = 0): number => {
       </p>
     </HeroOverlay>
 
-    <Section class="flex flex-col gap-16">
+    {/* Half the usual section spacing above the text: the hero card already sets it apart. */}
+    <Section class="flex flex-col gap-16" style="padding-top: calc(var(--space-section) / 2)">
       <div class="prose mx-auto w-full max-w-(--container-prose)">
         <Content />
       </div>
