@@ -33,8 +33,14 @@ Before opening a pull request, `npm run check` and `npm run build` must pass.
 | UI text (buttons, menus, labels) | `src/i18n/strings/<group>.ts`: one file per area, each string with `de`, `en` and `fr` side by side |
 | Pages | `src/pages/` |
 | Layout, `<head>`, SEO tags | `src/layouts/BaseLayout.astro`, `src/components/Seo.astro` |
-| Components | `src/components/` |
-| Colours, fonts, base typography | `src/styles/global.css` |
+| Site header, mobile menu, language switcher, footer, nav items | `src/components/layout/` (`navigation.ts` holds the menu entries) |
+| Design-system building blocks (Button, Icon, Logo, Card, Section, HeroOverlay, PlainHeader) | `src/components/ui/` |
+| Page sections and patterns (PostCard, ProjectCard, SectionHeading, MediaRow, SpecTable, DonationOptions, NewsletterForm, FaqAccordion, ...) | `src/components/pages/` |
+| Fixed link targets (bank details, PayPal, betterplace, social profiles) | `src/components/pages/links.ts` |
+| Structured data for search engines | `src/components/JsonLd.astro` |
+| Design tokens (colours, type scale, spacing) | `src/styles/tokens.css` |
+| Design-system CSS (HeroUI imports, typography roles, prose) | `src/styles/global.css` |
+| Living reference of every token and component | `/styleguide/` (`src/pages/styleguide.astro`) |
 | Images used by pages | `src/assets/` |
 | Files served as-is (PDFs, favicon) | `public/` |
 | Redirects, headers, CSP | `netlify.toml` |

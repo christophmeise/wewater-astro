@@ -1,6 +1,6 @@
 # WeWater rebuild plan
 
-Status (2026-11-18): plan approved with the recommended defaults for all decisions below. Phase 0 (setup) done; phase 1 next.
+Status (2026-11-18): phases 0–5 done (analytics open) and the automated part of phase 6. All pages are rebuilt in de/en/fr, all content is migrated, and every page type scores Lighthouse 100/100/100/100 on mobile and desktop. Next: phase 7 (cutover), which needs the WeWater team: connect Netlify, review open content questions (see "Open items for WeWater"), then switch the domain.
 
 ## Goal
 
@@ -145,12 +145,12 @@ The project status (in progress / completed) and filter type (AQQAbag / AQQAcube
 | # | Phase | Output |
 |---|---|---|
 | 0 ✅ | **Setup** | Astro 7 skeleton, TypeScript, CI (check, build, Lighthouse CI, visual diff), Netlify site with deploy previews, `CLAUDE.md` with the editing guide for maintainers |
-| 1 | **Design foundation** | Tokens, fonts, base layout, header with mega-menu, mobile menu, footer, language switcher, buttons, cards, the 5 header-overlay variants. Visual diff against the live site at 375, 768 and 1280 px. |
-| 2 | **Content migration** | `migrate-wp.ts`, collection schemas, all posts, projects, team, FAQ, press and media in the repo, with translation pairing |
-| 3 | **Static pages** | Home, Spenden (plus einmalig, monatlich), Filtersystem plus 4 subpages, Team, Presse, FAQ, Unterstützen, Impressum, Datenschutz, 404 |
-| 4 | **Collection pages** | Blog index and post, Projekte index with filter, project page (intro tiles, tables, galleries, donation form, related blog posts) |
-| 5 | **SEO and integrations** | Meta, sitemap, redirects, headers, analytics per Decision 2, Mailchimp form, PayPal buttons, betterplace per Decision 1 |
-| 6 | **Verification** | Lighthouse 100 on every page type (mobile and desktop), visual diff sign-off, link check, manual pass on real phones, review by the WeWater team |
+| 1 ✅ | **Design foundation** | Tokens, fonts, base layout, header with mega-menu, mobile menu, footer, language switcher, buttons, cards, the 5 header-overlay variants. Visual diff against the live site at 375, 768 and 1280 px. |
+| 2 ✅ | **Content migration** | `migrate-wp.ts`, collection schemas, all posts, projects, team, FAQ, press and media in the repo, with translation pairing |
+| 3 ✅ | **Static pages** | Home, Spenden (plus einmalig, monatlich), Filtersystem plus 4 subpages, Team, Presse, FAQ, Unterstützen, Impressum, Datenschutz, 404 |
+| 4 ✅ | **Collection pages** | Blog index and post, Projekte index with filter, project page (intro tiles, tables, galleries, donation form, related blog posts) |
+| 5 ✅ (analytics open) | **SEO and integrations** | Meta, sitemap, redirects, headers, analytics per Decision 2, Mailchimp form, PayPal buttons, betterplace per Decision 1 |
+| 6 ◐ (automated checks done; phone pass and team review open) | **Verification** | Lighthouse 100 on every page type (mobile and desktop), visual diff sign-off, link check, manual pass on real phones, review by the WeWater team |
 | 7 | **Cutover** | Point wewater.org at the new Netlify site. Keep wewaterbackend.org read-only for a transition period so old PDF links keep working. Watch 404s and fix redirects, then retire WordPress. |
 
 Phases 3 and 4 can run in parallel once phases 1 and 2 land.
@@ -231,3 +231,29 @@ The content schemas and `astro check` catch mistakes before a deploy. Every chan
 - [Astro vs Next.js vs Eleventy for content sites in 2026](https://devtoolpicks.com/blog/astro-vs-nextjs-vs-eleventy-indie-hackers-2026)
 - [Tailwind CSS v4.x releases](https://releases.sh/tailwind-css/tailwind-css.md)
 - Package versions checked on the npm registry on 2026-11-18: astro 7.4.12, @astrojs/mdx 8.1.6, @astrojs/sitemap 3.7.5, tailwindcss 4.3.5, @lhci/cli 0.16.1, @playwright/test 1.65.1, @11ty/eleventy 3.1.8, next 16.4.6.
+
+## Open items for WeWater (before cutover)
+
+**Connect Netlify and analytics**
+- Import `christophmeise/wewater-astro` in Netlify (build settings come from `netlify.toml`) and check the deploy preview.
+- Analytics (decision 2): no analytics script is installed yet. Choose a cookieless tool (Plausible or Netlify Analytics); adding its script also needs its origin in the CSP in `netlify.toml`.
+
+**Legal review**
+- Datenschutzerklärung (`src/pages/[...lang]/dataprotection.astro`): every change is marked with a `DATENSCHUTZ-REVIEW` comment in the source.
+- Open question: does the betterplace form, which loads automatically when it scrolls into view, need consent under § 25 TDDDG? If yes, switch `DonationForm` to click-to-load.
+
+**Content to confirm or translate**
+- Product figures that differ between languages on the live site:
+  - AQQAsystem lifespan: "5 Jahre" in German, "indefinitely" in English and French.
+  - AQQAcube flow: 1000 l / 12 h in German, 400 l / 8 h in English and French.
+- FAQ: the English and French pages show the German text, as on the live site, marked `contentLang: de`.
+- Untranslated posts: the "English" and "French" press releases and the French Gulu report are German WordPress copies.
+- New UI copy written during the rebuild (button labels, filter labels, notes): translations need a native check. Search for the string groups in `src/i18n/strings/`.
+- Image descriptions: about 400 migrated content images have generic alt text such as "Title (Foto 3)".
+- Team: Raphaela Küppers and Frank Paschen have no portrait or bio.
+
+**Cutover (phase 7)**
+1. Point wewater.org at the Netlify site.
+2. Keep wewaterbackend.org online read-only for a while, so old PDF links in emails and on betterplace keep working.
+3. Watch for 404s and add redirects to `public/_redirects`.
+4. Retire WordPress and delete `scripts/migrate-wp/`.
