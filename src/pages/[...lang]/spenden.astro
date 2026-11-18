@@ -1,0 +1,98 @@
+---
+/**
+ * Spenden (donate): /spenden/, /en/spenden/, /fr/spenden/.
+ * Hero, the three ways to give, then why to donate (trust, impact, use of funds, tax) next to the
+ * betterplace donation form.
+ *
+ * The form lazy-loads near the viewport (PLAN.md decision 1), so it must stay well below the first
+ * screen: on wide screens it sits in the right column below "Was deine Spende bewirken kann";
+ * on phones it comes after all the text. The two columns use `display: contents` below lg, so the
+ * phone order (intro, impact, use of funds, tax, form) follows the `order-*` classes.
+ */
+import heroImage from '@/assets/pages/spenden/hero.jpg';
+import heroImageMobile from '@/assets/pages/spenden/hero-mobile.jpg';
+import DonationFormSlot from '@/components/pages/DonationFormSlot.astro';
+import DonationOptions from '@/components/pages/DonationOptions.astro';
+import IconList from '@/components/pages/IconList.astro';
+import { DOCS, CONTACT_EMAIL } from '@/components/pages/links';
+import Notice from '@/components/pages/Notice.astro';
+import SectionHeading from '@/components/pages/SectionHeading.astro';
+import HeroOverlay from '@/components/ui/HeroOverlay.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+import { rich } from '@/i18n/rich';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const links = {
+  docLink: { href: DOCS.donationReceipt, srSuffix: t('spenden.taxSmall.linkHint') },
+  statuteLink: { href: DOCS.statute, srSuffix: t('spenden.taxStatute.linkHint') },
+  mailLink: { href: `mailto:${CONTACT_EMAIL}` },
+};
+const trust = (['spenden.trust1', 'spenden.trust2', 'spenden.trust3', 'spenden.trust4'] as const).map((key) => rich(t(key)));
+const impact = (['spenden.impact1', 'spenden.impact2', 'spenden.impact3', 'spenden.impact4'] as const).map((key) => rich(t(key)));
+const taxIntro = ['spenden.tax1', 'spenden.tax2'] as const;
+const taxRules = ['spenden.taxSmall', 'spenden.taxLarge', 'spenden.taxStatute'] as const;
+---
+
+<BaseLayout title={t('spenden.seo.title')} description={t('spenden.seo.description')}>
+  <HeroOverlay
+    image={heroImage}
+    imageMobile={heroImageMobile}
+    title={t('spenden.hero.title')}
+    size="large"
+    align="center"
+    width="xl"
+    objectPosition="bottom"
+  />
+
+  <Section container={false} class="flex flex-col gap-(--space-section) pt-0">
+    <DonationOptions locale={locale} class="container-page" />
+
+    <div class="container-page flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:items-start lg:gap-16" aria-labelledby="spenden-headline" role="group">
+      <div class="contents lg:flex lg:flex-col lg:gap-10">
+        <div class="order-1 flex flex-col gap-10">
+          <SectionHeading id="spenden-headline" eyebrow={t('spenden.eyebrow')} title={t('spenden.headline')} lead={t('spenden.intro')} />
+          <IconList icon="shield-check" items={trust} />
+        </div>
+
+        <div class="order-3 flex flex-col gap-10">
+          <section class="flex flex-col gap-4" aria-labelledby="spenden-usage">
+            <h3 id="spenden-usage" class="heading-3">{t('spenden.usage.headline')}</h3>
+            <p>{t('spenden.usage1')}</p>
+            <p>{t('spenden.usage2')}</p>
+          </section>
+
+          <section id="steuer" class="flex flex-col gap-4" aria-labelledby="spenden-tax">
+            <h3 id="spenden-tax" class="heading-3">{t('spenden.tax.headline')}</h3>
+            {taxIntro.map((key) => <p set:html={rich(t(key), links)} />)}
+            {
+              /* German donors don't need the "applies to taxpayers in Germany" hint. */
+              locale !== 'de' && (
+                <Notice icon="university">
+                  <p set:html={rich(t('spenden.taxForeign'))} />
+                </Notice>
+              )
+            }
+            {taxRules.map((key) => <p set:html={rich(t(key), links)} />)}
+          </section>
+        </div>
+      </div>
+
+      <div class="contents lg:flex lg:flex-col lg:items-end lg:gap-10">
+        <section class="bg-background-secondary order-2 flex w-full flex-col gap-4 rounded-3xl p-6 md:p-8 lg:max-w-xl" aria-labelledby="spenden-impact">
+          <h3 id="spenden-impact" class="heading-3">{t('spenden.impact.headline')}</h3>
+          <ul class="marker:text-accent flex list-disc flex-col gap-3 ps-5">
+            {impact.map((item) => <li set:html={item} />)}
+          </ul>
+        </section>
+
+        <DonationFormSlot class="order-4" />
+      </div>
+    </div>
+  </Section>
+</BaseLayout>

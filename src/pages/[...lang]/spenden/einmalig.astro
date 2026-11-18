@@ -1,0 +1,39 @@
+---
+/**
+ * One-off donation: /spenden/einmalig/ (+ /en/, /fr/). Three ways: PayPal, bank transfer, betterplace.
+ * The betterplace option comes last (the old page had it second) so its form stays below the
+ * first screen: the form lazy-loads near the viewport (PLAN.md decision 1).
+ */
+import BankDetails from '@/components/pages/BankDetails.astro';
+import DonationFormSection from '@/components/pages/DonationFormSection.astro';
+import PayPalDonateButton from '@/components/pages/PayPalDonateButton.astro';
+import Step from '@/components/pages/Step.astro';
+import Steps from '@/components/pages/Steps.astro';
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+---
+
+<BaseLayout title={t('spenden.once.seo.title')} description={t('spenden.once.seo.description')}>
+  <PlainHeader title={t('spenden.options.once.cta')} lead={t('spenden.once.intro')} />
+
+  <Section class="flex max-w-(--container-prose) flex-col gap-10">
+    <Steps>
+      <Step title={t('spenden.once.paypal')}>
+        <PayPalDonateButton label={t('spenden.paypal.button')} />
+      </Step>
+      <Step title={t('spenden.once.bank')}>
+        <BankDetails />
+      </Step>
+      <Step title={t('spenden.once.betterplace')} />
+    </Steps>
+  </Section>
+
+  <DonationFormSection locale={locale} />
+</BaseLayout>
