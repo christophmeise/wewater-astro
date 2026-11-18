@@ -130,6 +130,11 @@ const { id = 'card-row', label, previousLabel, nextLabel, pagesLabel, pageLabel,
       background-color 200ms;
   }
 
+  /* Inside the target: the window around the dots clips anything outside it. */
+  .card-row-dots__strip > :global(button:focus-visible) {
+    outline-offset: -2px;
+  }
+
   .card-row-dots__strip > :global(button:hover)::before {
     background: color-mix(in oklch, var(--foreground) 55%, transparent);
   }
