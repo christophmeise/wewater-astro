@@ -32,11 +32,18 @@ const OPTIONS: { title: UiKey; cta: UiKey; href: string; external?: boolean }[] 
 
 <section class:list={['flex flex-col', className]} aria-labelledby="donation-options-title">
   <h2 id="donation-options-title" class="sr-only">{t('spenden.options.title')}</h2>
-  <ul class="grid gap-6 md:grid-cols-3">
+  <ul class="grid gap-4 md:gap-6 lg:grid-cols-3">
     {
       OPTIONS.map((option) => (
-        <li class:list={[card.base(), 'items-center gap-5 p-6 text-center md:p-8']}>
-          <h3 class="heading-3 flex flex-1 items-center">{t(option.title)}</h3>
+        <li
+          class:list={[
+            card.base(),
+            'items-center gap-5 p-6 text-center xl:p-8',
+            // Tablets: one row per option (three columns would squeeze the buttons out of the cards).
+            'md:max-lg:flex-row md:max-lg:gap-8 md:max-lg:text-start',
+          ]}
+        >
+          <h3 class="font-heading flex flex-1 items-center text-lg leading-snug font-semibold text-balance hyphens-manual">{t(option.title)}</h3>
           <Button
             href={option.href}
             icon="tint"
