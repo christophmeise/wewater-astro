@@ -33,6 +33,7 @@ import Step from '@/components/pages/Step.astro';
 import Steps from '@/components/pages/Steps.astro';
 import YouTubeVideo from '@/components/pages/YouTubeVideo.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import CardRow from '@/components/pages/CardRow.astro';
 import CategoryChips from '@/components/pages/CategoryChips.astro';
 import PostCard from '@/components/pages/PostCard.astro';
 import ProjectCard from '@/components/pages/ProjectCard.astro';
@@ -45,6 +46,7 @@ const faqSample = (await getCollection('faq', (entry) => entry.data.lang === 'de
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
 const [samplePost] = await getPosts('de');
+const rowPosts = (await getPosts('de')).slice(0, 6);
 const projects = await getProjects('de');
 const sampleProject = projects[0];
 const completedProject = projects.find((p) => p.data.status === 'completed');
@@ -275,7 +277,47 @@ const colors = [
     <p>Children sit in the page container; here as a two-column grid.</p>
   </Section>
 
+  <Section container={false} class="flex flex-col gap-8" aria-labelledby="sg-card-row">
+    <CardRow
+      id="sg-card-row-list"
+      label="Beispielbeiträge"
+      previousLabel="Vorherige Beiträge"
+      nextLabel="Nächste Beiträge"
+      pagesLabel="Beiträge durchblättern"
+      pageLabel="Ab Beitrag {n} anzeigen"
+    >
+      <header slot="header" class="flex max-w-(--container-prose) flex-col gap-3">
+        <h2 id="sg-card-row" class="heading-2">CardRow</h2>
+        <p> <code>&lt;CardRow&gt;</code> (<code>src/components/pages/CardRow.astro</code>): scroll-snap row of cards, placed full-width (<code>&lt;Section container={'{false}'}&gt;</code>). Header and first card line up with the container, the row runs to the window edges. With JavaScript: previous/next buttons (a page of cards per click, disabled at the ends) and pagination dots instead of the scrollbar; without it a plain scrollable list. Props: <code>label</code>, <code>previousLabel</code>, <code>nextLabel</code>, <code>pagesLabel</code>, <code>pageLabel</code> (<code>{'{n}'}</code> = first card), <code>id</code>; slot <code>header</code>; children are the <code>&lt;li&gt;</code> items. </p>
+      </header>
+      {
+        rowPosts.map((post) => (
+          <li class="flex">
+            <PostCard post={post} sizes="(min-width: 75rem) 24rem, (min-width: 64rem) 31vw, (min-width: 48rem) 46vw, 85vw" />
+          </li>
+        ))
+      }
+    </CardRow>
+  </Section>
+
   <div class="container-page flex flex-col gap-16 py-(--space-section)">
+    <section class="flex flex-col gap-6" aria-labelledby="sg-tiles">
+      <h2 id="sg-tiles" class="heading-2">Feature tiles and scroll reveal</h2>
+      <p class="max-w-(--container-prose)"> <code>.dot-tile</code> on the tile and <code>.dot-title</code> on its title: the brand-blue dot hangs in front of the title, so title and text share one left edge (below <code>md</code> the tile moves in instead). <code>.reveal</code>: the block rises gently into place as it scrolls into view (CSS scroll-driven, transform only, off with reduced motion); use it below the first screen, never on a hero. </p>
+      <ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <li class="dot-tile reveal flex flex-col gap-3">
+          <AnimatedIcon name="gauge" />
+          <h3 class="heading-3 dot-title">Hohe Rückhalterate</h3>
+          <p class="text-muted">Title and text start on the same line; the dot sits in the gutter.</p>
+        </li>
+        <li class="dot-tile reveal flex flex-col gap-3">
+          <AnimatedIcon name="energy" />
+          <h3 class="heading-3 dot-title">Energiefrei</h3>
+          <p class="text-muted">Each tile rises on its own as it enters the viewport.</p>
+        </li>
+      </ul>
+    </section>
+
     <section class="flex flex-col gap-6" aria-labelledby="sg-hero">
       <h2 id="sg-hero" class="heading-2">HeroOverlay</h2>
       <p class="max-w-(--container-prose)"> Photo or video hero with the wave; the fixed header sits on top of it. Props: <code>image</code>, <code>imageMobile</code>, <code>video</code>, <code>eyebrow</code>, <code>title</code>, <code>lead</code> (or slots of the same name), <code>actions</code> slot, <code>size</code> (screen, large, medium), <code>align</code>, <code>position</code>, <code>width</code>, <code>overlay</code>, <code>inset</code>, <code>wave</code>, <code>belowHeader</code>, <code>priority</code>. The content sits between the fixed header and the wave with <code>--hero-space</code> of air on both sides; the hero only has a minimum height and grows on short screens instead of letting text run under the header or the wave. The page hero keeps <code>priority</code> (eager, high fetch priority); heroes lower on a page set <code>priority={'{false}'}</code> and <code>belowHeader={'{false}'}</code>. </p>
