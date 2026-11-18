@@ -1,0 +1,104 @@
+---
+/**
+ * Language switcher: the current language (flag + name) opens a small list of plain links to the
+ * same page in every language; the current one is marked with aria-current="page".
+ * Works without JavaScript (<details>); a few lines of script close it on Escape or a click outside.
+ *
+ * alternates: locale -> path of this page in that language (same prop as BaseLayout/Seo).
+ * Omitted = the page exists in every language under the same path. A language missing from
+ * `alternates` links to that language's home page.
+ */
+import { buttonVariants } from '@heroui/styles';
+import { LOCALES, localizePath, unlocalizePath, useTranslations, type Locale } from '@/i18n';
+import { FLAGS } from './flags';
+
+interface Props {
+  locale: Locale;
+  alternates?: Partial<Record<Locale, string>> | undefined;
+  /** dropdown: list floats below the toggle (header). inline: list opens in place (mobile menu). */
+  placement?: 'dropdown' | 'inline' | undefined;
+}
+
+const { locale, alternates, placement = 'dropdown' } = Astro.props;
+const t = useTranslations(locale);
+const basePath = unlocalizePath(Astro.url.pathname);
+
+function hrefFor(l: Locale): string {
+  if (!alternates) return localizePath(basePath, l);
+  // Pages with explicit alternates (posts, projects, 404) list only URLs that exist.
+  return alternates[l] ?? localizePath('/', l);
+}
+
+const languages = LOCALES.map((l) => ({ locale: l, name: t(`lang.${l}`), href: hrefFor(l), current: l === locale }));
+const flagClass = 'h-[0.6875rem] w-4 shrink-0 rounded-xs';
+---
+
+<details class:list={['group relative', placement === 'inline' && 'w-full']} data-lang-switcher>
+  <summary
+    class:list={[
+      buttonVariants({ variant: 'ghost', size: placement === 'inline' ? 'md' : 'sm' }),
+      'list-none [&::-webkit-details-marker]:hidden',
+      placement === 'inline' && 'px-0',
+    ]}
+  >
+    <span class="sr-only">{t('nav.language')}: </span>
+    <svg
+      class={flagClass}
+      viewBox={FLAGS[locale].viewBox}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      focusable="false"
+      set:html={FLAGS[locale].body}
+    />
+    <span>{t(`lang.${locale}`)}</span>
+    <svg class="size-3 transition-transform group-open:rotate-180" viewBox="0 0 10 6" aria-hidden="true" focusable="false">
+      <path d="M0 0h10L5 6z" fill="currentColor"></path>
+    </svg>
+  </summary>
+  <ul
+    class:list={[
+      'flex flex-col gap-1',
+      placement === 'dropdown' ? 'popover absolute end-0 top-full z-10 mt-2 min-w-44 p-1' : 'pt-1 pb-2',
+    ]}
+  >
+    {
+      languages.map((lang) => (
+        <li>
+          <a
+            href={lang.href}
+            hreflang={lang.locale}
+            lang={lang.locale}
+            aria-current={lang.current ? 'page' : undefined}
+            class="menu-item aria-[current=page]:font-semibold"
+          >
+            <svg
+              class={flagClass}
+              viewBox={FLAGS[lang.locale].viewBox}
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              focusable="false"
+              set:html={FLAGS[lang.locale].body}
+            />
+            {lang.name}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</details>
+
+<script>
+  // Close open language menus on Escape or on a click outside them.
+  document.addEventListener('click', (event) => {
+    for (const el of document.querySelectorAll<HTMLDetailsElement>('[data-lang-switcher][open]')) {
+      if (!el.contains(event.target as Node)) el.open = false;
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    for (const el of document.querySelectorAll<HTMLDetailsElement>('[data-lang-switcher][open]')) {
+      el.open = false;
+      el.querySelector('summary')?.focus();
+    }
+  });
+</script>

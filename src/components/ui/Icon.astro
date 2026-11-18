@@ -1,0 +1,37 @@
+---
+/**
+ * Inline SVG icon, rendered at build time (no JS, no icon font).
+ * 1em high (so it follows the surrounding font size; set `text-*` to resize), width from the
+ * icon's aspect ratio, colour = currentColor. Inside HeroUI buttons the button sizes it.
+ *
+ *   <Icon name="facebook" />                    decorative (aria-hidden), next to visible text
+ *   <Icon name="mail" label="E-Mail" />         meaningful on its own (role="img")
+ *
+ * Available names: the keys of ./icons.ts (generated from the old site's icon sources).
+ */
+import { icons, type IconName } from './icons';
+
+interface Props {
+  name: IconName;
+  /** Accessible name. Omit for decorative icons next to visible text. */
+  label?: string | undefined;
+  class?: string | undefined;
+}
+
+const { name, label, class: className } = Astro.props;
+const { viewBox, body } = icons[name];
+const [, , w = 1, h = 1] = viewBox.split(' ').map(Number);
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={viewBox}
+  class:list={['icon inline-block h-[1em] w-[calc(1em*var(--icon-ratio))] shrink-0 align-[-0.125em]', className]}
+  style={`--icon-ratio: ${Math.round((w / h) * 1000) / 1000}`}
+  fill="currentColor"
+  focusable="false"
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  set:html={body}
+/>

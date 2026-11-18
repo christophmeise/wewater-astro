@@ -1,0 +1,142 @@
+---
+/**
+ * Site header (the page's banner landmark): fixed to the top and translucent, so hero photos
+ * run underneath it. Pages start with <HeroOverlay> or <PlainHeader>, which leave room for it.
+ *
+ * - Desktop (lg, ≥1024px): logo, main navigation with the "Filtersysteme" mega-menu, the
+ *   "Ich will helfen!" button and the language switcher. The mega-menu opens on hover and on
+ *   keyboard focus (:focus-within), no JS needed; Escape dismisses it (small script below).
+ * - Phones and tablets: <MobileMenu> (top bar, burger, full-screen menu).
+ *
+ * The link to the current page gets aria-current="page"; its section is highlighted too
+ * (e.g. "Blog" on a blog post), in every language.
+ */
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Logo from '@/components/ui/Logo.astro';
+import { localizePath, useTranslations, type Locale } from '@/i18n';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import MobileMenu from './MobileMenu.astro';
+import { DONATE_PATH, NAV_ITEMS, linkState } from './navigation';
+
+interface Props {
+  locale: Locale;
+  alternates?: Partial<Record<Locale, string>> | undefined;
+}
+
+const { locale, alternates } = Astro.props;
+const t = useTranslations(locale);
+const pathname = Astro.url.pathname;
+---
+
+<header class="site-header fixed inset-x-0 top-0 z-40">
+  <div class="bg-background/75 shadow-surface hidden backdrop-blur-xl backdrop-saturate-150 lg:block" data-desktop-nav>
+    <div class="container-page flex h-(--header-height) items-center gap-8">
+      <a href={localizePath('/', locale)} class="shrink-0 rounded-2xl">
+        <Logo alt={t('nav.home')} loading="eager" />
+      </a>
+
+      <nav class="h-full" aria-label={t('nav.label')}>
+        <ul class="flex h-full items-center gap-1">
+          {
+            NAV_ITEMS.map((item) => {
+              const state = linkState(pathname, item.path, item.sectionPaths);
+              return (
+                <li class:list={['flex h-full items-center', item.children && 'has-mega relative']} data-mega={item.children ? '' : undefined}>
+                  <a
+                    href={item.external ? item.path : localizePath(item.path, locale)}
+                    class="text-foreground hover:bg-default data-active:bg-default rounded-2xl px-3 py-2 transition-colors"
+                    data-active={state ? '' : undefined}
+                    aria-current={state === 'page' ? 'page' : undefined}
+                    target={item.external ? '_blank' : undefined}
+                    rel={item.external ? 'noopener' : undefined}
+                  >
+                    {t(item.label)}
+                    {item.external && <span class="sr-only"> {t('nav.newTab')}</span>}
+                  </a>
+                  {item.children && (
+                    <div class="mega absolute top-full left-0 pt-1">
+                      <ul class="popover flex w-120 flex-col gap-1 p-2">
+                        {item.children.map((child) => (
+                          <li>
+                            <a
+                              href={localizePath(child.path, locale)}
+                              class="menu-item group/item items-center gap-4 p-3"
+                              aria-current={linkState(pathname, child.path) === 'page' ? 'page' : undefined}
+                            >
+                              {child.icon && (
+                                <span class="bg-accent grid size-12 shrink-0 place-items-center rounded-full">
+                                  <img src={child.icon.src} alt="" width="32" height="32" loading="lazy" decoding="async" class="size-8" />
+                                </span>
+                              )}
+                              <span class="flex flex-col gap-0.5">
+                                <span data-slot="label" class="text-link flex items-center gap-1 text-lg font-semibold">
+                                  {t(child.label)}
+                                  {!child.icon && (
+                                    <Icon
+                                      name="arrow-small-right"
+                                      class="text-2xl opacity-0 transition-opacity group-hover/item:opacity-100 group-focus-visible/item:opacity-100"
+                                    />
+                                  )}
+                                </span>
+                                <span data-slot="description" class="text-muted text-sm">
+                                  {t(child.description)}
+                                </span>
+                              </span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </li>
+              );
+            })
+          }
+        </ul>
+      </nav>
+
+      <div class="ms-auto flex items-center gap-4">
+        <Button href={localizePath(DONATE_PATH, locale)} size="sm">{t('nav.cta')}</Button>
+        <LanguageSwitcher locale={locale} alternates={alternates} />
+      </div>
+    </div>
+  </div>
+
+  <MobileMenu locale={locale} alternates={alternates} />
+</header>
+
+<script>
+  // Escape dismisses the hover/focus mega-menu (WCAG 1.4.13) until pointer or focus leave it.
+  for (const item of document.querySelectorAll<HTMLElement>('[data-mega]')) {
+    const reset = () => item.removeAttribute('data-dismissed');
+    item.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      item.setAttribute('data-dismissed', '');
+      item.querySelector<HTMLElement>('a')?.focus();
+    });
+    item.addEventListener('mouseleave', reset);
+    item.addEventListener('focusout', (event) => {
+      if (!item.contains(event.relatedTarget as Node | null)) reset();
+    });
+  }
+</script>
+
+<style>
+  /* Mega-menu: shown while the "Filtersysteme" item is hovered or holds keyboard focus. */
+  .mega {
+    display: none;
+  }
+
+  .has-mega:is(:hover, :focus-within):not([data-dismissed]) .mega {
+    display: block;
+    animation: heroui-overlay-enter-90-ny 150ms var(--ease-smooth);
+  }
+
+  /* Without JS the mobile menu is a plain link list in the page flow (see MobileMenu). */
+  @media (width < 64rem) {
+    :global(html:not(.js)) .site-header {
+      position: static;
+    }
+  }
+</style>

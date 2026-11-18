@@ -17,6 +17,11 @@
       "visual": false
     },
     {
+      "path": "/team/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
       "path": "/styleguide/",
       "lighthouse": true,
       "visual": false

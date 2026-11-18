@@ -4,9 +4,13 @@
  */
 import common from './common';
 import content from './content';
+import footer from './footer';
+import nav from './nav';
 
 export const strings = {
   ...common,
+  ...nav,
+  ...footer,
   ...content,
 };
 

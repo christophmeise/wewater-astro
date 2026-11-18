@@ -1,0 +1,184 @@
+---
+/**
+ * Navigation for phones and tablets (below lg/1024px), rendered inside <Header>: a top bar with
+ * the logo and a burger button that opens a full-screen menu (incl. the Filtersysteme
+ * sub-pages, the language switcher and the "Ich will helfen!" button).
+ *
+ * The burger is a <button aria-expanded aria-controls>; a few lines of script toggle it, close
+ * the menu on Escape and when the window grows to desktop width. Without JavaScript the burger
+ * is hidden and the menu is a plain list of links below the bar (html:not(.js), see BaseLayout).
+ */
+import { buttonVariants } from '@heroui/styles';
+import Button from '@/components/ui/Button.astro';
+import Logo from '@/components/ui/Logo.astro';
+import { localizePath, useTranslations, type Locale } from '@/i18n';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { DONATE_PATH, NAV_ITEMS, linkState } from './navigation';
+
+interface Props {
+  locale: Locale;
+  alternates?: Partial<Record<Locale, string>> | undefined;
+}
+
+const { locale, alternates } = Astro.props;
+const t = useTranslations(locale);
+const pathname = Astro.url.pathname;
+
+const linkClass =
+  'flex items-center gap-3 border-t border-separator px-(--gutter) py-3 text-lg transition-colors hover:bg-default aria-[current=page]:bg-default aria-[current=page]:font-semibold';
+---
+
+<div class="mobile-nav lg:hidden" data-mobile-nav>
+  <div
+    class="bg-background/80 border-separator flex h-(--header-height) items-center justify-between border-b px-(--gutter) backdrop-blur-xl backdrop-saturate-150"
+  >
+    <a href={localizePath('/', locale)} class="rounded-2xl">
+      <Logo alt={t('nav.home')} class="size-12" loading="eager" />
+    </a>
+    <button
+      type="button"
+      class:list={[buttonVariants({ variant: 'ghost', isIconOnly: true, size: 'lg' }), 'mobile-nav__toggle']}
+      aria-expanded="false"
+      aria-controls="mobile-nav-menu"
+      aria-label={t('nav.menu')}
+      data-mobile-nav-toggle
+    >
+      <svg class="burger" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+        <path
+          class="burger__line burger__line--1"
+          d="M 20,29.000046 H 80.00031 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058"
+        ></path>
+        <path class="burger__line burger__line--2" d="M 20,50 H 80"></path>
+        <path
+          class="burger__line burger__line--3"
+          d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942"
+        ></path>
+      </svg>
+    </button>
+  </div>
+
+  <nav id="mobile-nav-menu" class="mobile-nav__menu bg-background" aria-label={t('nav.label')}>
+    <ul>
+      {
+        NAV_ITEMS.map((item) => (
+          <li>
+            <a
+              href={item.external ? item.path : localizePath(item.path, locale)}
+              class={linkClass}
+              aria-current={linkState(pathname, item.path) === 'page' ? 'page' : undefined}
+              target={item.external ? '_blank' : undefined}
+              rel={item.external ? 'noopener' : undefined}
+            >
+              {t(item.label)}
+              {item.external && <span class="sr-only"> {t('nav.newTab')}</span>}
+            </a>
+            {item.children && (
+              <ul>
+                {item.children
+                  .filter((child) => child.path !== item.path)
+                  .map((child) => (
+                    <li>
+                      <a
+                        href={localizePath(child.path, locale)}
+                        class:list={[linkClass, 'ps-[calc(var(--gutter)+1.5rem)] before:bg-accent before:size-2 before:rounded-full']}
+                        aria-current={linkState(pathname, child.path) === 'page' ? 'page' : undefined}
+                      >
+                        {t(child.label)}
+                      </a>
+                    </li>
+                  ))}
+              </ul>
+            )}
+          </li>
+        ))
+      }
+      <li class="border-separator border-t px-(--gutter) py-1">
+        <LanguageSwitcher locale={locale} alternates={alternates} placement="inline" />
+      </li>
+      <li class="border-separator border-t px-(--gutter) py-4">
+        <Button href={localizePath(DONATE_PATH, locale)} icon="tint" fullWidth>{t('nav.cta')}</Button>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-mobile-nav]');
+  const toggle = root?.querySelector<HTMLButtonElement>('[data-mobile-nav-toggle]');
+  if (root && toggle) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      root.classList.toggle('is-open', open);
+      document.documentElement.classList.toggle('mobile-nav-open', open);
+    };
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && root.classList.contains('is-open')) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    matchMedia('(width >= 64rem)').addEventListener('change', (event) => {
+      if (event.matches) setOpen(false);
+    });
+  }
+</script>
+
+<style>
+  /* Animated burger <-> close icon (stroke lengths in SVG user units). */
+  .burger {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .burger__line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 6;
+    transition:
+      stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+      stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .burger__line--1,
+  .burger__line--3 {
+    stroke-dasharray: 60 207;
+  }
+
+  .burger__line--2 {
+    stroke-dasharray: 60 60;
+  }
+
+  .is-open .burger__line--1,
+  .is-open .burger__line--3 {
+    stroke-dasharray: 90 207;
+    stroke-dashoffset: -134;
+  }
+
+  .is-open .burger__line--2 {
+    stroke-dasharray: 1 60;
+    stroke-dashoffset: -30;
+  }
+
+  /* With JS: a full-screen panel below the bar, hidden until opened. */
+  :global(html.js) .mobile-nav__menu {
+    position: fixed;
+    inset: var(--header-height) 0 0;
+    display: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  :global(html.js) .is-open .mobile-nav__menu {
+    display: block;
+  }
+
+  :global(html.mobile-nav-open) {
+    overflow: hidden;
+  }
+
+  /* Without JS: no burger, the menu is a plain list below the bar. */
+  :global(html:not(.js)) .mobile-nav__toggle {
+    display: none;
+  }
+</style>

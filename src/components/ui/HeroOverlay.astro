@@ -1,0 +1,232 @@
+---
+/**
+ * Photo (or looping video) hero with overlaid text and the white wave at the bottom.
+ * The fixed site header sits on top of it, as on the old site. One component for all of the
+ * old HeaderOverlay / -Background / -Flexend / -Blog / -BlogPost and VideoOverlay variants.
+ *
+ *   <HeroOverlay image={photo} eyebrow="WeWater" title="Wasser weltweit klarmachen." lead="…">
+ *     <Fragment slot="actions"><Button href="/spenden/">Ich will helfen!</Button></Fragment>
+ *   </HeroOverlay>
+ *
+ *   Blog post header:   <HeroOverlay image={hero} inset size="medium" position="bottom" title={post.title} />
+ *   Video background:   <HeroOverlay image={poster} video={{ mp4: '/videos/x.mp4', mp4Mobile: '/videos/x-mobile.mp4' }} … />
+ *
+ * Text: pass `eyebrow`, `title`, `lead` as props, or as named slots for richer markup
+ * (e.g. a brand-blue word: <Fragment slot="title">We<span class="text-accent">Water</span></Fragment>).
+ * `actions` slot for buttons; the default slot renders below them (e.g. a counter).
+ *
+ * Image: AVIF + WebP in a responsive srcset (optional `imageMobile` crop for ≤767px). The hero is
+ * normally the LCP element, so it loads eagerly with fetchpriority="high" (`priority`, default
+ * true); pass priority={false} for heroes further down a page.
+ * Video: the <picture> stays underneath as poster and LCP element; the muted loop plays on top.
+ * `*Mobile` video sources are used up to 768px. Hidden with prefers-reduced-motion.
+ */
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  /** Photo; also the poster for `video`. */
+  image: ImageMetadata;
+  /** Different crop for phones (≤767px). */
+  imageMobile?: ImageMetadata | undefined;
+  /** Alt text. Default "" (decorative): right when the overlaid text says it all. */
+  alt?: string | undefined;
+  /** Looping background video: URLs of files in public/. */
+  video?:
+    | { mp4: string; webm?: string | undefined; mp4Mobile?: string | undefined; webmMobile?: string | undefined }
+    | undefined;
+  eyebrow?: string | undefined;
+  title?: string | undefined;
+  lead?: string | undefined;
+  /** Element for the title. Default h1 (the hero is the page title). */
+  titleTag?: 'h1' | 'h2' | 'p' | undefined;
+  /** screen: full viewport up to 56rem (home, landing pages) · large: blog index · medium: compact */
+  size?: 'screen' | 'large' | 'medium' | undefined;
+  /** Horizontal placement and text alignment of the content. */
+  align?: 'start' | 'center' | 'end' | undefined;
+  /** Vertical placement of the content. */
+  position?: 'center' | 'bottom' | undefined;
+  /** Maximum width of the text block. */
+  width?: 'md' | 'lg' | 'xl' | 'full' | undefined;
+  /** Navy overlay for text contrast: gradient behind the text (default), dark all over, or none. */
+  overlay?: 'gradient' | 'dark' | 'none' | undefined;
+  /** Rounded card inside the page container instead of full-bleed (blog post header). */
+  inset?: boolean | undefined;
+  /** White wave at the bottom. Default: on unless `inset`. */
+  wave?: boolean | undefined;
+  /** Which part of the photo stays visible when it is cropped. */
+  objectPosition?: 'center' | 'top' | 'bottom' | undefined;
+  /** Eager, high-priority image loading. Default true. */
+  priority?: boolean | undefined;
+  class?: string | undefined;
+}
+
+const {
+  image,
+  imageMobile,
+  alt = '',
+  video,
+  eyebrow,
+  title,
+  lead,
+  titleTag: TitleTag = 'h1',
+  size = 'screen',
+  align = 'start',
+  position = 'center',
+  width = 'lg',
+  overlay = 'gradient',
+  inset = false,
+  objectPosition = 'center',
+  priority = true,
+  class: className,
+} = Astro.props;
+const wave = Astro.props.wave ?? !inset;
+
+const WIDTHS = [480, 640, 828, 1080, 1280, 1600, 1920, 2560];
+async function srcsets(src: ImageMetadata) {
+  const widths = WIDTHS.filter((w) => w < src.width).concat(Math.min(src.width, 2560));
+  const [avif, webp] = await Promise.all(
+    (['avif', 'webp'] as const).map((format) => getImage({ src, widths, format, sizes: '100vw' })),
+  );
+  return { avif: avif!.srcSet.attribute, webp: webp!.srcSet.attribute };
+}
+const desktop = await srcsets(image);
+const mobile = imageMobile ? await srcsets(imageMobile) : undefined;
+const fallback = await getImage({
+  src: image,
+  width: Math.min(image.width, 1280),
+  format: image.format === 'png' ? 'png' : 'jpg',
+  layout: 'none',
+});
+const MOBILE = '(max-width: 767px)';
+const VIDEO_MOBILE = '(max-width: 768px)';
+
+const heightClass = {
+  screen: 'h-svh min-h-[32rem] max-h-[56rem]',
+  large: 'h-[90svh] min-h-[28rem] max-h-[46rem]',
+  medium: 'h-[80svh] min-h-[22rem] max-h-[31rem]',
+}[size];
+const alignClass = {
+  start: 'justify-start text-left',
+  center: 'justify-center text-center',
+  end: 'justify-end text-left',
+}[align];
+const overlayClass = {
+  gradient: {
+    start: 'bg-linear-to-r from-foreground/70 via-foreground/35 to-transparent',
+    center: 'bg-linear-to-t from-foreground/70 via-foreground/35 to-foreground/10',
+    end: 'bg-linear-to-l from-foreground/70 via-foreground/35 to-transparent',
+  }[align],
+  dark: 'bg-foreground/45',
+  none: '',
+}[overlay];
+const widthClass = { md: 'max-w-xl', lg: 'max-w-2xl', xl: 'max-w-3xl', full: 'max-w-none' }[width];
+const objectClass = { center: 'object-center', top: 'object-top', bottom: 'object-bottom' }[objectPosition];
+
+const hasEyebrow = Boolean(eyebrow) || Astro.slots.has('eyebrow');
+const hasTitle = Boolean(title) || Astro.slots.has('title');
+const hasLead = Boolean(lead) || Astro.slots.has('lead');
+---
+
+<div class:list={[inset && 'container-page pt-[calc(var(--header-height)+1.5rem)]', className]}>
+  <div
+    class:list={[
+      'relative isolate flex overflow-hidden bg-foreground text-white',
+      heightClass,
+      inset && 'rounded-3xl',
+    ]}
+  >
+    <picture>
+      {mobile && <source media={MOBILE} type="image/avif" srcset={mobile.avif} sizes="100vw" />}
+      {mobile && <source media={MOBILE} type="image/webp" srcset={mobile.webp} sizes="100vw" />}
+      <source type="image/avif" srcset={desktop.avif} sizes="100vw" />
+      <source type="image/webp" srcset={desktop.webp} sizes="100vw" />
+      <img
+        src={fallback.src}
+        alt={alt}
+        width={image.width}
+        height={image.height}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : 'auto'}
+        decoding="async"
+        class:list={['absolute inset-0 -z-20 size-full object-cover', objectClass]}
+      />
+    </picture>
+    {
+      video && (
+        <video
+          class:list={['absolute inset-0 -z-20 size-full object-cover motion-reduce:hidden', objectClass]}
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          aria-hidden="true"
+          tabindex="-1"
+        >
+          {video.webmMobile && <source media={VIDEO_MOBILE} src={video.webmMobile} type="video/webm" />}
+          {video.mp4Mobile && <source media={VIDEO_MOBILE} src={video.mp4Mobile} type="video/mp4" />}
+          {video.webm && <source src={video.webm} type="video/webm" />}
+          <source src={video.mp4} type="video/mp4" />
+        </video>
+      )
+    }
+    {overlayClass && <div class:list={['absolute inset-0 -z-10', overlayClass]} aria-hidden="true" />}
+
+    <div
+      class:list={[
+        'container-page flex',
+        inset ? 'py-8 md:py-12' : 'pt-(--header-height)',
+        position === 'bottom' ? 'items-end' : 'items-center',
+        position === 'bottom' && !inset && (wave ? 'pb-[12vw]' : 'pb-12'),
+        alignClass,
+      ]}
+    >
+      <div class:list={['flex flex-col gap-4 md:gap-6', widthClass, align === 'center' && 'items-center']}>
+        {
+          hasEyebrow && (
+            <p class="eyebrow text-accent">
+              <slot name="eyebrow">{eyebrow}</slot>
+            </p>
+          )
+        }
+        {
+          hasTitle && (
+            <TitleTag class="text-display text-white text-shadow-md">
+              <slot name="title">{title}</slot>
+            </TitleTag>
+          )
+        }
+        {
+          hasLead && (
+            <p class="lead text-white/90 text-shadow-sm">
+              <slot name="lead">{lead}</slot>
+            </p>
+          )
+        }
+        {
+          Astro.slots.has('actions') && (
+            <div class:list={['flex flex-wrap gap-3', align === 'center' && 'justify-center']}>
+              <slot name="actions" />
+            </div>
+          )
+        }
+        <slot />
+      </div>
+    </div>
+
+    {
+      wave && (
+        <svg
+          class="fill-background absolute inset-x-0 -bottom-px z-10 aspect-[1440/150] h-auto w-full"
+          viewBox="0 0 1440 150"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M1440 90.8571L1380 98.4286C1320 106 1200 121.143 1080 113.571C960 106 840 75.7143 720 71.9286C600 68.1429 480 90.8571 360 83.2857C240 75.7143 120 37.8571 60 18.9286L0 0V159H60C120 159 240 159 360 159C480 159 600 159 720 159C840 159 960 159 1080 159C1200 159 1320 159 1380 159H1440V90.8571Z" />
+        </svg>
+      )
+    }
+  </div>
+</div>

@@ -64,6 +64,12 @@ jobs:
       - run: npm run lighthouse
         env:
           LIGHTHOUSE_PRESET: ${{ matrix.preset }}
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lighthouse-${{ matrix.preset }}
+          path: .lighthouseci/reports
+          retention-days: 14
 
   visual:
     name: Visual diff against wewater.org

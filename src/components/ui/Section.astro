@@ -1,0 +1,41 @@
+---
+/**
+ * A page section: the design system's vertical rhythm (`.section`, fluid --space-section)
+ * plus the page container (`.container-page`). Children are laid out as a vertical stack
+ * with a consistent gap; pass `class` to change that (e.g. "grid md:grid-cols-2").
+ *
+ *   <Section>…</Section>
+ *   <Section muted as="div" id="newsletter">…</Section>       grey-blue band
+ *   <Section container={false}>full-bleed content</Section>
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type OwnProps = {
+  as?: 'section' | 'div' | 'aside' | 'article' | undefined;
+  /** Grey-blue background band (`section--muted`). */
+  muted?: boolean | undefined;
+  /** Wrap the content in `.container-page`. Default true. */
+  container?: boolean | undefined;
+  /** Classes for the inner container (or the section itself when container={false}). */
+  class?: string | undefined;
+};
+
+type Props = OwnProps & Omit<HTMLAttributes<'section'>, keyof OwnProps>;
+
+const { as: Tag = 'section', muted = false, container = true, class: className, ...attrs } = Astro.props;
+const inner = className ?? 'flex flex-col gap-8';
+---
+
+{
+  container ? (
+    <Tag class:list={['section', { 'section--muted': muted }]} {...attrs}>
+      <div class:list={['container-page', inner]}>
+        <slot />
+      </div>
+    </Tag>
+  ) : (
+    <Tag class:list={['section', { 'section--muted': muted }, inner]} {...attrs}>
+      <slot />
+    </Tag>
+  )
+}

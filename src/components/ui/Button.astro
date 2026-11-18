@@ -1,0 +1,77 @@
+---
+/**
+ * Button or button-styled link (HeroUI `.button`). Renders <a> when `href` is set, otherwise <button>.
+ *
+ *   <Button href={localizePath('/spenden/', locale)} icon="tint">Ich will helfen!</Button>
+ *   <Button variant="inverted" size="lg" href="#newsletter" icon="newspaper">Alle News</Button>
+ *   <Button type="submit" variant="secondary">Senden</Button>
+ *
+ * Variants:
+ *   primary   brand blue with navy text: the main call to action ("Ich will helfen!")
+ *   secondary light grey with blue text
+ *   tertiary  light grey with navy text
+ *   outline   thin border, transparent
+ *   ghost     transparent, grey on hover (toolbar-style buttons)
+ *   inverted  white outline and text, for photos and navy backgrounds
+ */
+import { buttonVariants } from '@heroui/styles';
+import type { HTMLAttributes } from 'astro/types';
+import Icon from './Icon.astro';
+import type { IconName } from './icons';
+
+type OwnProps = {
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'outline' | 'ghost' | 'inverted' | undefined;
+  size?: 'sm' | 'md' | 'lg' | undefined;
+  /** Renders an <a>. */
+  href?: string | undefined;
+  /** Only for <button>. Defaults to "button". */
+  type?: 'button' | 'submit' | 'reset' | undefined;
+  /** Icon before the label. */
+  icon?: IconName | undefined;
+  /** Stretch to the full width of the parent. */
+  fullWidth?: boolean | undefined;
+  /** Square button with only an icon; pass `aria-label`. */
+  iconOnly?: boolean | undefined;
+  class?: string | undefined;
+};
+
+type Props = OwnProps & Omit<HTMLAttributes<'a'> & HTMLAttributes<'button'>, keyof OwnProps>;
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  icon,
+  fullWidth = false,
+  iconOnly = false,
+  class: className,
+  ...attrs
+} = Astro.props;
+
+const classes = [
+  buttonVariants({
+    // `inverted` is a WeWater variant on top of HeroUI's transparent ghost button (global.css).
+    variant: variant === 'inverted' ? 'ghost' : variant,
+    size,
+    fullWidth,
+    isIconOnly: iconOnly,
+  }),
+  { 'button--inverted': variant === 'inverted' },
+  className,
+];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} {...attrs}>
+      {icon && <Icon name={icon} />}
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class:list={classes} {...attrs}>
+      {icon && <Icon name={icon} />}
+      <slot />
+    </button>
+  )
+}
