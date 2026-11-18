@@ -77,6 +77,11 @@
       "visual": false
     },
     {
+      "path": "/fr/spenden/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
       "path": "/spenden/einmalig/",
       "lighthouse": true,
       "visual": false
@@ -88,6 +93,11 @@
     },
     {
       "path": "/filtersystem/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/en/filtersystem/",
       "lighthouse": true,
       "visual": false
     },
