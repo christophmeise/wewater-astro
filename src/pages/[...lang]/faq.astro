@@ -81,7 +81,7 @@ const faqJsonLd = {
       }
     </div>
 
-    <aside class="flex flex-col gap-6" aria-label={t('faq.sidebar.label')}>
+    <aside class="grid gap-6 md:grid-cols-2 lg:grid-cols-1" aria-label={t('faq.sidebar.label')}>
       <Card variant="secondary" title={t('faq.about.title')} titleTag="h2" description={t('faq.about.text')}>
         <Fragment slot="footer">
           <Button href={localizePath('/', locale)} variant="secondary" size="sm" icon="arrow-right">
@@ -94,7 +94,7 @@ const faqJsonLd = {
           <Button href={localizePath('/spenden/', locale)} size="sm" icon="tint">{t('nav.cta')}</Button>
         </Fragment>
       </Card>
-      <Card variant="secondary" title={t('newsletter.title')} titleTag="h2">
+      <Card variant="secondary" title={t('newsletter.title')} titleTag="h2" class="md:col-span-2 lg:col-span-1">
         <NewsletterForm locale={locale} id="faq-newsletter" />
       </Card>
     </aside>
