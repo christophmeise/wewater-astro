@@ -25,6 +25,71 @@
       "path": "/styleguide/",
       "lighthouse": true,
       "visual": false
+    },
+    {
+      "path": "/spenden/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/en/spenden/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/spenden/einmalig/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/spenden/monatlich/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/filtersystem/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/filtersysteme/aqqabag/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/filtersysteme/aqqacube/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/filtersysteme/aqqasystem/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/filtersysteme/tutorials/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/unterstuetzen/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/impressum/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/dataprotection/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/404.html",
+      "lighthouse": true,
+      "visual": false
     }
   ]
 }
