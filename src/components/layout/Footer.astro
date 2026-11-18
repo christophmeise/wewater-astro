@@ -3,6 +3,10 @@
  * Site footer: wave into the grey-blue band, social links, three columns (Hilf uns /
  * Informationen / Spende jetzt with the bank details), then logo, copyright and legal links.
  * Internal links are localised; targets are copied from the old site's Footer.tsx.
+ *
+ * The wave rises from the page background (white). When a page ends with a grey-blue band
+ * (`.section--muted` as the last element in <main>), the wave sits on grey-blue instead, so no white
+ * strip shows between that band and the footer.
  */
 import { SOCIAL as SOCIAL_LINKS } from '@/components/pages/links';
 import { separatorVariants } from '@heroui/styles';
@@ -52,7 +56,7 @@ const headingClass = 'text-sm font-semibold uppercase tracking-widest';
 
 <footer>
   <svg
-    class="fill-background-secondary -mb-px block aspect-[1440/130] h-auto w-full"
+    class="footer-wave fill-background-secondary -mb-px block aspect-[1440/130] h-auto w-full"
     viewBox="0 0 1440 130"
     preserveAspectRatio="none"
     aria-hidden="true"
@@ -130,3 +134,10 @@ const headingClass = 'text-sm font-semibold uppercase tracking-widest';
     </div>
   </div>
 </footer>
+
+<style>
+  /* Last section of the page grey-blue (scripts such as JSON-LD after it don't count): no white strip. */
+  :global(main:has(> .section--muted:nth-last-child(1 of :not(script, style, template)))) + footer .footer-wave {
+    background-color: var(--background-secondary);
+  }
+</style>
