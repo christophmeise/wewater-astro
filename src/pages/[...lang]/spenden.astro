@@ -56,12 +56,12 @@ const heroTitle = t('spenden.hero.title').split(/(?<=\.)\s+/);
 
     <div class="container-page flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:items-start lg:gap-16" aria-labelledby="spenden-headline" role="group">
       <div class="contents lg:flex lg:flex-col lg:gap-10">
-        <div class="order-1 flex flex-col gap-10">
+        <div class="order-1 flex max-w-(--container-prose) flex-col gap-10">
           <SectionHeading id="spenden-headline" eyebrow={t('spenden.eyebrow')} title={t('spenden.headline')} lead={t('spenden.intro')} />
           <IconList icon="shield-check" items={trust} />
         </div>
 
-        <div class="order-3 flex flex-col gap-10">
+        <div class="order-3 flex max-w-(--container-prose) flex-col gap-10">
           <section class="flex flex-col gap-4" aria-labelledby="spenden-usage">
             <h3 id="spenden-usage" class="heading-3">{t('spenden.usage.headline')}</h3>
             <p>{t('spenden.usage1')}</p>
@@ -85,7 +85,7 @@ const heroTitle = t('spenden.hero.title').split(/(?<=\.)\s+/);
       </div>
 
       <div class="contents lg:flex lg:flex-col lg:items-end lg:gap-10">
-        <section class="bg-background-secondary order-2 flex w-full flex-col gap-4 rounded-3xl p-6 md:p-8 lg:max-w-xl" aria-labelledby="spenden-impact">
+        <section class="bg-background-secondary order-2 flex w-full max-w-(--container-prose) flex-col gap-4 rounded-3xl p-6 md:p-8 lg:max-w-xl" aria-labelledby="spenden-impact">
           <h3 id="spenden-impact" class="heading-3">{t('spenden.impact.headline')}</h3>
           <ul class="marker:text-accent flex list-disc flex-col gap-3 ps-5">
             {impact.map((item) => <li set:html={item} />)}
