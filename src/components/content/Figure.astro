@@ -1,0 +1,52 @@
+---
+/**
+ * An image in a blog post or project, optionally with a caption and a link.
+ *
+ *   <Figure src="wp/2026/11/foo.jpg" alt="Kinder am Wasserfilter" />
+ *   <Figure src="wp/2026/11/foo.jpg" alt="…">Caption with **Markdown** and [links](/spenden/)</Figure>
+ *   <Figure src="wp/2022/12/logo.png" alt="arche noVa" href="https://arche-nova.org/" />
+ *
+ * `src` is a path below src/assets/ (or an imported image). Images are never upscaled.
+ * Pages with a narrower text column can set `Astro.locals.contentMaxWidth` (px) before rendering
+ * the content, so the browser picks a smaller file.
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import { CONTENT_WIDTHS, resolveImage, type ImageSource } from './assets';
+
+interface Props {
+  src: ImageSource;
+  alt: string;
+  href?: string | undefined;
+  /** Load immediately (only for an image at the very top of a page). */
+  eager?: boolean | undefined;
+}
+
+const { src, alt, href, eager = false } = Astro.props;
+const image: ImageMetadata = await resolveImage(src);
+const maxWidth = (Astro.locals as { contentMaxWidth?: number }).contentMaxWidth ?? 1200;
+const display = Math.min(image.width, maxWidth);
+const widths = [...CONTENT_WIDTHS.filter((w) => w < image.width), Math.min(image.width, 1600)];
+const sizes = `(min-width: ${display}px) ${display}px, 100vw`;
+const external = href ? /^https?:\/\//.test(href) : false;
+const hasCaption = Astro.slots.has('default');
+---
+
+<figure class="not-prose mx-auto my-8 flex flex-col gap-3">
+  {
+    href ? (
+      <a href={href} rel={external ? 'noopener' : undefined} class="block">
+        <Image src={image} alt={alt} widths={widths} sizes={sizes} loading={eager ? 'eager' : 'lazy'} class="mx-auto rounded-2xl" />
+      </a>
+    ) : (
+      <Image src={image} alt={alt} widths={widths} sizes={sizes} loading={eager ? 'eager' : 'lazy'} class="mx-auto rounded-2xl" />
+    )
+  }
+  {
+    hasCaption && (
+      <figcaption class="text-muted text-center text-sm text-pretty [&_a]:text-link [&_a]:underline">
+        <slot />
+      </figcaption>
+    )
+  }
+</figure>

@@ -1,0 +1,145 @@
+---
+/**
+ * betterplace.org donation form (decision 1). Renders a lightweight placeholder of the same
+ * size; the real iframe (about 4 MB of Stripe, hCaptcha and betterplace scripts) is swapped in
+ * when the reader scrolls within ~300px of it, or immediately on click or keyboard focus.
+ * Nothing loads before the first scroll or interaction, so page-load metrics stay clean.
+ *
+ *   <DonationForm src="https://www.betterplace.org/de/donate/iframe/projects/68773?…" />
+ *
+ * The small betterplace progress widgets use the same component with a smaller height:
+ *   <DonationForm src="https://www.betterplace-widget.org/projects/68773?l=de" height={320} mobileHeight={320} />
+ *
+ * The iframe does not report its height, so it gets a fixed one that fits the whole form
+ * (measured 2026-11: 1600px desktop, 1720px phones). When the reader moves to the next form
+ * step, betterplace posts "bpScrollTop" and the page scrolls back to the top of the form.
+ */
+import { buttonVariants } from '@heroui/styles';
+import { getLocale, useTranslations } from '@/i18n';
+
+interface Props {
+  /** iframe URL, copied unchanged from betterplace (keeps amount, colours and interval). */
+  src: string;
+  /** Accessible iframe title. */
+  title?: string | undefined;
+  /** Height in px from tablet width up. */
+  height?: number | undefined;
+  /** Height in px on phones. */
+  mobileHeight?: number | undefined;
+  /** Link to the project on betterplace.org (shown in the placeholder, works without JavaScript). */
+  href?: string | undefined;
+}
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const { src, height = 1600, mobileHeight = 1720 } = Astro.props;
+const isWidget = height < 800;
+const title = Astro.props.title ?? t('content.donation.iframeTitle');
+const projectId = src.match(/projects\/(\d+)/)?.[1];
+const eventId = src.match(/fundraising_events\/(\d+)/)?.[1];
+const pageLang = locale === 'de' ? 'de' : 'en';
+const href =
+  Astro.props.href ??
+  (eventId
+    ? `https://www.betterplace.org/${pageLang}/fundraising-events/${eventId}`
+    : `https://www.betterplace.org/${pageLang}/projects/${projectId ?? '68773'}`);
+const style = `--donation-h: ${height / 16}rem; --donation-h-mobile: ${mobileHeight / 16}rem;`;
+---
+
+<div class="donation not-prose mx-auto my-8 w-full max-w-150" style={style} data-donation data-src={src} data-title={title}>
+  <div class="bg-background-secondary flex h-full flex-col items-start gap-4 rounded-3xl p-6 md:p-8" data-placeholder>
+    <p class="heading-3">{t(isWidget ? 'content.donation.widgetHeading' : 'content.donation.heading')}</p>
+    {!isWidget && <p class="text-muted">{t('content.donation.text')}</p>}
+    <button type="button" class={buttonVariants({ variant: 'primary' })} data-load>
+      {t(isWidget ? 'content.donation.widgetLoad' : 'content.donation.load')}
+    </button>
+    <a class="text-link underline" href={href} rel="noopener">{t('content.donation.open')}</a>
+  </div>
+</div>
+
+<style>
+  .donation {
+    height: var(--donation-h-mobile);
+  }
+
+  @media (width >= 48rem) {
+    .donation {
+      height: var(--donation-h);
+    }
+  }
+
+  .donation :global(iframe) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: transparent;
+  }
+</style>
+
+<script>
+  /*
+   * Swap placeholders for the real iframe. The observer only acts after the reader has scrolled
+   * or interacted once, so a page load alone (and Lighthouse) never fetches the form.
+   */
+  const boxes = [...document.querySelectorAll<HTMLElement>('[data-donation]')];
+
+  function load(box: HTMLElement) {
+    if (box.dataset['loaded']) return;
+    box.dataset['loaded'] = 'true';
+    const frame = document.createElement('iframe');
+    frame.src = box.dataset['src'] ?? '';
+    frame.title = box.dataset['title'] ?? '';
+    frame.setAttribute('allow', 'payment');
+    box.replaceChildren(frame);
+  }
+
+  if (boxes.length) {
+    let armed = false;
+    const near = new Set<HTMLElement>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const box = entry.target as HTMLElement;
+          if (entry.isIntersecting) near.add(box);
+          else near.delete(box);
+          if (armed && entry.isIntersecting) {
+            load(box);
+            observer.unobserve(box);
+          }
+        }
+      },
+      { rootMargin: '300px 0px' },
+    );
+    const arm = () => {
+      if (armed) return;
+      armed = true;
+      for (const box of near) {
+        load(box);
+        observer.unobserve(box);
+      }
+    };
+    for (const event of ['scroll', 'pointerdown', 'keydown', 'touchstart', 'wheel']) {
+      window.addEventListener(event, arm, { once: true, passive: true });
+    }
+    for (const box of boxes) {
+      observer.observe(box);
+      box.querySelector('[data-load]')?.addEventListener('click', () => load(box));
+      box.addEventListener('focusin', () => load(box), { once: true });
+    }
+
+    // betterplace posts "bpScrollTop" on each form step: scroll back to the top of that form.
+    window.addEventListener('message', (event) => {
+      if (event.data !== 'bpScrollTop') return;
+      let host = '';
+      try {
+        host = new URL(event.origin).hostname;
+      } catch {
+        return;
+      }
+      if (!/(^|\.)betterplace\.org$/.test(host)) return;
+      const frame = [...document.querySelectorAll('iframe')].find((f) => f.contentWindow === event.source);
+      if (frame && frame.getBoundingClientRect().top < 0) frame.scrollIntoView({ block: 'start' });
+    });
+  }
+</script>

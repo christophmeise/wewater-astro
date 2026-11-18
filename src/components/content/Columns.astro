@@ -1,0 +1,26 @@
+---
+/**
+ * Side-by-side columns (WordPress "columns" block). Stacks on phones, equal-width columns from
+ * tablet up. Put Markdown inside <Column>, with blank lines around it:
+ *
+ *   <Columns>
+ *
+ *   <Column>
+ *
+ *   ## Left
+ *
+ *   </Column>
+ *
+ *   <Column>
+ *
+ *   Right text
+ *
+ *   </Column>
+ *
+ *   </Columns>
+ */
+---
+
+<div class="my-8 grid gap-10 md:auto-cols-fr md:grid-flow-col">
+  <slot />
+</div>

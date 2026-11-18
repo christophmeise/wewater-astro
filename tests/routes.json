@@ -20,6 +20,21 @@
       "path": "/styleguide/",
       "lighthouse": true,
       "visual": false
+    },
+    {
+      "path": "/projekte/sauberes-trinkwasser-fuer-die-schule-uvira/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/blog/hilfe-zur-selbsthilfe-in-shinyalu-kenia-update-bei-den-health-workers/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/blog/sorgt-der-aqqacube-fuer-weniger-erkrankungen-in-bweyale/",
+      "lighthouse": true,
+      "visual": false
     }
   ]
 }

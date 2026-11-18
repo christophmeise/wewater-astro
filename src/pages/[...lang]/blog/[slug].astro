@@ -1,0 +1,111 @@
+---
+/**
+ * Blog post: /blog/<slug>/, /en/blog/<slug>/, /fr/blog/<slug>/ (each post only in its own language;
+ * old cross-language URLs redirect, see public/_redirects).
+ * Temporary layout from the content migration (phase 2); phase 4 restyles this page.
+ */
+import { Image, getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { authors } from '@/data/authors';
+import { categoryLabel } from '@/data/categories';
+import { useTranslations, type Locale } from '@/i18n';
+import { postPaths, readingMinutes, translationsOf, type Post } from '@/lib/content';
+
+export const getStaticPaths = postPaths;
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { data } = post;
+const locale: Locale = data.lang;
+const t = useTranslations(locale);
+const author = authors[data.author];
+const bio = author.description[locale] ?? author.description.de;
+const alternates = await translationsOf(post);
+const ogImage = await getImage({ src: data.hero, width: 1200, format: 'jpg' });
+const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'Europe/Berlin' });
+
+// Images in the text column are at most 42rem (672px) wide: let <Figure> pick smaller files.
+(Astro.locals as { contentMaxWidth?: number }).contentMaxWidth = 672;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={data.title} description={data.description} alternates={alternates} image={ogImage.src} type="article">
+  <article>
+    <header class="relative isolate flex min-h-[60svh] items-end overflow-hidden">
+      <Image
+        src={data.hero}
+        alt={data.heroAlt}
+        widths={[640, 800, 1080, 1280, 1600, 1920]}
+        sizes="100vw"
+        quality={70}
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 -z-10 size-full object-cover"
+      />
+      <div class="from-foreground/80 absolute inset-0 -z-10 bg-linear-to-t to-transparent"></div>
+      <div class="container-page flex flex-col gap-4 py-10 text-white">
+        {
+          data.categories.length > 0 && (
+            <ul class="flex flex-wrap gap-2" role="list">
+              {data.categories.slice(0, 3).map((key) => (
+                <li class="bg-background text-foreground rounded-full px-3 py-1 text-sm font-medium">{categoryLabel(key, locale)}</li>
+              ))}
+            </ul>
+          )
+        }
+        <h1 class="heading-1 max-w-(--container-prose)">{data.title}</h1>
+        <p class="text-sm">
+          {t('content.by')} {author.name} · <time datetime={data.date.toISOString()}>{dateFormat.format(data.date)}</time> ·{' '}
+          {readingMinutes(post.body)} {t('content.minRead')}
+        </p>
+      </div>
+    </header>
+
+    <div class="container-page section flex flex-col gap-12">
+      <div class="prose mx-auto w-full max-w-(--container-prose)">
+        <Content />
+      </div>
+
+      <aside class="mx-auto flex w-full max-w-(--container-prose) items-center gap-6 border-y border-border py-8">
+        {
+          author.avatar && (
+            <Image src={author.avatar} alt={author.name} width={96} height={96} densities={[1, 2]} class="size-24 shrink-0 rounded-full object-cover" />
+          )
+        }
+        <div class="flex flex-col gap-1">
+          <p class="eyebrow">{t('content.aboutAuthor')}</p>
+          <p class="heading-3">{author.name}</p>
+          {bio && <p class="text-muted" lang={author.description[locale] ? undefined : 'de'}>{bio}</p>}
+        </div>
+      </aside>
+
+      {
+        data.comments.length > 0 && (
+          <section class="mx-auto flex w-full max-w-(--container-prose) flex-col gap-6" aria-labelledby="comments">
+            <h2 id="comments" class="heading-2">
+              {data.comments.length} {t('content.comments')}
+            </h2>
+            <ol class="flex flex-col gap-6" role="list">
+              {data.comments.map((c) => (
+                <li class:list={['flex flex-col gap-2', { 'ml-8': c.parentId }]} id={`comment-${c.id}`}>
+                  <p class="text-sm">
+                    <strong>{c.author}</strong> <span class="text-muted">{t('content.says')}</span>{' '}
+                    <time class="text-muted" datetime={c.date.toISOString()}>
+                      {dateFormat.format(c.date)}
+                    </time>
+                  </p>
+                  <div class="prose prose-sm" set:html={c.html} />
+                </li>
+              ))}
+            </ol>
+            <p class="text-muted text-sm">{t('content.commentsClosed')}</p>
+          </section>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>

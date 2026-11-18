@@ -1,0 +1,24 @@
+---
+/**
+ * YouTube video as a lightweight facade: thumbnail plus play button. The YouTube player (and
+ * its cookies) only load after a click, from youtube-nocookie.com.
+ *
+ *   <YouTube id="qHDE8HboDBk" title="Projektupdate aus Kayonza, Uganda" />
+ */
+import { YouTube as LiteYouTube } from '@astro-community/astro-embed-youtube';
+import { getLocale, useTranslations } from '@/i18n';
+
+interface Props {
+  /** YouTube video id or URL. */
+  id: string;
+  /** Video title; also used for the play button label. */
+  title: string;
+}
+
+const { id, title } = Astro.props;
+const t = useTranslations(getLocale(Astro.currentLocale));
+---
+
+<figure class="not-prose my-8 overflow-hidden rounded-2xl">
+  <LiteYouTube id={id} title={title} playlabel={`${t('content.video.play')}: ${title}`} />
+</figure>

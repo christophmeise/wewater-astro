@@ -9,8 +9,8 @@
   ASTRO_TELEMETRY_DISABLED = "1"
 
 # ---------------------------------------------------------------------------
-# Redirects. Content redirects (old cross-language URLs etc.) are generated
-# into dist/_redirects at build time; these are the fixed ones from the old site.
+# Redirects. Content redirects (old cross-language URLs, old WordPress permalinks) are in
+# public/_redirects (written by scripts/migrate-wp); these are the fixed ones from the old site.
 # ---------------------------------------------------------------------------
 
 [[redirects]]
@@ -56,6 +56,6 @@
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
     X-Frame-Options = "SAMEORIGIN"
     # When adding a new third-party embed or form target, add its origin here.
-    # frame-src: betterplace donation form, YouTube (privacy mode).
+    # frame-src: betterplace donation form and progress widgets (loaded on demand), YouTube (privacy mode).
     # form-action: PayPal donate buttons, Mailchimp newsletter.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://i.ytimg.com; font-src 'self'; connect-src 'self'; frame-src https://www.betterplace.org https://www.youtube-nocookie.com; form-action 'self' https://www.paypal.com https://wewater.us20.list-manage.com; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://i.ytimg.com; font-src 'self'; connect-src 'self'; frame-src https://www.betterplace.org https://www.betterplace-widget.org https://project-widget.betterplace.org https://www.youtube-nocookie.com; form-action 'self' https://www.paypal.com https://wewater.us20.list-manage.com; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; upgrade-insecure-requests"

@@ -1,0 +1,79 @@
+---
+/**
+ * "Projektdetails" block at the top of a project: kicker, title and four tiles
+ * (country, goal, implementation, people helped) with fixed icons in this order:
+ * pin, map, to-do list, people. Icons are static SVGs exported from the old animated
+ * lord-icons (decision 7).
+ *
+ *   <IntroTiles subtitle="Projektdetails" title="Uvira, Provinz Süd-Kivu, DR Kongo"
+ *     tiles={[
+ *       { title: "Land", text: "Demokratische Republik Kongo" },
+ *       { title: "Ziel", text: "…" },
+ *       { title: "Umsetzung", text: "…" },
+ *       { title: "Menschen geholfen", text: "…" },
+ *     ]}
+ *   />
+ *
+ * A tile text may contain several paragraphs separated by a blank line ("\n\n").
+ */
+import pin from './icons/pin.svg?url';
+import map from './icons/map.svg?url';
+import todo from './icons/todo.svg?url';
+import people from './icons/people.svg?url';
+
+interface Tile {
+  title: string;
+  text: string;
+}
+
+interface Props {
+  /** Small kicker above the title ("Projektdetails"). */
+  subtitle?: string | undefined;
+  /** Location line ("Uvira, Provinz Süd-Kivu, DR Kongo"). */
+  title: string;
+  tiles: Tile[];
+}
+
+const { subtitle, title, tiles } = Astro.props;
+const icons = [pin, map, todo, people];
+---
+
+<section class="not-prose my-10 flex flex-col gap-8">
+  <header class="flex flex-col gap-2">
+    {subtitle && <p class="eyebrow">{subtitle}</p>}
+    <h2 class="heading-2">{title}</h2>
+  </header>
+  <ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4" role="list">
+    {
+      tiles.map((tile, i) => (
+        <li class="flex flex-col gap-3">
+          <img src={icons[i % icons.length]} width="80" height="80" alt="" loading="lazy" decoding="async" class="size-20" />
+          <p class="tile-title relative font-semibold">{tile.title}</p>
+          {tile.text.split(/\n{2,}/).map((para) => (
+            <p class="text-muted">{para}</p>
+          ))}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  /* Small brand-blue dot in front of the tile title, as on the old site. */
+  .tile-title::before {
+    content: '';
+    position: absolute;
+    top: 0.55em;
+    left: -0.9rem;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 9999px;
+    background: var(--accent);
+  }
+
+  @media (width < 40rem) {
+    .tile-title {
+      margin-left: 0.9rem;
+    }
+  }
+</style>

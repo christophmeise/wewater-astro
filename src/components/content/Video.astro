@@ -1,0 +1,55 @@
+---
+/**
+ * Self-hosted video (files in public/media/). Nothing is downloaded until the reader presses
+ * play (preload="none"); the poster image is optimised by Astro.
+ *
+ *   <Video src="/media/Nutzung.mp4" poster="wp/2021/09/Nutzung-poster.jpg" width={352} height={640} />
+ *   <Video src="/media/clip.mp4" poster="…">Optional caption</Video>
+ */
+import { getImage } from 'astro:assets';
+import { getLocale, useTranslations } from '@/i18n';
+import { resolveImage } from './assets';
+
+interface Props {
+  /** Public URL of the MP4 file, e.g. /media/foo.mp4. */
+  src: string;
+  /** Poster image, a path below src/assets/. */
+  poster?: string | undefined;
+  /** Intrinsic size (avoids layout shift). */
+  width?: number | undefined;
+  height?: number | undefined;
+  /** Accessible name when there is no caption. */
+  title?: string | undefined;
+}
+
+const { src, poster, width, height, title } = Astro.props;
+const t = useTranslations(getLocale(Astro.currentLocale));
+const posterImage = poster
+  ? await getImage({ src: await resolveImage(poster), width: Math.min(width ?? 960, 960), format: 'webp' })
+  : undefined;
+const hasCaption = Astro.slots.has('default');
+const portrait = width && height ? height > width : false;
+---
+
+<figure class="not-prose mx-auto my-8 flex flex-col gap-3">
+  <video
+    controls
+    preload="none"
+    playsinline
+    poster={posterImage?.src}
+    width={width}
+    height={height}
+    aria-label={hasCaption ? undefined : title}
+    class:list={['bg-foreground mx-auto h-auto rounded-2xl', portrait ? 'max-h-[80dvh] w-auto' : 'w-full']}
+  >
+    <source src={src} type="video/mp4" />
+    <a href={src}>{t('content.video.download')}</a>
+  </video>
+  {
+    hasCaption && (
+      <figcaption class="text-muted text-center text-sm">
+        <slot />
+      </figcaption>
+    )
+  }
+</figure>

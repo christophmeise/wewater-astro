@@ -1,0 +1,172 @@
+---
+/**
+ * Photo gallery: a grid of thumbnails (two columns on phones, `columns` from tablet up). Clicking a
+ * photo opens it large in a native <dialog> lightbox, a swipeable scroll-snap strip with prev/next
+ * buttons, arrow keys and Esc. Without JavaScript the thumbnails link to the large image.
+ *
+ *   <Gallery
+ *     columns={3}
+ *     images={[
+ *       { src: "wp/2022/12/foo.jpg", alt: "…", caption: "Optional caption" },
+ *       { src: "wp/2022/12/bar.jpg", alt: "…" },
+ *     ]}
+ *   />
+ *
+ * `src` is a path below src/assets/. `caption` (optional) is shown under the gallery.
+ */
+import { Image, getImage } from 'astro:assets';
+import { getLocale, useTranslations } from '@/i18n';
+import { resolveImage, type ImageSource } from './assets';
+
+interface GalleryImage {
+  src: ImageSource;
+  alt: string;
+  caption?: string | undefined;
+}
+
+interface Props {
+  images: GalleryImage[];
+  /** Columns from tablet width up (WordPress gallery setting). Default 3. */
+  columns?: number | undefined;
+  caption?: string | undefined;
+}
+
+const { images, columns = 3, caption } = Astro.props;
+const t = useTranslations(getLocale(Astro.currentLocale));
+const cols = Math.min(Math.max(columns, 1), 4);
+
+const items = await Promise.all(
+  images.map(async (img) => {
+    const meta = await resolveImage(img.src);
+    const large = await getImage({ src: meta, width: Math.min(meta.width, 1600), format: 'webp' });
+    const thumbWidths = [320, 480, 640, 960].filter((w) => w < meta.width);
+    return { ...img, meta, large, thumbWidths: thumbWidths.length ? thumbWidths : [meta.width] };
+  }),
+);
+---
+
+<figure class="not-prose my-8 flex flex-col gap-3" data-gallery>
+  <ul
+    class:list={[
+      'grid grid-cols-2 gap-3',
+      { 'md:grid-cols-3': cols === 3, 'md:grid-cols-4': cols === 4, 'grid-cols-1 sm:grid-cols-2': cols === 1 },
+    ]}
+    aria-label={t('content.gallery.label')}
+  >
+    {
+      items.map((item, i) => (
+        <li class="flex flex-col gap-2">
+          <a
+            href={item.large.src}
+            class="group block overflow-hidden rounded-2xl"
+            data-open={i}
+            aria-label={`${t('content.gallery.open')}: ${item.alt}`}
+          >
+            <Image
+              src={item.meta}
+              alt={item.alt}
+              widths={item.thumbWidths}
+              quality={65}
+              sizes="(min-width: 75rem) 24rem, (min-width: 48rem) 33vw, 50vw"
+              class="aspect-4/3 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          </a>
+          {item.caption && <p class="text-muted text-sm text-pretty">{item.caption}</p>}
+        </li>
+      ))
+    }
+  </ul>
+  {caption && <figcaption class="text-muted text-center text-sm">{caption}</figcaption>}
+
+  <dialog class="gallery-dialog bg-foreground/95 m-0 h-dvh max-h-none w-dvw max-w-none p-0 text-white" aria-label={t('content.gallery.label')}>
+    <div class="flex h-full w-full snap-x snap-mandatory overflow-x-auto" data-track>
+      {
+        items.map((item) => (
+          <figure class="flex h-full w-full shrink-0 snap-center flex-col items-center justify-center gap-3 p-4 md:p-12">
+            <img
+              src={item.large.src}
+              width={item.large.attributes.width}
+              height={item.large.attributes.height}
+              alt={item.alt}
+              loading="lazy"
+              decoding="async"
+              class="max-h-[85dvh] w-auto max-w-full rounded-2xl object-contain"
+            />
+            {item.caption && <figcaption class="text-center text-sm text-pretty">{item.caption}</figcaption>}
+          </figure>
+        ))
+      }
+    </div>
+    <button type="button" class="gallery-dialog__btn top-4 right-4" data-close aria-label={t('content.gallery.close')}>
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="size-6"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+    </button>
+    {
+      items.length > 1 && (
+        <>
+          <button type="button" class="gallery-dialog__btn top-1/2 left-4 -translate-y-1/2" data-prev aria-label={t('content.gallery.previous')}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="size-6"><path d="m15 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+          <button type="button" class="gallery-dialog__btn top-1/2 right-4 -translate-y-1/2" data-next aria-label={t('content.gallery.next')}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="size-6"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+        </>
+      )
+    }
+  </dialog>
+</figure>
+
+<style>
+  .gallery-dialog::backdrop {
+    background: transparent;
+  }
+
+  .gallery-dialog [data-track] {
+    scrollbar-width: none;
+  }
+
+  .gallery-dialog__btn {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    background: color-mix(in oklch, var(--white) 15%, transparent);
+    color: var(--white);
+    cursor: pointer;
+  }
+
+  .gallery-dialog__btn:hover {
+    background: color-mix(in oklch, var(--white) 25%, transparent);
+  }
+</style>
+
+<script>
+  // Lightbox: open the dialog at the clicked photo; prev/next scroll the snap track.
+  for (const gallery of document.querySelectorAll<HTMLElement>('[data-gallery]')) {
+    const dialog = gallery.querySelector('dialog');
+    const track = dialog?.querySelector<HTMLElement>('[data-track]');
+    if (!dialog || !track) continue;
+    const step = (dir: number) => track.scrollBy({ left: dir * track.clientWidth, behavior: 'smooth' });
+    for (const link of gallery.querySelectorAll<HTMLAnchorElement>('[data-open]')) {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        dialog.showModal();
+        const slide = track.children[Number(link.dataset['open'])];
+        track.scrollTo({ left: slide instanceof HTMLElement ? slide.offsetLeft : 0, behavior: 'instant' });
+      });
+    }
+    dialog.querySelector('[data-close]')?.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-prev]')?.addEventListener('click', () => step(-1));
+    dialog.querySelector('[data-next]')?.addEventListener('click', () => step(1));
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') step(-1);
+      if (event.key === 'ArrowRight') step(1);
+    });
+    // Click on the dark area around the photo closes the lightbox.
+    dialog.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      if (target === dialog || target.tagName === 'FIGURE') dialog.close();
+    });
+  }
+</script>

@@ -1,0 +1,82 @@
+---
+/**
+ * Project: /projekte/<slug>/, /en/projekte/<slug>/, /fr/projekte/<slug>/ (each project only in its
+ * own language; old cross-language URLs redirect, see public/_redirects).
+ * Temporary layout from the content migration (phase 2); phase 4 restyles this page.
+ */
+import { Image, getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { useTranslations, type Locale } from '@/i18n';
+import { postUrl, projectPaths, relatedPosts, translationsOf, type Project } from '@/lib/content';
+
+export const getStaticPaths = projectPaths;
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const locale: Locale = data.lang;
+const t = useTranslations(locale);
+const alternates = await translationsOf(project);
+const ogImage = await getImage({ src: data.hero, width: 1200, format: 'jpg' });
+const related = await relatedPosts(project);
+const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'Europe/Berlin' });
+
+(Astro.locals as { contentMaxWidth?: number }).contentMaxWidth = 1200;
+const { Content } = await render(project);
+---
+
+<BaseLayout title={data.title} description={data.description} alternates={alternates} image={ogImage.src}>
+  <article>
+    <header class="relative isolate flex min-h-[60svh] items-end overflow-hidden">
+      <Image
+        src={data.hero}
+        alt={data.heroAlt}
+        widths={[640, 800, 1080, 1280, 1600, 1920]}
+        sizes="100vw"
+        quality={70}
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 -z-10 size-full object-cover"
+      />
+      <div class="from-foreground/80 absolute inset-0 -z-10 bg-linear-to-t to-transparent"></div>
+      <div class="container-page flex flex-col gap-4 py-10 text-white">
+        <p class="text-sm font-semibold">{t(`content.status.${data.status}`)}</p>
+        <h1 class="heading-1 max-w-4xl">{data.title}</h1>
+      </div>
+    </header>
+
+    <div class="container-page section flex flex-col gap-12">
+      <div class="prose max-w-none">
+        <Content />
+      </div>
+
+      {
+        related.length > 0 && (
+          <section class="flex flex-col gap-6" aria-labelledby="related">
+            <h2 id="related" class="heading-2">
+              {t('content.relatedPosts')}
+            </h2>
+            <ul class="grid gap-6 md:grid-cols-3" role="list">
+              {related.map((post) => (
+                <li>
+                  <a href={postUrl(post)} class="card h-full no-underline transition-shadow hover:shadow-surface">
+                    <span class="card__header">
+                      <span class="card__title heading-3">{post.data.title}</span>
+                      <time class="card__description" datetime={post.data.date.toISOString()}>
+                        {dateFormat.format(post.data.date)}
+                      </time>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>
