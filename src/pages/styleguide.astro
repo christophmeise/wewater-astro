@@ -14,6 +14,19 @@ import { icons, type IconName } from '@/components/ui/icons';
 import Logo from '@/components/ui/Logo.astro';
 import PlainHeader from '@/components/ui/PlainHeader.astro';
 import Section from '@/components/ui/Section.astro';
+import tutorialPoster from '@/assets/pages/tutorials/poster-intro.jpg';
+import BankDetails from '@/components/pages/BankDetails.astro';
+import DonationOptions from '@/components/pages/DonationOptions.astro';
+import IconList from '@/components/pages/IconList.astro';
+import LinkCard from '@/components/pages/LinkCard.astro';
+import MediaRow from '@/components/pages/MediaRow.astro';
+import Notice from '@/components/pages/Notice.astro';
+import PayPalDonateButton from '@/components/pages/PayPalDonateButton.astro';
+import SectionHeading from '@/components/pages/SectionHeading.astro';
+import SpecTable from '@/components/pages/SpecTable.astro';
+import Step from '@/components/pages/Step.astro';
+import Steps from '@/components/pages/Steps.astro';
+import YouTubeVideo from '@/components/pages/YouTubeVideo.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { buttonVariants, chipVariants } from '@heroui/styles';
 
@@ -53,6 +66,13 @@ const colors = [
       <p class="eyebrow">Eyebrow above a section title</p>
       <p class="lead max-w-(--container-prose)">Lead paragraph. Introduces a section in one or two sentences.</p>
       <p class="max-w-(--container-prose)"> Body text at 16px with a 1.65 line height. Hinter WeWater steht ein engagiertes, überwiegend ehrenamtliches Team. Um unsere Projekte weltweit umzusetzen, sind wir auf Spenden angewiesen. <a class="link" href="/spenden/">Ein Link im Text</a>. </p>
+      <p class="max-w-(--container-prose)"> Links inside running text that wraps over lines use <code>link-inline</code> (underlined, so they are not told apart by colour alone): <a class="link-inline" href="/unterstuetzen/">So kannst du uns auch ohne Spende unterstützen</a>. UI strings with inline links or bold text are written with tags (<code>&lt;docLink&gt;dieses Dokument&lt;/docLink&gt;</code>) and rendered with <code>rich()</code> from <code>src/i18n/rich.ts</code>. </p>
+      <div class="prose" lang="de">
+        <p class="not-prose eyebrow">prose</p>
+        <h2>Long-form text (prose)</h2>
+        <p>For legal pages, blog posts and projects: <code>&lt;div class="prose"&gt;</code> styles plain HTML or Markdown in the WeWater palette. <a href="/dataprotection/">Datenschutzerklärung</a>.</p>
+        <ul><li>Lists, <strong>bold text</strong> and links</li><li>Headings from h2 down</li></ul>
+      </div>
     </section>
 
     <section class="flex flex-col gap-6" aria-labelledby="sg-colors">
@@ -209,6 +229,95 @@ const colors = [
       <p class="max-w-(--container-prose)"> Centred title for pages without a photo (FAQ, Impressum, …). Leaves room for the fixed header. Props: <code>eyebrow</code>, <code>title</code>, <code>lead</code>, <code>titleTag</code>; default slot below. </p>
       <div class="border-border rounded-3xl border pb-8">
         <PlainHeader titleTag="p" eyebrow="Hilfe" title="FAQ" lead="Häufig gestellte Fragen" />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-10" aria-labelledby="sg-page">
+      <div class="flex flex-col gap-3">
+        <h2 id="sg-page" class="heading-2">Page components</h2>
+        <p class="max-w-(--container-prose)"> Building blocks for the static pages, in <code>src/components/pages/</code>. Fixed link targets (PDFs, bank account, PayPal button, social profiles) are in <code>src/components/pages/links.ts</code>. </p>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <h3 class="heading-3">SectionHeading</h3>
+        <p class="text-muted max-w-(--container-prose) text-sm"> Eyebrow, title (h2 by default) and lead at the top of a section. Props: <code>eyebrow</code>, <code>title</code>, <code>lead</code> (or slots), <code>titleTag</code>, <code>id</code>, <code>align</code>. </p>
+        <div class="border-border rounded-3xl border p-6">
+          <SectionHeading titleTag="p" eyebrow="Werde Dauerspender*in" title="Deine Spende macht Wasser trinkbar" lead="Hinter WeWater steht ein engagiertes, überwiegend ehrenamtliches Team." />
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <h3 class="heading-3">MediaRow</h3>
+        <p class="text-muted max-w-(--container-prose) text-sm"> Image + text row (/filtersystem/). Props: <code>image</code>, <code>imageAlt</code>, <code>eyebrow</code>, <code>title</code>, <code>titleTag</code>, <code>reverse</code>, <code>aspect</code>; default slot for text, <code>actions</code> slot for buttons. </p>
+        <MediaRow image={heroImage} imageAlt="" eyebrow="AQQAbag" title="Die Lösung für den Soforteinsatz" titleTag="h3">
+          <p>Um kurzfristig den Bedarf an sicherem Wasser zu decken, kann der AQQAbag ein bis zwei Personen versorgen.</p>
+          <Fragment slot="actions"><Button href="/filtersysteme/aqqabag/" icon="grid">Mehr erfahren<span class="sr-only">: AQQAbag</span></Button></Fragment>
+        </MediaRow>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <h3 class="heading-3">SpecTable</h3>
+        <p class="text-muted max-w-(--container-prose) text-sm"> HeroUI table for spec sheets: one value column (product pages) or a comparison with <code>columns</code> (scrolls sideways on phones). Props: <code>caption</code> (screen readers), <code>rows</code> (<code>{'{ label, values: html[] }'}</code>), <code>columns</code> (<code>{'{ title, href?, image? }'}</code>). The filter specs come from <code>filterSpecs.ts</code>. </p>
+        <SpecTable
+          caption="Beispiel"
+          columns={[{ title: 'AQQAbag' }, { title: 'AQQAcube' }]}
+          rows={[
+            { label: 'Anwendung', values: ['Sofortlösung (z.B. nach einer Umweltkatastrophe)', 'Sofortlösung'] },
+            { label: 'Kosten', values: ['59 Euro je Stück', 'auf Anfrage'] },
+          ]}
+        />
+      </div>
+
+      <div class="grid gap-10 lg:grid-cols-2">
+        <div class="flex flex-col gap-4">
+          <h3 class="heading-3">IconList</h3>
+          <p class="text-muted text-sm"> List with the same icon before each item. Props: <code>items</code> (HTML strings), <code>icon</code>. </p>
+          <IconList items={['Unsere Gemeinnützigkeit ist vom Finanzamt anerkannt.', 'Wir halten unsere Kosten <strong>bewusst niedrig</strong>.']} />
+        </div>
+        <div class="flex flex-col gap-4">
+          <h3 class="heading-3">Steps + Step</h3>
+          <p class="text-muted text-sm"> Numbered options or steps (an <code>&lt;ol&gt;</code>; numbers follow the order). Step props: <code>title</code>, <code>titleTag</code>; content in the default slot. </p>
+          <Steps>
+            <Step title="Du spendest via PayPal." titleTag="h4"><PayPalDonateButton label="Mit PayPal spenden" /></Step>
+            <Step title="Du spendest über eine Banküberweisung an" titleTag="h4"><BankDetails /></Step>
+          </Steps>
+        </div>
+      </div>
+
+      <div class="grid gap-10 lg:grid-cols-2">
+        <div class="flex flex-col gap-4">
+          <h3 class="heading-3">LinkCard</h3>
+          <p class="text-muted text-sm"> A card that is one link (instead of social media embeds). Props: <code>href</code>, <code>icon</code>, <code>title</code>, <code>text</code>, <code>external</code> + <code>newTabLabel</code>. </p>
+          <LinkCard href="https://www.instagram.com/wewater_org/" icon="instagram" title="Instagram" text="instagram.com/wewater_org" external newTabLabel="(öffnet in neuem Tab)" class="max-w-sm" />
+        </div>
+        <div class="flex flex-col gap-4">
+          <h3 class="heading-3">Notice</h3>
+          <p class="text-muted text-sm"> Short note (HeroUI alert). Props: <code>icon</code>, <code>title</code>, <code>status</code> (accent, default), <code>lang</code>. </p>
+          <Notice icon="globe">This legal text is only available in German.</Notice>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <h3 class="heading-3">DonationOptions</h3>
+        <p class="text-muted max-w-(--container-prose) text-sm"> The three ways to give on /spenden/ (monthly, gift, one-off). Prop: <code>locale</code>. Renders its own h2 (screen readers only) and h3 per card. </p>
+        <DonationOptions locale="de" />
+      </div>
+
+      <div class="grid gap-10 lg:grid-cols-2">
+        <div class="flex flex-col gap-4">
+          <h3 class="heading-3">YouTubeVideo</h3>
+          <p class="text-muted text-sm"> Click-to-load YouTube facade (privacy-enhanced mode). Props: <code>id</code>, <code>title</code>, <code>playLabel</code>, <code>poster</code> (local image: then nothing is requested from YouTube before the click). </p>
+          <YouTubeVideo id="YhAQGvI53-0" title="Vorstellung AQQAcube" playLabel="Video abspielen" poster={tutorialPoster} />
+        </div>
+        <div class="flex flex-col gap-4">
+          <h3 class="heading-3">More</h3>
+          <ul class="flex list-disc flex-col gap-2 ps-5 text-sm">
+            <li><code>FilterSystemPage</code>: body of the AQQAbag/-cube/-system pages (video hero, spec table, text, photos).</li>
+            <li><code>DonationFormSlot</code>: reserves the betterplace form's space (placeholder until <code>DonationForm</code> is wired).</li>
+            <li><code>RelatedProjects</code>: projects using a filter system (placeholder, renders nothing yet).</li>
+            <li><code>PayPalDonateButton</code>, <code>BankDetails</code>, <code>PayPalIcon</code>: donation helpers (see Steps above).</li>
+          </ul>
+        </div>
       </div>
     </section>
 

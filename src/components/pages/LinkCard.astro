@@ -1,0 +1,50 @@
+---
+/**
+ * Compact card that is one big link: icon, title and a short line of text.
+ * Used instead of third-party embeds (Facebook page plugin, Instagram post), for documents, etc.
+ *
+ *   <LinkCard href="https://www.facebook.com/wewater.org/" icon="facebook" title="Facebook"
+ *     text="facebook.com/wewater.org" external newTabLabel={t('nav.newTab')} />
+ *
+ * `external` opens the link in a new tab and appends `newTabLabel` for screen readers.
+ */
+import { cardVariants } from '@heroui/styles';
+import Icon from '@/components/ui/Icon.astro';
+import type { IconName } from '@/components/ui/icons';
+
+interface Props {
+  href: string;
+  icon: IconName;
+  title: string;
+  text?: string | undefined;
+  external?: boolean | undefined;
+  newTabLabel?: string | undefined;
+  /** Element for the title. Default p (the card sits below its own heading). */
+  titleTag?: 'p' | 'h2' | 'h3' | undefined;
+  class?: string | undefined;
+}
+
+const { href, icon, title, text, external = false, newTabLabel, titleTag: TitleTag = 'p', class: className } = Astro.props;
+const card = cardVariants({ variant: 'default' });
+---
+
+<a
+  href={href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener' : undefined}
+  class:list={[
+    card.base(),
+    'group flex-row items-center gap-4 p-4 transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-overlay md:p-5',
+    className,
+  ]}
+>
+  <span class="bg-accent text-accent-foreground flex size-12 shrink-0 items-center justify-center rounded-2xl text-2xl">
+    <Icon name={icon} />
+  </span>
+  <span class="flex min-w-0 flex-col gap-0.5">
+    <TitleTag class="font-heading group-hover:text-link font-semibold">{title}</TitleTag>
+    {text && <span class="text-muted truncate text-sm">{text}</span>}
+    {external && newTabLabel && <span class="sr-only">{newTabLabel}</span>}
+  </span>
+  <Icon name="arrow-small-right" class="text-link ms-auto shrink-0 text-2xl transition-transform group-hover:translate-x-0.5" />
+</a>

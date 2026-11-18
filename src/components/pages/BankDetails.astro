@@ -1,0 +1,23 @@
+---
+/**
+ * WeWater's bank account for transfers and standing orders, in a soft box.
+ *
+ *   <BankDetails />
+ *
+ * The account itself is in ./links.ts (BANK); the footer shows the same account.
+ */
+import { BANK } from './links';
+
+interface Props {
+  class?: string | undefined;
+}
+
+const { class: className } = Astro.props;
+---
+
+<p class:list={['bg-background-secondary rounded-2xl px-5 py-4', className]}>
+  <strong class="font-semibold">{BANK.holder}</strong><br />
+  {BANK.bank}<br />
+  <span class="text-muted">IBAN:</span> <span class="font-medium tabular-nums">{BANK.iban}</span><br />
+  <span class="text-muted">BIC/SWIFT:</span> <span class="font-medium">{BANK.bic}</span>
+</p>

@@ -1,0 +1,22 @@
+---
+/**
+ * "Der AQQAbag/AQQAcube ist an folgenden Stellen im Einsatz": projects that use a filter system,
+ * shown at the end of /filtersysteme/aqqabag/ and /filtersysteme/aqqacube/.
+ *
+ *   <RelatedProjects filter="aqqacube" locale={locale} />
+ *
+ * PLACEHOLDER: renders nothing until the projects content collection exists (phase 2).
+ * TODO: load the projects of this locale whose filter type is `filter` (newest first, at most 4),
+ * render them as <Card>s in a grid below a section heading with t(`${filter}.projects.title`)
+ * (strings exist in aqqabag.ts / aqqacube.ts), and render nothing when there are none.
+ */
+import type { Locale } from '@/i18n';
+
+interface Props {
+  filter: 'aqqabag' | 'aqqacube';
+  locale: Locale;
+}
+
+// Props are part of the contract for the real implementation.
+const { filter: _filter, locale: _locale } = Astro.props;
+---

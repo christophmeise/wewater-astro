@@ -1,0 +1,60 @@
+---
+/**
+ * The three ways to give, as cards: monthly (/spenden/monatlich/), as a gift (shop) and one-off
+ * (/spenden/einmalig/). Each card: what you do, a button, and the accepted payment methods.
+ *
+ *   <DonationOptions locale={locale} />
+ *
+ * Renders an <h2> (screen readers only) and a card per option with an <h3>.
+ */
+import { cardVariants } from '@heroui/styles';
+import { SHOP_URL } from '@/components/layout/navigation';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { localizePath, useTranslations, type Locale, type UiKey } from '@/i18n';
+import PayPalIcon from './PayPalIcon.astro';
+
+interface Props {
+  locale: Locale;
+  class?: string | undefined;
+}
+
+const { locale, class: className } = Astro.props;
+const t = useTranslations(locale);
+const card = cardVariants({ variant: 'default' });
+
+const OPTIONS: { title: UiKey; cta: UiKey; href: string; external?: boolean }[] = [
+  { title: 'spenden.options.monthly.title', cta: 'spenden.options.monthly.cta', href: localizePath('/spenden/monatlich/', locale) },
+  { title: 'spenden.options.gift.title', cta: 'spenden.options.gift.cta', href: SHOP_URL, external: true },
+  { title: 'spenden.options.once.title', cta: 'spenden.options.once.cta', href: localizePath('/spenden/einmalig/', locale) },
+];
+---
+
+<section class:list={['flex flex-col', className]} aria-labelledby="donation-options-title">
+  <h2 id="donation-options-title" class="sr-only">{t('spenden.options.title')}</h2>
+  <ul class="grid gap-6 md:grid-cols-3">
+    {
+      OPTIONS.map((option) => (
+        <li class:list={[card.base(), 'items-center gap-5 p-6 text-center md:p-8']}>
+          <h3 class="heading-3 flex flex-1 items-center">{t(option.title)}</h3>
+          <Button
+            href={option.href}
+            icon="tint"
+            size="lg"
+            target={option.external ? '_blank' : undefined}
+            rel={option.external ? 'noopener' : undefined}
+          >
+            {t(option.cta)}
+            {option.external && <span class="sr-only">{t('nav.newTab')}</span>}
+          </Button>
+          <p class="text-link flex items-center gap-3 text-2xl">
+            <PayPalIcon />
+            <Icon name="credit-card" />
+            <Icon name="university" />
+            <span class="sr-only">{t('spenden.options.payment')}</span>
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+</section>

@@ -1,0 +1,75 @@
+---
+/**
+ * Body of a filter-system product page (/filtersysteme/aqqabag/, -aqqacube/, -aqqasystem/):
+ * video hero, eyebrow + title, spec table and text (default slot) next to a column of photos,
+ * then whatever comes after (slot "after", e.g. <RelatedProjects>).
+ *
+ *   <FilterSystemPage system="aqqacube" name="AQQAcube" heroTitle={t('aqqacube.hero.title')}
+ *     title={t('filtersystem.cube.title')} poster={…} posterMobile={…} video="aqqacube"
+ *     photos={[{ image, alt }, …]} locale={locale}>
+ *     <p>…</p>
+ *   </FilterSystemPage>
+ *
+ * `video` is the base name of the files in public/videos/ (<name>.mp4 and <name>-mobile.mp4).
+ */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import HeroOverlay from '@/components/ui/HeroOverlay.astro';
+import Section from '@/components/ui/Section.astro';
+import { useTranslations, type Locale } from '@/i18n';
+import { filterSpecRows, type FilterSystem } from './filterSpecs';
+import SectionHeading from './SectionHeading.astro';
+import SpecTable from './SpecTable.astro';
+
+interface Props {
+  system: FilterSystem;
+  /** Product name, e.g. "AQQAcube" (eyebrow). */
+  name: string;
+  heroTitle: string;
+  title: string;
+  poster: ImageMetadata;
+  posterMobile: ImageMetadata;
+  video: string;
+  /** Photos in the side column; `square` crops a very tall photo. */
+  photos: { image: ImageMetadata; alt: string; square?: boolean | undefined }[];
+  locale: Locale;
+}
+
+const { system, name, heroTitle, title, poster, posterMobile, video, photos, locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<HeroOverlay
+  image={poster}
+  imageMobile={posterMobile}
+  video={{ mp4: `/videos/${video}.mp4`, mp4Mobile: `/videos/${video}-mobile.mp4` }}
+  eyebrow={t('nav.filtersystems')}
+  title={heroTitle}
+  size="large"
+/>
+
+<Section class="grid gap-10 lg:grid-cols-12 lg:gap-12">
+  <div class="flex flex-col gap-8 lg:col-span-8">
+    <SectionHeading eyebrow={name} title={title} />
+    <SpecTable caption={`${name}: ${t('filtersystem.spec.overview')}`} rows={filterSpecRows(t, system)} />
+    <div class="flex max-w-(--container-prose) flex-col gap-4">
+      <slot />
+    </div>
+  </div>
+  <div class="grid content-start gap-6 sm:grid-cols-2 lg:col-span-4 lg:grid-cols-1">
+    {
+      photos.map((photo) => (
+        <Picture
+          src={photo.image}
+          alt={photo.alt}
+          formats={['avif', 'webp']}
+          width={640}
+          sizes="(min-width: 1024px) 24rem, (min-width: 640px) 50vw, 100vw"
+          class:list={['shadow-surface w-full rounded-3xl object-cover', photo.square && 'aspect-square']}
+        />
+      ))
+    }
+  </div>
+</Section>
+
+<slot name="after" />

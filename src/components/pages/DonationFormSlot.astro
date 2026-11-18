@@ -1,0 +1,22 @@
+---
+/**
+ * Where the betterplace donation form goes on /spenden/, /spenden/einmalig/ and /spenden/monatlich/.
+ * Keeps the form's height (1600px, 1720px on phones, as on the old site) so nothing jumps.
+ *
+ * PLACEHOLDER until <DonationForm /> (src/components/content/DonationForm.astro, phase 2) is merged.
+ * It lazy-loads the iframe near the viewport (PLAN.md decision 1), so every page places this slot
+ * below the first screen.
+ * TODO: render <DonationForm src={BETTERPLACE_FORM_URL} /> (./links.ts) here and drop the placeholder box.
+ */
+interface Props {
+  class?: string | undefined;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['donation-form-slot w-full max-w-xl', className]}>
+  {/* DonationForm: phase 2 */}
+  <div class="bg-background-secondary h-[107.5rem] rounded-3xl md:h-[100rem]" data-donation-form-placeholder aria-hidden="true">
+  </div>
+</div>

@@ -1,0 +1,45 @@
+---
+/**
+ * YouTube video as a lightweight facade (@astro-community/astro-embed-youtube): a poster image with
+ * a play button. The player itself (youtube-nocookie.com, privacy-enhanced mode) only loads on click.
+ *
+ *   <YouTubeVideo id="YhAQGvI53-0" title="Vorstellung AQQAcube" playLabel="Video abspielen" poster={still} />
+ *
+ * `poster`: an image from src/assets, served from our own server, so nothing is requested from
+ * YouTube before the click (and it is fast enough to be the LCP image). Without it the facade
+ * loads YouTube's thumbnail from i.ytimg.com (allowed in the CSP).
+ *
+ * On phones and in Safari the facade would normally load the YouTube iframe API from youtube.com
+ * (blocked by our CSP and not in privacy-enhanced mode); the script below keeps every browser on the
+ * plain youtube-nocookie.com iframe instead. On phones a second tap may be needed to start playback.
+ */
+import { YouTube } from '@astro-community/astro-embed-youtube';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  /** YouTube video ID. */
+  id: string;
+  /** Video title: names the player for screen readers. */
+  title: string;
+  /** Accessible label of the play button, e.g. "Video abspielen". */
+  playLabel: string;
+  poster?: ImageMetadata | undefined;
+  class?: string | undefined;
+}
+
+const { id, title, playLabel, poster, class: className } = Astro.props;
+const posterUrl = poster ? (await getImage({ src: poster, width: 720, format: 'webp' })).src : undefined;
+---
+
+<div class:list={['bg-foreground shadow-surface overflow-hidden rounded-3xl', className]}>
+  <YouTube id={id} title={title} playlabel={`${playLabel}: ${title}`} {...posterUrl ? { poster: posterUrl } : {}} />
+</div>
+
+<script>
+  customElements.whenDefined('lite-youtube').then(() => {
+    for (const el of document.querySelectorAll('lite-youtube')) {
+      (el as HTMLElement & { needsYTApi?: boolean }).needsYTApi = false;
+    }
+  });
+</script>
