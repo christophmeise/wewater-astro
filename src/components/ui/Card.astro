@@ -1,8 +1,9 @@
 ---
 /**
- * Content card (HeroUI `.card`): rounded image, eyebrow or category chip, title, meta line,
- * short description. With `href` the whole card is clickable (the title link stretches over it),
- * so there is a single link per card for screen readers and keyboards.
+ * Content card (HeroUI `.card`): rounded image, eyebrow or category chip, title, short
+ * description, meta line at the bottom (so dates line up across a row). With `href` the whole
+ * card is clickable (the title link stretches over it), so there is a single link per card for
+ * screen readers and keyboards.
  *
  *   <Card
  *     href="/blog/50-prozent-weniger-krankheiten/"
@@ -33,7 +34,7 @@ interface Props {
   eyebrow?: string | undefined;
   /** Category or status chip above the title, e.g. { label: 'In Arbeit', color: 'accent' }. */
   chip?: { label: string; color?: 'default' | 'accent' | 'success' | 'warning' | undefined } | undefined;
-  /** Muted line below the title: date, author, reading time, location. */
+  /** Muted line at the bottom of the card: date, author, reading time, location. */
   meta?: string | undefined;
   description?: string | undefined;
   /** Heading level for the title. Default h3 (cards sit below a section h2). */
@@ -119,12 +120,13 @@ const hasChips = Astro.slots.has('chips');
         )
       }
     </TitleTag>
-    {meta && <p class="text-muted text-sm">{meta}</p>}
     {description && <p class:list={[card.description(), size === 'lg' && 'md:text-base']}>{description}</p>}
     <slot />
+    {/* mt-auto: meta (and the footer) sit at the bottom, so dates line up across a row of cards. */}
+    {meta && <p class="text-muted mt-auto text-sm">{meta}</p>}
     {
       Astro.slots.has('footer') && (
-        <div class:list={[card.footer(), 'mt-auto gap-3 pt-2']}>
+        <div class:list={[card.footer(), !meta && 'mt-auto', 'gap-3 pt-2']}>
           <slot name="footer" />
         </div>
       )
