@@ -1,10 +1,16 @@
 ---
 /**
  * Team page: /team/, /en/team/, /fr/team/.
- * TEMPORARY placeholder (phase 1): a plain white page with <PlainHeader>, to compare the
- * header on a white background with the live site. Phase 3 builds the real team page.
+ * Photo hero, then one card per team member (src/content/team/*.md, sorted by `order`)
+ * with role, bio and contact links in the page language.
  */
-import PlainHeader from '@/components/ui/PlainHeader.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
+import banner from '@/assets/pages/team/banner.jpg';
+import Button from '@/components/ui/Button.astro';
+import Card from '@/components/ui/Card.astro';
+import HeroOverlay from '@/components/ui/HeroOverlay.astro';
+import type { IconName } from '@/components/ui/icons';
 import Section from '@/components/ui/Section.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
@@ -14,17 +20,73 @@ export const getStaticPaths = localeStaticPaths;
 const locale = getLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 
-// Placeholder copy (old page_team.json); moves into a strings group in phase 3.
-const headline = {
-  de: 'Wir machen Wasser sauber.',
-  en: 'We make water clean.',
-  fr: "Nous nettoyons l'eau.",
-}[locale];
+const members = (await getCollection('team')).sort((a, b) => a.data.order - b.data.order);
+const ogImage = await getImage({ src: banner, width: 1200, format: 'jpg' });
+
+type Links = CollectionEntry<'team'>['data']['links'];
+type LinkKey = keyof Links;
+
+/** Order of the icon buttons, and how each link is shown. */
+const LINKS: { key: LinkKey; icon: IconName; network?: string }[] = [
+  { key: 'email', icon: 'mail' },
+  { key: 'website', icon: 'globe' },
+  { key: 'linkedin', icon: 'linkedin', network: 'LinkedIn' },
+  { key: 'instagram', icon: 'instagram', network: 'Instagram' },
+  { key: 'facebook', icon: 'facebook', network: 'Facebook' },
+  { key: 'twitter', icon: 'twitter', network: 'Twitter' },
+];
+
+function linksOf(name: string, links: Links) {
+  return LINKS.flatMap(({ key, icon, network }) => {
+    const value = links[key];
+    if (!value) return [];
+    if (key === 'email') {
+      return [{ href: `mailto:${value}`, icon, label: t('team.link.email').replace('{name}', name), external: false }];
+    }
+    const label = network
+      ? t('team.link.social').replace('{name}', name).replace('{network}', network)
+      : t('team.link.website').replace('{name}', name);
+    return [{ href: value, icon, label: `${label} ${t('nav.newTab')}`, external: true }];
+  });
+}
+
+/** Bios are plain text; a blank line starts a new paragraph. */
+const paragraphs = (text: string) => text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 ---
 
-<BaseLayout title={t('nav.team')}>
-  <PlainHeader eyebrow={t('nav.team')} title={headline} />
-  <Section>
-    <p class="max-w-(--container-prose)">{t('site.description')}</p>
+<BaseLayout title={t('team.title')} description={t('team.description')} image={ogImage.src}>
+  <HeroOverlay image={banner} size="large" align="center" position="bottom" title={t('team.headline')} />
+
+  <Section class="grid gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+    {
+      members.map(({ data }) => (
+        <Card image={data.photo} imageAlt={data.photoAlt} eyebrow={data.role[locale]} title={data.name} titleTag="h2">
+          <div class="text-muted flex flex-col gap-3">
+            {paragraphs(data.description[locale]).map((p) => (
+              <p>{p}</p>
+            ))}
+          </div>
+          {linksOf(data.name, data.links).length > 0 && (
+            <ul slot="footer" class="-ms-2 flex flex-wrap gap-1">
+              {linksOf(data.name, data.links).map((link) => (
+                <li>
+                  <Button
+                    href={link.href}
+                    variant="ghost"
+                    iconOnly
+                    icon={link.icon}
+                    aria-label={link.label}
+                    title={link.label}
+                    target={link.external ? '_blank' : undefined}
+                    rel={link.external ? 'noopener' : undefined}
+                    class="text-link text-lg"
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      ))
+    }
   </Section>
 </BaseLayout>
