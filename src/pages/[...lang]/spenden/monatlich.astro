@@ -1,0 +1,40 @@
+---
+/**
+ * Monthly donation: /spenden/monatlich/ (+ /en/, /fr/). Two ways: PayPal (monthly) and a standing
+ * order, then the betterplace form below the first screen (it lazy-loads, PLAN.md decision 1).
+ */
+import BankDetails from '@/components/pages/BankDetails.astro';
+import DonationFormSection from '@/components/pages/DonationFormSection.astro';
+import PayPalDonateButton from '@/components/pages/PayPalDonateButton.astro';
+import Step from '@/components/pages/Step.astro';
+import Steps from '@/components/pages/Steps.astro';
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+---
+
+<BaseLayout title={t('spenden.monthly.seo.title')} description={t('spenden.monthly.seo.description')}>
+  <PlainHeader title={t('spenden.options.monthly.cta')} lead={t('spenden.monthly.intro')} />
+
+  <Section class="flex max-w-(--container-prose) flex-col gap-10">
+    <Steps>
+      <Step title={t('spenden.monthly.paypal')}>
+        <p>{t('spenden.monthly.paypalText')}</p>
+        <PayPalDonateButton label={t('spenden.paypal.button')} />
+      </Step>
+      <Step title={t('spenden.monthly.standingOrder')}>
+        <p>{t('spenden.monthly.copyDetails')}</p>
+        <BankDetails />
+        <p>{t('spenden.monthly.standingOrderText')}</p>
+      </Step>
+    </Steps>
+  </Section>
+
+  <DonationFormSection locale={locale} />
+</BaseLayout>

@@ -1,0 +1,38 @@
+---
+/** AQQAsystem product page: /filtersysteme/aqqasystem/ (+ /en/, /fr/). No project list (as on the old site). */
+import photoModule from '@/assets/pages/filtersysteme/aqqasystem-module.jpg';
+import photoPlant from '@/assets/pages/filtersysteme/aqqasystem-plant.jpg';
+import photoSite from '@/assets/pages/filtersysteme/aqqasystem-site.jpg';
+import poster from '@/assets/pages/filtersysteme/hero-aqqasystem.jpg';
+import posterMobile from '@/assets/pages/filtersysteme/hero-aqqasystem-mobile.jpg';
+import FilterSystemPage from '@/components/pages/FilterSystemPage.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+---
+
+<BaseLayout title={t('aqqasystem.seo.title')} description={t('aqqasystem.seo.description')}>
+  <FilterSystemPage
+    system="aqqasystem"
+    name="AQQAsystem"
+    heroTitle={t('aqqasystem.hero.title')}
+    title={t('filtersystem.system.title')}
+    poster={poster}
+    posterMobile={posterMobile}
+    video="aqqasystem"
+    photos={[
+      { image: photoPlant, alt: t('filtersystem.img.systemPlant') },
+      { image: photoModule, alt: t('filtersystem.img.systemModule') },
+      { image: photoSite, alt: t('filtersystem.img.systemSite') },
+    ]}
+    locale={locale}
+  >
+    <p>{t('aqqasystem.text1')}</p>
+    <p>{t('aqqasystem.text2')}</p>
+    <p>{t('aqqasystem.text3')}</p>
+  </FilterSystemPage>
+</BaseLayout>

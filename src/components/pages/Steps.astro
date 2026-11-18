@@ -1,0 +1,26 @@
+---
+/**
+ * Numbered steps or options (an <ol>): each <Step> gets a brand-blue number badge, a title and
+ * its content. Numbers come from the list order, so steps can be reordered freely.
+ *
+ *   <Steps>
+ *     <Step title="Du spendest via PayPal."><PayPalDonateButton … /></Step>
+ *     <Step title="Du spendest über eine Banküberweisung an"><BankDetails /></Step>
+ *   </Steps>
+ */
+interface Props {
+  class?: string | undefined;
+}
+
+const { class: className } = Astro.props;
+---
+
+<ol class:list={['steps flex flex-col gap-10 md:gap-12', className]}>
+  <slot />
+</ol>
+
+<style>
+  .steps {
+    counter-reset: step;
+  }
+</style>

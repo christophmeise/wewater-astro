@@ -1,0 +1,37 @@
+---
+/**
+ * Short note in a soft box (HeroUI `.alert`), e.g. "This legal text is only available in German."
+ *
+ *   <Notice icon="globe">{t('legal.germanOnly')}</Notice>
+ *   <Notice status="default" title="Hinweis"><p>…</p></Notice>
+ *
+ * Content goes in the default slot (inline text or paragraphs). Pass `lang` when the note is in a
+ * different language than the page.
+ */
+import { alertVariants } from '@heroui/styles';
+import Icon from '@/components/ui/Icon.astro';
+import type { IconName } from '@/components/ui/icons';
+
+interface Props {
+  icon?: IconName | undefined;
+  title?: string | undefined;
+  status?: 'accent' | 'default' | undefined;
+  lang?: string | undefined;
+  class?: string | undefined;
+}
+
+const { icon = 'comment', title, status = 'accent', lang, class: className } = Astro.props;
+const alert = alertVariants({ status });
+---
+
+<div class:list={[alert.base(), 'shadow-none', status === 'accent' ? 'bg-accent-soft' : 'bg-background-secondary', className]} lang={lang}>
+  <span class:list={[alert.indicator(), 'text-link text-lg']}>
+    <Icon name={icon} />
+  </span>
+  <div class:list={[alert.content(), 'gap-1']}>
+    {title && <p class:list={[alert.title(), 'text-foreground text-base font-semibold']}>{title}</p>}
+    <div class="text-foreground [&_a]:text-accent-soft-foreground flex flex-col gap-2">
+      <slot />
+    </div>
+  </div>
+</div>

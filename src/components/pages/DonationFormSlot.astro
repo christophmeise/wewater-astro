@@ -1,0 +1,21 @@
+---
+/**
+ * The betterplace donation form on /spenden/, /spenden/einmalig/ and /spenden/monatlich/.
+ * <DonationForm /> lazy-loads the iframe near the viewport (PLAN.md decision 1), so every page
+ * places this slot below the first screen.
+ */
+import DonationForm from '@/components/content/DonationForm.astro';
+import { getLocale } from '@/i18n';
+import { betterplaceFormUrl } from './links';
+
+interface Props {
+  class?: string | undefined;
+}
+
+const { class: className } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
+---
+
+<div class:list={['donation-form-slot w-full max-w-xl', className]}>
+  <DonationForm src={betterplaceFormUrl(locale)} />
+</div>

@@ -1,0 +1,32 @@
+---
+/**
+ * List where every item starts with the same icon in brand blue (trust points, benefits).
+ *
+ *   <IconList icon="shield-check" items={[t('spenden.trust1'), t('spenden.trust2')]} />
+ *
+ * Items are HTML strings (they may contain <strong> or links, see rich()). The icon is decorative.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import type { IconName } from '@/components/ui/icons';
+
+interface Props {
+  items: string[];
+  icon?: IconName | undefined;
+  class?: string | undefined;
+}
+
+const { items, icon = 'shield-check', class: className } = Astro.props;
+---
+
+<ul class:list={['flex flex-col gap-4', className]}>
+  {
+    items.map((item) => (
+      <li class="flex items-start gap-4">
+        <span class="bg-accent-soft text-link flex size-10 shrink-0 items-center justify-center rounded-2xl text-xl">
+          <Icon name={icon} />
+        </span>
+        <span class="pt-1.5" set:html={item} />
+      </li>
+    ))
+  }
+</ul>

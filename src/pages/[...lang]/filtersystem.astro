@@ -1,0 +1,88 @@
+---
+/**
+ * Filter systems overview: /filtersystem/ (+ /en/, /fr/). Video hero, one row per system and a
+ * comparison table. The video poster (its first frame) is the LCP image; the loop plays on top.
+ */
+import bagPhoto from '@/assets/pages/filtersysteme/aqqabag-bags.jpg';
+import cubePhoto from '@/assets/pages/filtersysteme/aqqacube-children.jpg';
+import heroPoster from '@/assets/pages/filtersysteme/hero-filtersystem.jpg';
+import heroPosterMobile from '@/assets/pages/filtersysteme/hero-filtersystem-mobile.jpg';
+import systemPhoto from '@/assets/pages/filtersysteme/aqqasystem-plant.jpg';
+import { filterComparisonRows } from '@/components/pages/filterSpecs';
+import MediaRow from '@/components/pages/MediaRow.astro';
+import SpecTable from '@/components/pages/SpecTable.astro';
+import Button from '@/components/ui/Button.astro';
+import HeroOverlay from '@/components/ui/HeroOverlay.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, localizePath, useTranslations, type UiKey } from '@/i18n';
+import type { ImageMetadata } from 'astro';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const SYSTEMS: { name: string; path: string; image: ImageMetadata; alt: UiKey; title: UiKey; text: UiKey }[] = [
+  {
+    name: 'AQQAbag',
+    path: '/filtersysteme/aqqabag/',
+    image: bagPhoto,
+    alt: 'filtersystem.img.bagBags',
+    title: 'filtersystem.bag.title',
+    text: 'filtersystem.bag.text',
+  },
+  {
+    name: 'AQQAcube',
+    path: '/filtersysteme/aqqacube/',
+    image: cubePhoto,
+    alt: 'filtersystem.img.cubeChildren',
+    title: 'filtersystem.cube.title',
+    text: 'filtersystem.cube.text',
+  },
+  {
+    name: 'AQQAsystem',
+    path: '/filtersysteme/aqqasystem/',
+    image: systemPhoto,
+    alt: 'filtersystem.img.systemPlant',
+    title: 'filtersystem.system.title',
+    text: 'filtersystem.system.text',
+  },
+];
+---
+
+<BaseLayout title={t('filtersystem.seo.title')} description={t('filtersystem.seo.description')}>
+  <HeroOverlay
+    image={heroPoster}
+    imageMobile={heroPosterMobile}
+    video={{ mp4: '/videos/filtersystem.mp4', mp4Mobile: '/videos/filtersystem-mobile.mp4' }}
+    eyebrow={t('site.name')}
+    title={t('filtersystem.hero.title')}
+    size="large"
+  />
+
+  <Section class="flex flex-col gap-16 md:gap-24">
+    {
+      SYSTEMS.map((system, index) => (
+        <MediaRow image={system.image} imageAlt={t(system.alt)} eyebrow={system.name} title={t(system.title)} reverse={index % 2 === 1}>
+          <p>{t(system.text)}</p>
+          <Fragment slot="actions">
+            <Button href={localizePath(system.path, locale)} icon="grid">
+              {t('filtersystem.learnMore')}
+              <span class="sr-only">: {system.name}</span>
+            </Button>
+          </Fragment>
+        </MediaRow>
+      ))
+    }
+  </Section>
+
+  <Section muted aria-labelledby="filtersystem-compare">
+    <h2 id="filtersystem-compare" class="heading-2">{t('filtersystem.compare.caption')}</h2>
+    <SpecTable
+      caption={t('filtersystem.compare.caption')}
+      columns={SYSTEMS.map((system) => ({ title: system.name, href: localizePath(system.path, locale), image: system.image }))}
+      rows={filterComparisonRows(t)}
+    />
+  </Section>
+</BaseLayout>

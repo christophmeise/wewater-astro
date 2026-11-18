@@ -1,0 +1,53 @@
+---
+/**
+ * Heading block at the top of a section: optional eyebrow (small blue kicker), title and lead.
+ *
+ *   <SectionHeading eyebrow="AQQAcube" title="Für den Soforteinsatz in Communitys" />
+ *   <SectionHeading eyebrow={t('spenden.eyebrow')} title={t('spenden.headline')} lead={t('spenden.intro')} />
+ *   <SectionHeading title="…" titleTag="h3" align="center" />
+ *
+ * Text as props or named slots (`eyebrow`, `title`, `lead`). Pass `id` to reference the title
+ * from aria-labelledby.
+ */
+interface Props {
+  eyebrow?: string | undefined;
+  title?: string | undefined;
+  lead?: string | undefined;
+  /** Default h2 (a section title below the page's h1). */
+  titleTag?: 'h1' | 'h2' | 'h3' | 'p' | undefined;
+  /** id of the title element. */
+  id?: string | undefined;
+  align?: 'start' | 'center' | undefined;
+  class?: string | undefined;
+}
+
+const { eyebrow, title, lead, titleTag: TitleTag = 'h2', id, align = 'start', class: className } = Astro.props;
+const hasEyebrow = Boolean(eyebrow) || Astro.slots.has('eyebrow');
+const hasTitle = Boolean(title) || Astro.slots.has('title');
+const hasLead = Boolean(lead) || Astro.slots.has('lead');
+const titleClass = TitleTag === 'h3' ? 'heading-3' : TitleTag === 'h1' ? 'heading-1' : 'heading-2';
+---
+
+<div class:list={['flex max-w-(--container-prose) flex-col gap-3', align === 'center' && 'mx-auto items-center text-center', className]}>
+  {
+    hasEyebrow && (
+      <p class="eyebrow">
+        <slot name="eyebrow">{eyebrow}</slot>
+      </p>
+    )
+  }
+  {
+    hasTitle && (
+      <TitleTag id={id} class={titleClass}>
+        <slot name="title">{title}</slot>
+      </TitleTag>
+    )
+  }
+  {
+    hasLead && (
+      <p class="lead">
+        <slot name="lead">{lead}</slot>
+      </p>
+    )
+  }
+</div>

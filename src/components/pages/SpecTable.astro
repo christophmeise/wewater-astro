@@ -1,0 +1,93 @@
+---
+/**
+ * Spec table (HeroUI `.table`): a label column plus one value column per product.
+ * One product = a simple key/value sheet (product pages); several = a comparison with a
+ * header row of product names, optional photos and links (/filtersystem/).
+ *
+ *   <SpecTable caption="Übersicht" rows={[{ label: 'Kosten', values: ['59 Euro je Stück'] }]} />
+ *   <SpecTable caption="…" columns={[{ title: 'AQQAbag', href: '/filtersysteme/aqqabag/', image: bag }, …]} rows={…} />
+ *
+ * Values are HTML (they may contain links); build them from translated strings in the page.
+ * The caption is for screen readers; show a visible heading above the table if needed.
+ * Comparisons scroll sideways on narrow screens (the scroll area is keyboard-focusable).
+ */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { tableVariants } from '@heroui/styles';
+
+interface Column {
+  title: string;
+  href?: string | undefined;
+  image?: ImageMetadata | undefined;
+}
+
+interface Props {
+  caption: string;
+  columns?: Column[] | undefined;
+  rows: { label: string; values: string[] }[];
+  class?: string | undefined;
+}
+
+const { caption, columns, rows, class: className } = Astro.props;
+const table = tableVariants({ variant: 'primary' });
+const comparison = Boolean(columns && columns.length > 1);
+---
+
+<div class:list={[table.base(), className]}>
+  <div
+    class={table.scrollContainer()}
+    tabindex={comparison ? 0 : undefined}
+    role={comparison ? 'region' : undefined}
+    aria-label={comparison ? caption : undefined}
+  >
+    <table class:list={[table.content(), comparison && 'min-w-176 table-fixed']}>
+      <caption class="sr-only">{caption}</caption>
+      {
+        columns && (
+          <thead class={table.header()}>
+            <tr>
+              <td class:list={[table.column(), comparison && 'w-1/5']} />
+              {columns.map((column) => (
+                <th scope="col" class:list={[table.column(), 'py-4 align-bottom']}>
+                  <div class="flex flex-col gap-3">
+                    {column.image && (
+                      <Picture
+                        src={column.image}
+                        alt=""
+                        formats={['avif', 'webp']}
+                        width={360}
+                        sizes="(min-width: 1200px) 15rem, 12rem"
+                        class="aspect-4/3 w-full rounded-2xl object-cover"
+                      />
+                    )}
+                    {column.href ? (
+                      <a href={column.href} class="link-inline heading-3 no-underline hover:underline">
+                        {column.title}
+                      </a>
+                    ) : (
+                      <span class="heading-3 text-foreground">{column.title}</span>
+                    )}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+        )
+      }
+      <tbody class={table.body()}>
+        {
+          rows.map((row) => (
+            <tr class={table.row()}>
+              <th scope="row" class:list={[table.cell(), 'text-muted text-start align-top font-medium', !comparison && 'w-2/5']}>
+                {row.label}
+              </th>
+              {row.values.map((value) => (
+                <td class:list={[table.cell(), 'align-top']} set:html={value} />
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

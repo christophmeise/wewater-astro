@@ -1,0 +1,51 @@
+---
+/** AQQAcube product page: /filtersysteme/aqqacube/ (+ /en/, /fr/). */
+import photoChildren from '@/assets/pages/filtersysteme/aqqacube-children.jpg';
+import photoFilling from '@/assets/pages/filtersysteme/aqqacube-filling.jpg';
+import photoPallets from '@/assets/pages/filtersysteme/aqqacube-pallets.jpg';
+import poster from '@/assets/pages/filtersysteme/hero-aqqacube.jpg';
+import posterMobile from '@/assets/pages/filtersysteme/hero-aqqacube-mobile.jpg';
+import FilterSystemPage from '@/components/pages/FilterSystemPage.astro';
+import { DOCS } from '@/components/pages/links';
+import RelatedProjects from '@/components/pages/RelatedProjects.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, localizePath, useTranslations } from '@/i18n';
+import { rich } from '@/i18n/rich';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const links = {
+  certLink: { href: DOCS.bcsCertificate, srSuffix: '(PDF)' },
+  particlesLink: { href: DOCS.aqqacubeParticles, srSuffix: '(PDF)' },
+  tutorialsLink: { href: localizePath('/filtersysteme/tutorials/', locale) },
+};
+---
+
+<BaseLayout title={t('aqqacube.seo.title')} description={t('aqqacube.seo.description')}>
+  <FilterSystemPage
+    system="aqqacube"
+    name="AQQAcube"
+    heroTitle={t('aqqacube.hero.title')}
+    title={t('filtersystem.cube.title')}
+    poster={poster}
+    posterMobile={posterMobile}
+    video="aqqacube"
+    photos={[
+      { image: photoChildren, alt: t('filtersystem.img.cubeChildren') },
+      { image: photoFilling, alt: t('filtersystem.img.cubeFilling') },
+      { image: photoPallets, alt: t('filtersystem.img.cubePallets'), square: true },
+    ]}
+    locale={locale}
+  >
+    <p set:html={rich(t('aqqacube.certificate'), links)} />
+    <p set:html={rich(t('aqqacube.particles'), links)} />
+    <p>{t('aqqacube.text1')}</p>
+    <p>{t('aqqacube.text2')}</p>
+    <p>{t('aqqacube.text3')}</p>
+    <p set:html={rich(t('aqqacube.cleaning'), links)} />
+    <RelatedProjects slot="after" filter="aqqacube" locale={locale} />
+  </FilterSystemPage>
+</BaseLayout>

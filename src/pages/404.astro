@@ -1,18 +1,36 @@
 ---
+/**
+ * 404 page. Netlify serves /404.html for every unknown URL in every language, so the message is
+ * shown in German, English and French, each with a link to that language's home page.
+ */
+import Button from '@/components/ui/Button.astro';
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { LOCALES, localizePath, useTranslations } from '@/i18n';
+
+const de = useTranslations('de');
+const others = LOCALES.filter((locale) => locale !== 'de').map((locale) => {
+  const t = useTranslations(locale);
+  return { locale, text: t('notFound.text'), home: t('notFound.home'), href: localizePath('/', locale) };
+});
 ---
 
-<BaseLayout title="Seite nicht gefunden" noindex alternates={{}}>
-  <section class="container not-found">
-    <h1>404</h1>
-    <h2>Diese Seite gibt es nicht (mehr).</h2>
-    <p lang="en">This page does not exist (anymore).</p>
-    <p><a href="/">Zur Startseite</a> · <a href="/en/" lang="en">Go to the home page</a> · <a href="/fr/" lang="fr">Page d’accueil</a></p>
-  </section>
-</BaseLayout>
+<BaseLayout title={de('notFound.title')} noindex alternates={{}}>
+  <PlainHeader eyebrow="404" title={de('notFound.title')} lead={de('notFound.text')}>
+    <Button href="/" icon="arrow-right" size="lg">{de('notFound.home')}</Button>
+  </PlainHeader>
 
-<style>
-  .not-found {
-    padding-block: 7.5rem 3rem;
-  }
-</style>
+  <Section class="grid max-w-3xl gap-6 sm:grid-cols-2">
+    {
+      others.map((other) => (
+        <div lang={other.locale} class="bg-background-secondary flex flex-col items-start gap-3 rounded-3xl p-6">
+          <p class="text-lg">{other.text}</p>
+          <a href={other.href} class="link-inline">
+            {other.home}
+          </a>
+        </div>
+      ))
+    }
+  </Section>
+</BaseLayout>

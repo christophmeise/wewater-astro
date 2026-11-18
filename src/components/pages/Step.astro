@@ -1,0 +1,40 @@
+---
+/**
+ * One item of <Steps>: number badge, title (h2 by default) and content (default slot).
+ * The number is generated with a CSS counter and hidden from screen readers, which announce
+ * the list position themselves.
+ */
+interface Props {
+  title: string;
+  /** Default h2 (steps directly below the page title). */
+  titleTag?: 'h2' | 'h3' | 'h4' | undefined;
+  id?: string | undefined;
+  class?: string | undefined;
+}
+
+const { title, titleTag: TitleTag = 'h2', id, class: className } = Astro.props;
+---
+
+<li class:list={['step grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 md:gap-x-6', className]} id={id}>
+  <span
+    class="step__number bg-accent text-accent-foreground font-heading flex size-10 items-center justify-center rounded-full text-lg font-semibold md:size-12"
+    aria-hidden="true"></span>
+  <TitleTag class="heading-3 self-center">{title}</TitleTag>
+  {
+    Astro.slots.has('default') && (
+      <div class="col-start-2 flex flex-col items-start gap-4">
+        <slot />
+      </div>
+    )
+  }
+</li>
+
+<style>
+  .step {
+    counter-increment: step;
+  }
+
+  .step__number::before {
+    content: counter(step);
+  }
+</style>

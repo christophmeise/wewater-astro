@@ -1,0 +1,39 @@
+---
+/** AQQAbag product page: /filtersysteme/aqqabag/ (+ /en/, /fr/). */
+import photoBags from '@/assets/pages/filtersysteme/aqqabag-bags.jpg';
+import photoDetail from '@/assets/pages/filtersysteme/aqqabag-detail.jpg';
+import photoUse from '@/assets/pages/filtersysteme/aqqabag-use.jpg';
+import poster from '@/assets/pages/filtersysteme/hero-aqqabag.jpg';
+import posterMobile from '@/assets/pages/filtersysteme/hero-aqqabag-mobile.jpg';
+import FilterSystemPage from '@/components/pages/FilterSystemPage.astro';
+import RelatedProjects from '@/components/pages/RelatedProjects.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+---
+
+<BaseLayout title={t('aqqabag.seo.title')} description={t('aqqabag.seo.description')}>
+  <FilterSystemPage
+    system="aqqabag"
+    name="AQQAbag"
+    heroTitle={t('aqqabag.hero.title')}
+    title={t('filtersystem.bag.title')}
+    poster={poster}
+    posterMobile={posterMobile}
+    video="aqqabag"
+    photos={[
+      { image: photoBags, alt: t('filtersystem.img.bagBags') },
+      { image: photoUse, alt: t('filtersystem.img.bagUse') },
+      { image: photoDetail, alt: t('filtersystem.img.bagDetail') },
+    ]}
+    locale={locale}
+  >
+    <p>{t('aqqabag.text1')}</p>
+    <p>{t('aqqabag.text2')}</p>
+    <RelatedProjects slot="after" filter="aqqabag" locale={locale} />
+  </FilterSystemPage>
+</BaseLayout>
