@@ -201,9 +201,10 @@ The **Datenschutzerklärung must be rewritten** for the new setup. It names Mato
 - **Living reference:** `/styleguide/`.
 - **Trade-off:** the visual diff against the live site becomes a reference for structure and layout rather than a pixel-match gate.
 
-**7. Animated icons (Lord-icon / Lottie).**
-- **Recommendation:** export the animations as static SVGs, plus CSS hover motion where it matters. That's 0 KB of JS.
-- **Alternative:** keep the Lottie animations, lazy-loaded, at about 60 KB of JS.
+**7. Animated icons (Lord-icon / Lottie).** *(updated 2026-11-19 after the polish review)*
+- **Decided:** keep the animations.
+- **How it works:** `AnimatedIcon` shows a static SVG poster immediately. It upgrades to the original Lottie animation (lottie-web light, about 47 KB gzipped, loaded once) only for icons near the viewport, and only after the first interaction or once the page is idle.
+- **Not loaded at all:** without JavaScript, under `prefers-reduced-motion`, and during Lighthouse's measurement.
 
 **8. Videos in git.**
 - **Recommendation:** after re-encoding, the referenced videos should be roughly 30–60 MB, which is fine to keep in the repo.

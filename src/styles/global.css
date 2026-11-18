@@ -334,6 +334,46 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * YouTube facade (lite-youtube, used by content/YouTube and pages/YouTubeVideo):
+ * a large round play button in the brand style instead of YouTube's small grey one,
+ * a soft navy tint instead of the title bar. Unlayered: the embed ships its own CSS.
+ * ------------------------------------------------------------------------- */
+lite-youtube {
+  max-width: none;
+  background-color: var(--foreground);
+}
+
+lite-youtube::before {
+  content: '';
+  inset: 0;
+  height: auto;
+  padding: 0;
+  background: linear-gradient(180deg, oklch(0.192 0.0958 262.9 / 0%) 40%, oklch(0.192 0.0958 262.9 / 35%) 100%);
+  transition: background-color 200ms ease;
+}
+
+lite-youtube > .lyt-playbtn {
+  filter: none;
+  background-size: clamp(4rem, 3rem + 4vw, 6rem);
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><circle cx="48" cy="48" r="48" fill="%235abee6"/><path d="M39 31.5v33a2 2 0 0 0 3 1.7l26-16.5a2 2 0 0 0 0-3.4l-26-16.5a2 2 0 0 0-3 1.7z" fill="%23000d3e"/></svg>');
+  transition: background-size 200ms var(--ease-out-quad, ease);
+}
+
+lite-youtube:hover > .lyt-playbtn,
+lite-youtube .lyt-playbtn:focus-visible {
+  background-size: clamp(4.5rem, 3.4rem + 4.4vw, 6.75rem);
+}
+
+lite-youtube .lyt-playbtn:focus-visible {
+  outline: 3px solid var(--white);
+  outline-offset: -6px;
+}
+
+lite-youtube.lyt-activated::before {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

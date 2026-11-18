@@ -20,7 +20,7 @@ const numbers = [
 ];
 ---
 
-<div class:list={['bg-background-secondary flex w-full max-w-md flex-col gap-2 rounded-2xl px-5 py-4', className]}>
+<div class:list={['bg-background-secondary flex w-full max-w-md flex-col gap-2 rounded-2xl px-4 py-4 sm:px-5', className]}>
   <p>
     <strong class="font-semibold">{BANK.holder}</strong><br />
     {BANK.bank}
@@ -30,7 +30,7 @@ const numbers = [
       numbers.map((number) => (
         <>
           <dt class="text-muted max-sm:text-sm">{number.label}</dt>
-          <dd class="font-medium whitespace-nowrap tabular-nums max-sm:not-last:mb-1">{number.value}</dd>
+          <dd class="font-medium whitespace-nowrap tabular-nums max-sm:not-last:mb-1 max-[22.5rem]:text-sm">{number.value}</dd>
         </>
       ))
     }

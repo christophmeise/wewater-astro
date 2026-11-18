@@ -55,7 +55,7 @@ const paragraphs = (text: string) => text.split(/\n\s*\n/).map((p) => p.trim()).
 ---
 
 <BaseLayout title={t('team.title')} description={t('team.description')} image={ogImage.src}>
-  <HeroOverlay image={banner} size="large" align="center" position="bottom" title={t('team.headline')} />
+  <HeroOverlay image={banner} size="large" align="center" position="bottom" photoOnPhones="whole" title={t('team.headline')} />
 
   <Section class="grid gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
     {

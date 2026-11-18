@@ -34,7 +34,8 @@ Before opening a pull request, `npm run check` and `npm run build` must pass.
 | Pages | `src/pages/` |
 | Layout, `<head>`, SEO tags | `src/layouts/BaseLayout.astro`, `src/components/Seo.astro` |
 | Site header, mobile menu, language switcher, footer, nav items | `src/components/layout/` (`navigation.ts` holds the menu entries) |
-| Design-system building blocks (Button, Icon, Logo, Card, Section, HeroOverlay, PlainHeader) | `src/components/ui/` |
+| Design-system building blocks (Button, Icon, AnimatedIcon, Logo, Card, Section, HeroOverlay, PlainHeader) | `src/components/ui/` |
+| Animated icons (baked Lottie JSON + static SVG posters) | `src/assets/animations/`, registered in `src/components/ui/animated-icons.ts`; new ones are made with `scripts/animations/` (see below) |
 | Page sections and patterns (PostCard, ProjectCard, SectionHeading, MediaRow, SpecTable, DonationOptions, NewsletterForm, FaqAccordion, ...) | `src/components/pages/` |
 | Fixed link targets (bank details, PayPal, betterplace, social profiles) | `src/components/pages/links.ts` |
 | Structured data for search engines | `src/components/JsonLd.astro` |
@@ -178,6 +179,14 @@ The site has one design system: Tailwind CSS v4 utilities plus HeroUI v3 compone
 **JavaScript**
 - The site ships no JavaScript framework. Prefer HTML and CSS: `<details>` for accordions, CSS scroll-snap for carousels, `:has()` for filters.
 - If a script is unavoidable, keep it small, put it in the component in a `<script>` tag, and make sure the page still works without it.
+
+**Animated icons**
+- Use `<AnimatedIcon name="gauge" trigger="loop" class="size-20" />`. The available names are in `src/components/ui/animated-icons.ts`; the styleguide shows them all.
+- The icon renders a static SVG first. The animation player only loads near the viewport after interaction or idle, so it never costs page speed.
+- To add a new lord-icon:
+  1. Run `node scripts/animations/bake.mjs <name>=<path/to/icon.json>`. This bakes lordicon's colour and stroke expressions into plain values for the light player.
+  2. Run `node scripts/animations/posters.mjs <name>` to render the static poster.
+  3. Register the icon in `animated-icons.ts`.
 
 **Third-party embeds**
 - YouTube: use the lite YouTube component (`@astro-community/astro-embed-youtube`), never a raw iframe.
