@@ -1,9 +1,17 @@
 ---
 /**
- * Outer HTML shell for every page: <html lang>, <head> metadata, fonts and global styles.
- * Header and footer are added in phase 1 (design foundation).
+ * Outer HTML shell for every page: <html lang>, <head> metadata, fonts, global styles,
+ * skip link, site header, <main> and footer.
+ *
+ * The header is fixed and overlays the top of <main>: pages start with a <HeroOverlay>
+ * (photo runs under the header) or a <PlainHeader> (leaves room for it).
+ *
+ * alternates: locale -> path of this page in the other languages. Used for hreflang tags and
+ * the language switcher. Omit it for pages that exist in every language under the same path.
  */
 import { Font } from 'astro:assets';
+import Footer from '@/components/layout/Footer.astro';
+import Header from '@/components/layout/Header.astro';
 import Seo from '@/components/Seo.astro';
 import { getLocale, useTranslations, LOCALE_TAGS, type Locale } from '@/i18n';
 import '@/styles/global.css';
@@ -27,11 +35,15 @@ const { title, description = t('site.description'), alternates, image, type, noi
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Lets CSS tell "JS available" apart from the no-JS fallbacks (mobile menu). -->
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
     <meta name="theme-color" content="#5abee6" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <Font cssVariable="--font-poppins" preload={[{ weight: 400 }, { weight: 500 }]} />
+    <Font cssVariable="--font-poppins" preload={[{ weight: 400 }, { weight: 500 }, { weight: 700 }]} />
     <Seo
       title={title}
       description={description}
@@ -44,8 +56,10 @@ const { title, description = t('site.description'), alternates, image, type, noi
   </head>
   <body>
     <a class="skip-link" href="#main">{t('a11y.skipToContent')}</a>
+    <Header locale={locale} alternates={alternates} />
     <main id="main">
       <slot />
     </main>
+    <Footer locale={locale} />
   </body>
 </html>

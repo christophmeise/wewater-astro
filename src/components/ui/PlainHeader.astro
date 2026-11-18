@@ -1,0 +1,35 @@
+---
+/**
+ * Centred page title on a white background, for pages without a hero photo
+ * (FAQ, Impressum, Datenschutz, Unterstützen, tutorials, donation sub-pages, 404).
+ * Leaves room for the fixed site header above it.
+ *
+ *   <PlainHeader>
+ *     <h1 class="hero-headline">FAQ</h1>
+ *     <p class="hero-subheadline">Häufig gestellte Fragen</p>
+ *   </PlainHeader>
+ */
+interface Props {
+  class?: string | undefined;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['container', 'plain-header', className]}>
+  <slot />
+</div>
+
+<style>
+  .plain-header {
+    padding-block: 7.5rem 2rem;
+    text-align: center;
+    overflow-wrap: break-word;
+  }
+
+  @media (width <= 767px) {
+    .plain-header {
+      padding-top: 7rem;
+    }
+  }
+</style>

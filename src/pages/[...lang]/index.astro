@@ -1,8 +1,11 @@
 ---
 /**
  * Home page in all three languages: / (de), /en/, /fr/.
- * Placeholder until phase 3 ports the real home page.
+ * TEMPORARY placeholder (phase 1): only the hero, so the header-over-hero look can be
+ * compared with the live site. Phase 3 ports the real home page and its strings.
  */
+import heroImage from '@/assets/site/hero-home.jpg';
+import HeroOverlay from '@/components/ui/HeroOverlay.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
 
@@ -10,22 +13,67 @@ export const getStaticPaths = localeStaticPaths;
 
 const locale = getLocale(Astro.currentLocale);
 const t = useTranslations(locale);
+
+// Placeholder copy from the old site's translation.json; moves into a strings group in phase 3.
+const copy = {
+  de: {
+    claim: 'Wasser weltweit klarmachen.',
+    text: 'Eine innovative Wasserfiltertechnologie ohne Einsatz elektrischer Energie oder Chemie, aber mit maximalem Reinheitsgrad.',
+  },
+  en: {
+    claim: 'Clean water worldwide.',
+    text: 'An innovative water filtration technology without need of electrical energy or chemicals, but with maximum purity.',
+  },
+  fr: {
+    claim: "De l'eau potable pour tous.",
+    text: "Une technologie innovante pour la filtration de l'eau sans nécessité d'énergie électrique ou de produits chimiques, mais avec un degré de pureté exceptionnel.",
+  },
+}[locale];
 ---
 
 <BaseLayout title={t('site.name')}>
-  <section class="container placeholder">
-    <h1>{t('site.name')}</h1>
-    <h2>{t('home.title')}</h2>
-    <p>{t('site.description')}</p>
-  </section>
+  <HeroOverlay image={heroImage} width={10}>
+    <h1 class="hero-headline home-title">{t('site.name')}</h1>
+    <p class="hero-headline hero-headline--inverted home-claim">{copy.claim}</p>
+    <p class="hero-subheadline hero-subheadline--inverted home-text">{copy.text}</p>
+  </HeroOverlay>
 </BaseLayout>
 
 <style>
-  .placeholder {
-    padding-block: 7.5rem 3rem;
+  .home-title {
+    margin: 0;
+    font-size: 72px;
+    font-weight: 400;
+    line-height: 94px;
+    letter-spacing: -0.05em;
   }
 
-  h1 {
-    color: var(--color-dark);
+  .home-claim {
+    font-size: 48px;
+    font-weight: 500;
+    line-height: 63px;
+    letter-spacing: -0.025em;
+  }
+
+  .home-text {
+    max-width: 80%;
+    font-size: 18px;
+    line-height: 23px;
+  }
+
+  @media (width <= 767px) {
+    .home-title {
+      font-size: 48px;
+      line-height: 60px;
+    }
+
+    .home-claim {
+      font-size: 32px;
+      line-height: 40px;
+    }
+
+    .home-text {
+      max-width: none;
+    }
   }
 </style>

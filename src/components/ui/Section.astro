@@ -1,0 +1,65 @@
+---
+/**
+ * A page section: vertical rhythm plus the centred site container
+ * (the old `.main-section` + Semantic UI `.ui.container`).
+ *
+ *   <Section>…</Section>
+ *   <Section background="secondary" as="div" id="newsletter">…</Section>
+ *   <Section container={false}>full-bleed content</Section>
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type OwnProps = {
+  as?: 'section' | 'div' | 'aside' | 'article' | undefined;
+  /** 'secondary' = light grey-blue band (#f6f9fc). */
+  background?: 'default' | 'secondary' | undefined;
+  /** Wrap the content in .container. Default true. */
+  container?: boolean | undefined;
+  /** Remove the vertical padding. */
+  flush?: boolean | undefined;
+  class?: string | undefined;
+};
+
+type Props = OwnProps & Omit<HTMLAttributes<'section'>, keyof OwnProps>;
+
+const {
+  as: Tag = 'section',
+  background = 'default',
+  container = true,
+  flush = false,
+  class: className,
+  ...attrs
+} = Astro.props;
+---
+
+<Tag class:list={['section', { 'section--secondary': background === 'secondary', 'section--flush': flush }, className]} {...attrs}>
+  {
+    container ? (
+      <div class="container">
+        <slot />
+      </div>
+    ) : (
+      <slot />
+    )
+  }
+</Tag>
+
+<style>
+  .section {
+    padding-block: 3rem;
+  }
+
+  .section--secondary {
+    background: var(--color-bg-secondary);
+  }
+
+  @media (width <= 767px) {
+    .section {
+      padding-block: 2rem;
+    }
+  }
+
+  .section--flush {
+    padding-block: 0;
+  }
+</style>

@@ -1,0 +1,32 @@
+---
+/**
+ * Team page: /team/, /en/team/, /fr/team/.
+ * TEMPORARY placeholder (phase 1): a plain white page with <PlainHeader>, to compare the
+ * header on a white background with the live site. Phase 3 builds the real team page.
+ */
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+// Placeholder copy (old page_team.json); moves into a strings group in phase 3.
+const headline = {
+  de: 'Wir machen Wasser sauber.',
+  en: 'We make water clean.',
+  fr: "Nous nettoyons l'eau.",
+}[locale];
+---
+
+<BaseLayout title={t('nav.team')}>
+  <PlainHeader>
+    <h1 class="hero-headline">{headline}</h1>
+  </PlainHeader>
+  <Section>
+    <p>{t('site.description')}</p>
+  </Section>
+</BaseLayout>

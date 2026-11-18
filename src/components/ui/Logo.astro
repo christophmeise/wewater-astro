@@ -1,0 +1,39 @@
+---
+/**
+ * The WeWater logo (drop in two hands + wordmark). PNG source, served as optimised
+ * WebP at 1x and 2x. Displayed at `size` px; parents may resize it with CSS on `.logo`.
+ * No SVG version of the logo exists yet; swap src/assets/site/logo.png when one does.
+ */
+import { Image } from 'astro:assets';
+import logo from '@/assets/site/logo.png';
+
+interface Props {
+  /** Display size in CSS px (square). Default 60. */
+  size?: number | undefined;
+  /** Use "" when a surrounding link already names the destination. */
+  alt: string;
+  loading?: 'eager' | 'lazy' | undefined;
+  class?: string | undefined;
+}
+
+const { size = 60, alt, loading = 'lazy', class: className } = Astro.props;
+---
+
+<Image
+  src={logo}
+  alt={alt}
+  width={size}
+  height={size}
+  layout="fixed"
+  loading={loading}
+  decoding="async"
+  class:list={['logo', className]}
+/>
+
+<style>
+  .logo {
+    display: block;
+    width: var(--logo-size, auto);
+    height: var(--logo-size, auto);
+  }
+</style>
