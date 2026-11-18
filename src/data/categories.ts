@@ -26,7 +26,7 @@ const categoryData = {
   abgeschlossen: { label: { de: "Abgeschlossen", en: "Completed", fr: "Achevé" }, status: "completed" },
   allgemein: { label: { de: "Allgemein", en: "General", fr: "Général" }, color: "#5ABEE6" },
   "aqqabag-projekt": { label: { de: "AQQAbag-Projekt", en: "AQQAbag project", fr: "Projet AQQAbag" }, product: "aqqabag" },
-  "aqqacube-projekt": { label: { de: "AQQAcube-Projekt", en: "AQQAcube-project", fr: "Projet AQQAcube" }, product: "aqqacube" },
+  "aqqacube-projekt": { label: { de: "AQQAcube-Projekt", en: "AQQAcube project", fr: "Projet AQQAcube" }, product: "aqqacube" },
   belutschistan: { label: { de: "Belutschistan", en: "Balochistan", fr: "Baloutchistan" } },
   bweyale: { label: { de: "Bweyale", en: "Bweyale", fr: "Bweyale" }, color: "#7E5AE6" },
   "dr-kongo": { label: { de: "DR Kongo", en: "DR Congo", fr: "RD Congo" } },

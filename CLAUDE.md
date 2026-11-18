@@ -50,7 +50,7 @@ Before opening a pull request, `npm run check` and `npm run build` must pass.
 
 All content is in `src/content/`. Every file is checked against the schemas in `src/content.config.ts` when you run `npm run check` or `npm run build`. A wrong category, a missing image or a missing field fails the build with the file name.
 
-Until cutover, `npm run migrate:wp` regenerates everything in `src/content/`, `src/assets/{wp,team,authors}/`, `public/docs/`, `public/media/`, `src/data/*.ts` and `public/_redirects` from WordPress, and overwrites hand edits there. After cutover the script is deleted and these files are edited by hand.
+The WordPress migration (`npm run migrate:wp`) is finished. The files in `src/content/`, `src/assets/{wp,team,authors}/`, `public/docs/`, `public/media/`, `src/data/*.ts` and `public/_redirects` are now the source of truth and are edited by hand. Do not re-run the script: it would overwrite those edits, so it refuses unless `--overwrite-hand-edits` is passed. It gets deleted after cutover.
 
 ### Blog post
 

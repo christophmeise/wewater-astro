@@ -1,5 +1,8 @@
 /**
- * One-off WordPress -> repo migration (phase 2). Re-runnable until cutover, then delete it.
+ * One-off WordPress -> repo migration (phase 2). Delete it after cutover.
+ *
+ * DONE: the migrated files have since been corrected by hand (FAQ, cost tables, duplicate titles,
+ * labels). Re-running OVERWRITES those fixes, so it refuses to run without --overwrite-hand-edits.
  *
  *   npm run migrate:wp                 fetch WordPress, convert, write files
  *   npm run migrate:wp -- --offline    reuse the last GraphQL responses (scripts/migrate-wp/.cache)
@@ -13,6 +16,14 @@
  *
  * Media files already downloaded by the old Gatsby site are reused (see gatsbyCacheDir()).
  */
+if (!process.argv.includes('--overwrite-hand-edits')) {
+  console.error(
+    'The WordPress migration is finished and its output has been edited by hand since.\n' +
+      'Re-running would overwrite those edits. Pass --overwrite-hand-edits if that is really intended.',
+  );
+  process.exit(1);
+}
+
 import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { LANGS, ROOT, generatedDirs, gatsbyCacheDir, paths, type Lang } from './lib/config.ts';
