@@ -64,6 +64,12 @@ interface Props {
   belowHeader?: boolean | undefined;
   /** Which part of the photo stays visible when it is cropped. */
   objectPosition?: 'center' | 'top' | 'bottom' | undefined;
+  /**
+   * Phones (below md): cover (default) crops the photo to fill the hero; whole shows the whole
+   * photo at its own proportions below the header, with the text under it on navy. For wide
+   * photos where the sides matter, e.g. a group photo. Photos only (not with `video`).
+   */
+  photoOnPhones?: 'cover' | 'whole' | undefined;
   /** Eager, high-priority image loading. Default true. */
   priority?: boolean | undefined;
   class?: string | undefined;
@@ -86,10 +92,12 @@ const {
   inset = false,
   belowHeader = true,
   objectPosition = 'center',
+  photoOnPhones = 'cover',
   priority = true,
   class: className,
 } = Astro.props;
 const wave = Astro.props.wave ?? !inset;
+const whole = photoOnPhones === 'whole' && !video;
 
 const WIDTHS = [480, 640, 828, 1080, 1280, 1600, 1920, 2560];
 async function srcsets(src: ImageMetadata) {
@@ -147,6 +155,7 @@ const hasLead = Boolean(lead) || Astro.slots.has('lead');
       'relative isolate flex overflow-hidden bg-foreground text-white',
       heightClass,
       inset && 'rounded-3xl',
+      whole && 'max-md:min-h-0 max-md:flex-col',
     ]}
   >
     <picture>
@@ -162,7 +171,13 @@ const hasLead = Boolean(lead) || Astro.slots.has('lead');
         loading={priority ? 'eager' : 'lazy'}
         fetchpriority={priority ? 'high' : 'auto'}
         decoding="async"
-        class:list={['absolute inset-0 -z-20 size-full object-cover', objectClass]}
+        class:list={[
+          'absolute inset-0 -z-20 size-full object-cover',
+          objectClass,
+          // Whole photo on phones: in the flow, full width, height from its width/height attributes.
+          whole && 'max-md:static max-md:block max-md:h-auto',
+          whole && belowHeader && 'max-md:mt-(--header-height)',
+        ]}
       />
     </picture>
     {
@@ -199,6 +214,7 @@ const hasLead = Boolean(lead) || Astro.slots.has('lead');
           ? 'py-8 md:py-12'
           : [
               belowHeader ? 'pt-[calc(var(--header-height)+var(--hero-space))]' : 'pt-(--hero-space)',
+              whole && 'max-md:pt-(--hero-space)',
               wave ? 'pb-[calc(var(--wave-height)+var(--hero-space))]' : 'pb-(--hero-space)',
             ],
         position === 'bottom' ? 'items-end' : 'items-center',
