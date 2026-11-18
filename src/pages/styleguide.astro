@@ -251,7 +251,7 @@ const colors = [
   <div class="container-page flex flex-col gap-16 py-(--space-section)">
     <section class="flex flex-col gap-6" aria-labelledby="sg-hero">
       <h2 id="sg-hero" class="heading-2">HeroOverlay</h2>
-      <p class="max-w-(--container-prose)"> Photo or video hero with the wave; the fixed header sits on top of it. Props: <code>image</code>, <code>imageMobile</code>, <code>video</code>, <code>eyebrow</code>, <code>title</code>, <code>lead</code> (or slots of the same name), <code>actions</code> slot, <code>size</code> (screen, large, medium), <code>align</code>, <code>position</code>, <code>width</code>, <code>overlay</code>, <code>inset</code>, <code>wave</code>, <code>priority</code>. The page hero keeps <code>priority</code> (eager, high fetch priority); heroes lower on a page set <code>priority={'{false}'}</code>. </p>
+      <p class="max-w-(--container-prose)"> Photo or video hero with the wave; the fixed header sits on top of it. Props: <code>image</code>, <code>imageMobile</code>, <code>video</code>, <code>eyebrow</code>, <code>title</code>, <code>lead</code> (or slots of the same name), <code>actions</code> slot, <code>size</code> (screen, large, medium), <code>align</code>, <code>position</code>, <code>width</code>, <code>overlay</code>, <code>inset</code>, <code>wave</code>, <code>belowHeader</code>, <code>priority</code>. The content sits between the fixed header and the wave with <code>--hero-space</code> of air on both sides; the hero only has a minimum height and grows on short screens instead of letting text run under the header or the wave. The page hero keeps <code>priority</code> (eager, high fetch priority); heroes lower on a page set <code>priority={'{false}'}</code> and <code>belowHeader={'{false}'}</code>. </p>
     </section>
   </div>
 
@@ -259,6 +259,7 @@ const colors = [
     image={heroImage}
     size="medium"
     priority={false}
+    belowHeader={false}
     titleTag="p"
     eyebrow="size=medium"
     title="Wasser weltweit klarmachen."
@@ -277,6 +278,7 @@ const colors = [
     position="bottom"
     overlay="dark"
     priority={false}
+    belowHeader={false}
     titleTag="p"
     eyebrow="inset, position=bottom, overlay=dark"
     title="Blog post header"

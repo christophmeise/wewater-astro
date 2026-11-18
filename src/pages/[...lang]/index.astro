@@ -68,7 +68,7 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
 ---
 
 <BaseLayout title={t('home.seoTitle')} description={t('home.description')}>
-  <HeroOverlay image={heroImage} imageMobile={heroImageMobile} lead={t('home.intro')}>
+  <HeroOverlay image={heroImage} imageMobile={heroImageMobile} lead={t('home.intro')} width="xl">
     <Fragment slot="title">
       <span class="text-accent block">{t('site.name')}</span>{' '}
       <span class="heading-1 block pt-2 text-white md:pt-3">{t('home.claim')}</span>
@@ -173,6 +173,7 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
   <HeroOverlay
     image={giftImage}
     priority={false}
+    belowHeader={false}
     size="large"
     align="end"
     overlay="dark"

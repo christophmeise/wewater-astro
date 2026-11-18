@@ -15,6 +15,9 @@
  * (e.g. a brand-blue word: <Fragment slot="title">We<span class="text-accent">Water</span></Fragment>).
  * `actions` slot for buttons; the default slot renders below them (e.g. a counter).
  *
+ * Layout: the content sits between the fixed header and the wave, with --hero-space (tokens.css)
+ * of air on both sides. Heroes further down a page pass belowHeader={false}.
+ *
  * Image: AVIF + WebP in a responsive srcset (optional `imageMobile` crop for ≤767px). The hero is
  * normally the LCP element, so it loads eagerly with fetchpriority="high" (`priority`, default
  * true); pass priority={false} for heroes further down a page.
@@ -54,6 +57,11 @@ interface Props {
   inset?: boolean | undefined;
   /** White wave at the bottom. Default: on unless `inset`. */
   wave?: boolean | undefined;
+  /**
+   * Leave room for the fixed site header above the content. Default true (a hero at the top of
+   * the page); false for heroes further down a page.
+   */
+  belowHeader?: boolean | undefined;
   /** Which part of the photo stays visible when it is cropped. */
   objectPosition?: 'center' | 'top' | 'bottom' | undefined;
   /** Eager, high-priority image loading. Default true. */
@@ -76,6 +84,7 @@ const {
   width = 'lg',
   overlay = 'gradient',
   inset = false,
+  belowHeader = true,
   objectPosition = 'center',
   priority = true,
   class: className,
@@ -132,7 +141,7 @@ const hasTitle = Boolean(title) || Astro.slots.has('title');
 const hasLead = Boolean(lead) || Astro.slots.has('lead');
 ---
 
-<div class:list={[inset && 'container-page pt-[calc(var(--header-height)+1.5rem)]', className]}>
+<div class:list={[inset && ['container-page', belowHeader && 'pt-[calc(var(--header-height)+1.5rem)]'], className]}>
   <div
     class:list={[
       'relative isolate flex overflow-hidden bg-foreground text-white',
@@ -177,14 +186,22 @@ const hasLead = Boolean(lead) || Astro.slots.has('lead');
     }
     {overlayClass && <div class:list={['absolute inset-0 -z-10', overlayClass]} aria-hidden="true" />}
 
+    {/*
+      The content sits in the part of the photo between the fixed header and the wave, with
+      --hero-space of air on both sides; `position` centres it there or pushes it down to the wave.
+      The box only has a minimum height, so on short screens it grows instead of letting the text
+      run under the header or the wave.
+    */}
     <div
       class:list={[
         'container-page flex',
-        inset ? 'py-8 md:py-12' : 'pt-(--header-height)',
+        inset
+          ? 'py-8 md:py-12'
+          : [
+              belowHeader ? 'pt-[calc(var(--header-height)+var(--hero-space))]' : 'pt-(--hero-space)',
+              wave ? 'pb-[calc(var(--wave-height)+var(--hero-space))]' : 'pb-(--hero-space)',
+            ],
         position === 'bottom' ? 'items-end' : 'items-center',
-        position === 'bottom' && !inset && (wave ? 'pb-[12vw]' : 'pb-12'),
-        // Centre the content in the photo above the wave, so it never runs under the wave.
-        position === 'center' && wave && 'pb-[10vw]',
         alignClass,
       ]}
     >

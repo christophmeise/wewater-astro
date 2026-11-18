@@ -107,4 +107,9 @@
   --gutter: clamp(1rem, 0.6rem + 1.8vw, 2rem); /* page side padding */
   --space-section: clamp(3rem, 2.2rem + 3.6vw, 6rem); /* between page sections */
   --header-height: 4.5rem;
+
+  /* Photo heroes (HeroOverlay): breathing room below the fixed header and above the wave. */
+  --hero-space: clamp(1.5rem, 0.6rem + 3.2vw, 4rem);
+  /* Height of the white wave at the bottom of full-bleed heroes (viewBox 1440 x 150). */
+  --wave-height: calc(100vw * 150 / 1440);
 }
