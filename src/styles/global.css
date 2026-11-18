@@ -217,6 +217,11 @@
     @apply font-heading mt-[1.5em] mb-[0.5em] text-lg font-semibold;
   }
 
+  /* A rule right under a heading (WordPress separator) underlines it instead of floating 3em away. */
+  .prose :where(h2, h3, h4) + :where(hr):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    @apply mt-3 mb-6;
+  }
+
   .prose :where(a):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
     @apply decoration-1 underline-offset-2 hover:decoration-2;
   }
