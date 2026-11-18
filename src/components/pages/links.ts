@@ -38,9 +38,11 @@ export const BETTERPLACE_FORM_URL =
 /** PayPal hosted donate button (one-off and monthly donations). */
 export const PAYPAL_HOSTED_BUTTON_ID = 'E6362KW22CKHG';
 
+/** WeWater's social profiles (footer, link cards, JSON-LD sameAs). */
 export const SOCIAL = {
   facebook: 'https://www.facebook.com/wewater.org/',
   instagram: 'https://www.instagram.com/wewater_org/',
+  youtube: 'https://www.youtube.com/channel/UC3zOjWWL5drSnoxzcj3-jqw',
 } as const;
 
 export const CONTACT_EMAIL = 'hi@wewater.org';

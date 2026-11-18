@@ -1,17 +1,72 @@
 ---
 /**
- * Structured data for search engines: one <script type="application/ld+json"> block.
+ * Structured data (schema.org JSON-LD) for search engines: one <script type="application/ld+json">.
  * It is not executed, so it needs no CSP entry and costs no JavaScript.
  *
- *   <JsonLd data={{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [...] }} />
+ *   <JsonLd type="organization" />                          home page: WeWater as an NGO
+ *   <JsonLd type="blogPosting" post={post} image={ogUrl} /> blog post
+ *   <JsonLd data={{ '@context': 'https://schema.org', '@type': 'FAQPage', ... }} />  anything else
+ *
+ * Search engines read JSON-LD anywhere in the page, so pages render it in their content.
  */
-interface Props {
-  /** A schema.org object (or an array / @graph of them). */
-  data: Record<string, unknown> | Record<string, unknown>[];
+import { getImage } from 'astro:assets';
+import logo from '@/assets/site/logo.png';
+import { SOCIAL } from '@/components/pages/links';
+import { authors } from '@/data/authors';
+import { getLocale, useTranslations } from '@/i18n';
+import { postUrl, type Post } from '@/lib/content';
+
+type Props =
+  | { type: 'organization' }
+  | { type: 'blogPosting'; post: Post; image: string }
+  | { data: Record<string, unknown> | Record<string, unknown>[] };
+
+const props = Astro.props;
+const site = Astro.site ?? new URL('https://www.wewater.org');
+const abs = (path: string) => new URL(path, site).href;
+
+async function organization() {
+  const logoImage = await getImage({ src: logo, format: 'png', width: logo.width });
+  return {
+    '@type': 'NGO',
+    '@id': abs('/#organization'),
+    name: 'WeWater gUG',
+    alternateName: 'WeWater',
+    url: abs('/'),
+    logo: { '@type': 'ImageObject', url: abs(logoImage.src), width: logo.width, height: logo.height },
+    email: 'hi@wewater.org',
+    sameAs: Object.values(SOCIAL),
+  };
+}
+
+let data: Record<string, unknown> | Record<string, unknown>[];
+if ('data' in props) {
+  data = props.data;
+} else if (props.type === 'organization') {
+  const t = useTranslations(getLocale(Astro.currentLocale));
+  data = { '@context': 'https://schema.org', ...(await organization()), description: t('site.description') };
+} else {
+  const { post, image } = props;
+  const url = abs(postUrl(post));
+  data = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    '@id': `${url}#article`,
+    mainEntityOfPage: url,
+    url,
+    headline: post.data.title,
+    description: post.data.description ?? post.data.excerpt,
+    image: [abs(image)],
+    datePublished: post.data.date.toISOString(),
+    dateModified: post.data.date.toISOString(),
+    inLanguage: post.data.lang,
+    author: { '@type': 'Person', name: authors[post.data.author].name },
+    publisher: await organization(),
+  };
 }
 
 // Escape "<" so text such as "</script>" inside the data cannot end the script element.
-const json = JSON.stringify(Astro.props.data).replace(/</g, '\\u003c');
+const json = JSON.stringify(data).replace(/</g, '\\u003c');
 ---
 
 <script is:inline type="application/ld+json" set:html={json} />

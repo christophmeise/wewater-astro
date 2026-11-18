@@ -1,0 +1,55 @@
+---
+/**
+ * Category chips of a blog post: label with the category's colour dot (as on the old site).
+ * Categories without a colour get the brand colours in order: blue, orange, violet.
+ *
+ *   <CategoryChips categories={post.data.categories} locale="de" />            first three
+ *   <CategoryChips categories={post.data.categories} locale="de" max={Infinity} />
+ *
+ * Renders a list (for screen readers: "Kategorien, 3 items"); inside a card, render it in the
+ * card's `chips` slot. Inside a paragraph (e.g. a HeroOverlay `eyebrow` slot) pass inline.
+ */
+import { chipVariants } from '@heroui/styles';
+import { categories, categoryLabel, type CategoryKey } from '@/data/categories';
+import { useTranslations, type Locale } from '@/i18n';
+
+interface Props {
+  categories: readonly CategoryKey[];
+  locale: Locale;
+  /** How many to show. Default 3 (cards). */
+  max?: number | undefined;
+  /** Chip background: grey (default, on white cards) or white (on photos and grey cards). */
+  tone?: 'default' | 'light' | undefined;
+  /** Render as spans instead of a list, for use inside a <p>. */
+  inline?: boolean | undefined;
+  class?: string | undefined;
+}
+
+const { categories: keys, locale, max = 3, tone = 'default', inline = false, class: className } = Astro.props;
+const List = inline ? 'span' : 'ul';
+const Item = inline ? 'span' : 'li';
+const t = useTranslations(locale);
+const chip = chipVariants({ color: 'default', size: 'lg' });
+const FALLBACK = ['bg-brand', 'bg-brand-orange', 'bg-brand-violet'];
+const shown = keys.slice(0, max);
+---
+
+{
+  shown.length > 0 && (
+    <List class:list={['flex flex-wrap gap-2', className]} aria-label={inline ? undefined : t('blog.categories')}>
+      {shown.map((key, i) => {
+        const color = categories[key].color;
+        return (
+          <Item class:list={[chip.base(), 'gap-1.5', tone === 'light' && 'bg-background text-foreground']}>
+            <span
+              class:list={['size-2 shrink-0 rounded-full', !color && FALLBACK[i % FALLBACK.length]]}
+              style={color ? `background-color: ${color}` : undefined}
+              aria-hidden="true"
+            />
+            <span class={chip.label()}>{categoryLabel(key, locale)}</span>
+          </Item>
+        );
+      })}
+    </List>
+  )
+}

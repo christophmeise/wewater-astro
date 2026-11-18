@@ -1,0 +1,64 @@
+---
+/**
+ * Blog overview: /blog/, /en/blog/, /fr/blog/. Only posts in the page's language, newest first:
+ * the newest one large with the next two beside it (below it on phones), then all others.
+ */
+import PostCard from '@/components/pages/PostCard.astro';
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+import { getPosts } from '@/lib/content';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const [newest, ...rest] = await getPosts(locale);
+const featured = rest.slice(0, 2);
+const more = rest.slice(2);
+---
+
+<BaseLayout title={t('blog.title')} description={t('blog.description')}>
+  <PlainHeader eyebrow={t('blog.eyebrow')} title={t('blog.heading')} />
+
+  <Section class="flex flex-col gap-16 md:gap-20">
+    {
+      newest && (
+        <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <li class="flex md:col-span-2 lg:row-span-2">
+            <PostCard
+              post={newest}
+              size="lg"
+              titleTag="h2"
+              priority
+              sizes="(min-width: 75rem) 48rem, (min-width: 64rem) 64vw, 100vw"
+            />
+          </li>
+          {featured.map((post) => (
+            <li class="flex">
+              <PostCard post={post} titleTag="h2" />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      more.length > 0 && (
+        <section class="flex flex-col gap-8" aria-labelledby="blog-more">
+          <h2 id="blog-more" class="heading-2">
+            {t('blog.morePosts')}
+          </h2>
+          <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {more.map((post) => (
+              <li class="flex">
+                <PostCard post={post} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </Section>
+</BaseLayout>

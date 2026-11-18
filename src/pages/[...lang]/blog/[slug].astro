@@ -2,15 +2,24 @@
 /**
  * Blog post: /blog/<slug>/, /en/blog/<slug>/, /fr/blog/<slug>/ (each post only in its own language;
  * old cross-language URLs redirect, see public/_redirects).
- * Temporary layout from the content migration (phase 2); phase 4 restyles this page.
+ *
+ * Hero card with categories, title, author, date and reading time; the text at a comfortable
+ * reading width; author box; the frozen WordPress comments (read-only, decision 3); three more
+ * posts in the same language.
  */
 import { Image, getImage } from 'astro:assets';
 import { render } from 'astro:content';
+import JsonLd from '@/components/JsonLd.astro';
+import CategoryChips from '@/components/pages/CategoryChips.astro';
+import PostCard from '@/components/pages/PostCard.astro';
+import Button from '@/components/ui/Button.astro';
+import HeroOverlay from '@/components/ui/HeroOverlay.astro';
+import Section from '@/components/ui/Section.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { authors } from '@/data/authors';
-import { categoryLabel } from '@/data/categories';
-import { useTranslations, type Locale } from '@/i18n';
-import { postPaths, readingMinutes, translationsOf, type Post } from '@/lib/content';
+import { localizePath, useTranslations, type Locale } from '@/i18n';
+import { formatDate } from '@/lib/format';
+import { getPosts, postPaths, readingMinutes, translationsOf, type Post } from '@/lib/content';
 
 export const getStaticPaths = postPaths;
 
@@ -24,81 +33,91 @@ const locale: Locale = data.lang;
 const t = useTranslations(locale);
 const author = authors[data.author];
 const bio = author.description[locale] ?? author.description.de;
+const initials = author.name
+  .split(/\s+/)
+  .map((part) => part[0])
+  .join('')
+  .slice(0, 2);
 const alternates = await translationsOf(post);
 const ogImage = await getImage({ src: data.hero, width: 1200, format: 'jpg' });
-const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'Europe/Berlin' });
+const morePosts = (await getPosts(locale)).filter((p) => p.id !== post.id).slice(0, 3);
 
 // Images in the text column are at most 42rem (672px) wide: let <Figure> pick smaller files.
 (Astro.locals as { contentMaxWidth?: number }).contentMaxWidth = 672;
 const { Content } = await render(post);
+
+/** Replies are indented under their parent (up to three levels); WordPress keeps them in date order. */
+const INDENT = ['', 'ms-6', 'ms-12', 'ms-18'];
+const commentDepth = (id: number | undefined, depth = 0): number => {
+  const parent = data.comments.find((c) => c.id === id);
+  return parent ? commentDepth(parent.parentId, depth + 1) : depth;
+};
 ---
 
-<BaseLayout title={data.title} description={data.description} alternates={alternates} image={ogImage.src} type="article">
+<BaseLayout
+  title={data.title}
+  description={data.description ?? data.excerpt}
+  alternates={alternates}
+  image={ogImage.src}
+  type="article"
+>
   <article>
-    <header class="relative isolate flex min-h-[60svh] items-end overflow-hidden">
-      <Image
-        src={data.hero}
-        alt={data.heroAlt}
-        widths={[640, 800, 1080, 1280, 1600, 1920]}
-        sizes="100vw"
-        quality={60}
-        loading="eager"
-        fetchpriority="high"
-        class="absolute inset-0 -z-10 size-full object-cover"
-      />
-      <div class="from-foreground/80 absolute inset-0 -z-10 bg-linear-to-t to-transparent"></div>
-      <div class="container-page flex flex-col gap-4 py-10 text-white">
-        {
-          data.categories.length > 0 && (
-            <ul class="flex flex-wrap gap-2" role="list">
-              {data.categories.slice(0, 3).map((key) => (
-                <li class="bg-background text-foreground rounded-full px-3 py-1 text-sm font-medium">{categoryLabel(key, locale)}</li>
-              ))}
-            </ul>
-          )
-        }
-        <h1 class="heading-1 max-w-(--container-prose)">{data.title}</h1>
-        <p class="text-sm">
-          {t('content.by')} {author.name} · <time datetime={data.date.toISOString()}>{dateFormat.format(data.date)}</time> ·{' '}
-          {readingMinutes(post.body)} {t('content.minRead')}
-        </p>
-      </div>
-    </header>
+    <HeroOverlay image={data.hero} alt={data.heroAlt} inset size="medium" position="bottom" overlay="dark" width="full">
+      <CategoryChips slot="eyebrow" categories={data.categories} locale={locale} tone="light" inline />
+      <span slot="title" class="heading-1 block text-white">{data.title}</span>
+      <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-white/90">
+        <span>{t('content.by')} {author.name}</span>
+        <span aria-hidden="true">·</span>
+        <time datetime={data.date.toISOString()}>{formatDate(data.date, locale)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{readingMinutes(post.body)} {t('content.minRead')}</span>
+      </p>
+    </HeroOverlay>
 
-    <div class="container-page section flex flex-col gap-12">
+    <Section class="flex flex-col gap-16">
       <div class="prose mx-auto w-full max-w-(--container-prose)">
         <Content />
       </div>
 
-      <aside class="mx-auto flex w-full max-w-(--container-prose) items-center gap-6 border-y border-border py-8">
+      <section
+        class="bg-background-secondary mx-auto flex w-full max-w-(--container-prose) flex-col gap-5 rounded-3xl p-6 sm:flex-row sm:items-start md:p-8"
+        aria-labelledby="about-author"
+      >
         {
-          author.avatar && (
-            <Image src={author.avatar} alt={author.name} width={96} height={96} densities={[1, 2]} class="size-24 shrink-0 rounded-full object-cover" />
+          author.avatar ? (
+            <Image src={author.avatar} alt="" width={96} height={96} densities={[1, 2]} class="size-20 shrink-0 rounded-full object-cover md:size-24" />
+          ) : (
+            <span class="bg-accent text-accent-foreground grid size-20 shrink-0 place-items-center rounded-full text-2xl font-semibold md:size-24" aria-hidden="true">
+              {initials}
+            </span>
           )
         }
-        <div class="flex flex-col gap-1">
+        <div class="flex flex-col gap-2">
           <p class="eyebrow">{t('content.aboutAuthor')}</p>
-          <p class="heading-3">{author.name}</p>
+          <h2 id="about-author" class="heading-3">{author.name}</h2>
           {bio && <p class="text-muted" lang={author.description[locale] ? undefined : 'de'}>{bio}</p>}
         </div>
-      </aside>
+      </section>
 
       {
         data.comments.length > 0 && (
           <section class="mx-auto flex w-full max-w-(--container-prose) flex-col gap-6" aria-labelledby="comments">
             <h2 id="comments" class="heading-2">
-              {data.comments.length} {t('content.comments')}
+              {data.comments.length} {t(data.comments.length === 1 ? 'blog.comment' : 'content.comments')}
             </h2>
-            <ol class="flex flex-col gap-6" role="list">
+            <ol class="flex flex-col gap-4">
               {data.comments.map((c) => (
-                <li class:list={['flex flex-col gap-2', { 'ml-8': c.parentId }]} id={`comment-${c.id}`}>
+                <li
+                  id={`comment-${c.id}`}
+                  class:list={['border-border flex flex-col gap-2 rounded-2xl border p-5', INDENT[Math.min(commentDepth(c.parentId), 3)]]}
+                >
                   <p class="text-sm">
-                    <strong>{c.author}</strong> <span class="text-muted">{t('content.says')}</span>{' '}
+                    <strong class="font-semibold">{c.author}</strong> <span class="text-muted">{t('content.says')}</span>{' '}
                     <time class="text-muted" datetime={c.date.toISOString()}>
-                      {dateFormat.format(c.date)}
+                      {formatDate(c.date, locale)}
                     </time>
                   </p>
-                  <div class="prose prose-sm" set:html={c.html} />
+                  <div class="prose prose-sm max-w-none" set:html={c.html} />
                 </li>
               ))}
             </ol>
@@ -106,6 +125,30 @@ const { Content } = await render(post);
           </section>
         )
       }
-    </div>
+    </Section>
   </article>
+
+  {
+    morePosts.length > 0 && (
+      <Section aria-labelledby="more-posts">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <h2 id="more-posts" class="heading-2">
+            {t('content.morePosts')}
+          </h2>
+          <Button href={localizePath('/blog/', locale)} variant="outline" icon="newspaper">
+            {t('blog.allPosts')}
+          </Button>
+        </div>
+        <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {morePosts.map((p) => (
+            <li class="flex">
+              <PostCard post={p} />
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  <JsonLd type="blogPosting" post={post} image={ogImage.src} />
 </BaseLayout>

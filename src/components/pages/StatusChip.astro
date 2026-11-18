@@ -1,0 +1,37 @@
+---
+/**
+ * Project status chip: "In Arbeit" (half-filled circle) or "Abgeschlossen" (check mark).
+ * Static icons replace the old animated gears/thumb lord-icons (decision 7).
+ *
+ *   <StatusChip status={project.data.status} locale="de" />
+ *   <StatusChip status="completed" locale="en" tone="light" />    on photos
+ */
+import { chipVariants } from '@heroui/styles';
+import { useTranslations, type Locale } from '@/i18n';
+
+interface Props {
+  status: 'in-progress' | 'completed';
+  locale: Locale;
+  /** Default: soft tint (on white cards). light: white chip (on photos). */
+  tone?: 'default' | 'light' | undefined;
+  class?: string | undefined;
+}
+
+const { status, locale, tone = 'default', class: className } = Astro.props;
+const t = useTranslations(locale);
+const chip = chipVariants({ color: status === 'completed' ? 'success' : 'accent', variant: 'soft', size: 'lg' });
+---
+
+<span class:list={[chip.base(), 'gap-1.5', tone === 'light' && 'bg-background', className]}>
+  <svg viewBox="0 0 24 24" class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+    <circle cx="12" cy="12" r="9"></circle>
+    {
+      status === 'completed' ? (
+        <path d="m8 12.5 2.75 2.75L16.5 9.5" stroke-linecap="round" stroke-linejoin="round" />
+      ) : (
+        <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none" />
+      )
+    }
+  </svg>
+  <span class={chip.label()}>{t(`content.status.${status}`)}</span>
+</span>

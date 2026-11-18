@@ -4,6 +4,7 @@
  * Informationen / Spende jetzt with the bank details), then logo, copyright and legal links.
  * Internal links are localised; targets are copied from the old site's Footer.tsx.
  */
+import { SOCIAL as SOCIAL_LINKS } from '@/components/pages/links';
 import { separatorVariants } from '@heroui/styles';
 import Icon from '@/components/ui/Icon.astro';
 import type { IconName } from '@/components/ui/icons';
@@ -21,9 +22,9 @@ const l = (path: string) => localizePath(path, locale);
 const year = new Date().getFullYear();
 
 const SOCIAL: { name: string; href: string; icon: IconName }[] = [
-  { name: 'Facebook', href: 'https://www.facebook.com/wewater.org/', icon: 'facebook' },
-  { name: 'Instagram', href: 'https://www.instagram.com/wewater_org/', icon: 'instagram' },
-  { name: 'YouTube', href: 'https://www.youtube.com/channel/UC3zOjWWL5drSnoxzcj3-jqw', icon: 'youtube' },
+  { name: 'Facebook', href: SOCIAL_LINKS.facebook, icon: 'facebook' },
+  { name: 'Instagram', href: SOCIAL_LINKS.instagram, icon: 'instagram' },
+  { name: 'YouTube', href: SOCIAL_LINKS.youtube, icon: 'youtube' },
 ];
 
 const COLUMNS: { heading: UiKey; links: { label: UiKey; href: string }[] }[] = [

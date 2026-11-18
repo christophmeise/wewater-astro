@@ -4,8 +4,14 @@
  * its cookies) only load after a click, from youtube-nocookie.com.
  *
  *   <YouTube id="qHDE8HboDBk" title="Projektupdate aus Kayonza, Uganda" />
+ *   <YouTube id="zy1MzATrJkc" title="…" poster={posterImage} />   own thumbnail from src/assets/
+ *
+ * Without `poster` the thumbnail comes from i.ytimg.com. A local `poster` avoids that extra
+ * third-party connection, which matters for a video near the top of a page (page speed).
  */
 import { YouTube as LiteYouTube } from '@astro-community/astro-embed-youtube';
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
 import { getLocale, useTranslations } from '@/i18n';
 
 interface Props {
@@ -13,12 +19,17 @@ interface Props {
   id: string;
   /** Video title; also used for the play button label. */
   title: string;
+  /** Own thumbnail (an imported image), instead of YouTube's. */
+  poster?: ImageMetadata | undefined;
 }
 
-const { id, title } = Astro.props;
+const { id, title, poster } = Astro.props;
 const t = useTranslations(getLocale(Astro.currentLocale));
+const posterUrl = poster
+  ? (await getImage({ src: poster, width: Math.min(poster.width, 640), format: 'webp', quality: 50 })).src
+  : undefined;
 ---
 
 <figure class="not-prose my-8 overflow-hidden rounded-2xl">
-  <LiteYouTube id={id} title={title} playlabel={`${t('content.video.play')}: ${title}`} />
+  <LiteYouTube id={id} title={title} {...posterUrl && { poster: posterUrl }} playlabel={`${t('content.video.play')}: ${title}`} />
 </figure>

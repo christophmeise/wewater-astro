@@ -1,0 +1,49 @@
+---
+/**
+ * Blog post teaser, built on <Card>: hero image, category chips (first three, with colour dot),
+ * title, date in the post's language. The whole card links to the post.
+ *
+ *   <PostCard post={post} />
+ *   <PostCard post={newest} size="lg" priority titleTag="h2" sizes="…" />   featured, top of /blog/
+ *
+ * Lay out several in a grid: <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"> with each card
+ * in an <li class="flex">, or in the scroll-snap row on the home page.
+ */
+import Card from '@/components/ui/Card.astro';
+import { formatDate } from '@/lib/format';
+import { postUrl, type Post } from '@/lib/content';
+import CategoryChips from './CategoryChips.astro';
+
+interface Props {
+  post: Post;
+  /** lg: featured card with a larger title and the excerpt. */
+  size?: 'md' | 'lg' | undefined;
+  /** Heading level of the title. Default h3. */
+  titleTag?: 'h2' | 'h3' | 'h4' | undefined;
+  /** `sizes` of the image for layouts other than the 3-column grid. */
+  sizes?: string | undefined;
+  /** Eager, high-priority image (the first card at the top of a page). */
+  priority?: boolean | undefined;
+  class?: string | undefined;
+}
+
+const { post, size = 'md', titleTag, sizes, priority, class: className } = Astro.props;
+const { data } = post;
+---
+
+<Card
+  href={postUrl(post)}
+  image={data.hero}
+  title={data.title}
+  description={size === 'lg' ? data.excerpt : undefined}
+  titleTag={titleTag}
+  size={size}
+  sizes={sizes}
+  priority={priority}
+  class:list={['w-full', className]}
+>
+  <CategoryChips slot="chips" categories={data.categories} locale={data.lang} />
+  <p class="text-muted text-sm">
+    <time datetime={data.date.toISOString()}>{formatDate(data.date, data.lang)}</time>
+  </p>
+</Card>

@@ -1,41 +1,249 @@
 ---
 /**
  * Home page in all three languages: / (de), /en/, /fr/.
- * TEMPORARY placeholder (phase 1): only the hero, so the header-over-hero look can be
- * compared with the live site. Phase 3 ports the real home page and its strings.
+ * Sections as on the old site: hero with the litre counter, video, innovation, filter systems,
+ * latest news, water donation as a gift (shop), latest projects. Texts: src/i18n/strings/home.ts.
  */
+import filterAqqabag from '@/assets/home/filter-aqqabag.jpg';
+import filterAqqacube from '@/assets/home/filter-aqqacube.jpg';
+import filterAqqasystem from '@/assets/home/filter-aqqasystem.jpg';
+import giftImage from '@/assets/home/gift-water-donation.jpg';
+import heroImageMobile from '@/assets/home/hero-home-mobile.jpg';
+import videoPoster from '@/assets/home/video-poster.webp';
 import heroImage from '@/assets/site/hero-home.jpg';
+import YouTube from '@/components/content/YouTube.astro';
+import JsonLd from '@/components/JsonLd.astro';
+import CardRow from '@/components/pages/CardRow.astro';
+import cheapIcon from '@/components/pages/icons/cheap.svg?url';
+import chemicalsIcon from '@/components/pages/icons/chemicals.svg?url';
+import energyIcon from '@/components/pages/icons/energy.svg?url';
+import gaugeIcon from '@/components/pages/icons/gauge.svg?url';
+import LiterCounter from '@/components/pages/LiterCounter.astro';
+import PostCard from '@/components/pages/PostCard.astro';
+import ProjectCard from '@/components/pages/ProjectCard.astro';
 import Button from '@/components/ui/Button.astro';
+import Card from '@/components/ui/Card.astro';
 import HeroOverlay from '@/components/ui/HeroOverlay.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Section from '@/components/ui/Section.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getLocale, localeStaticPaths, localizePath, useTranslations } from '@/i18n';
+import { getPosts, getProjects } from '@/lib/content';
 
 export const getStaticPaths = localeStaticPaths;
 
 const locale = getLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 
-// Placeholder copy from the old site's translation.json; moves into a strings group in phase 3.
-const copy = {
-  de: {
-    claim: 'Wasser weltweit klarmachen.',
-    text: 'Eine innovative Wasserfiltertechnologie ohne Einsatz elektrischer Energie oder Chemie, aber mit maximalem Reinheitsgrad.',
+const posts = (await getPosts(locale)).slice(0, 10);
+const projects = (await getProjects(locale)).slice(0, 2);
+
+/** Mailchimp sign-up page of the German newsletter. */
+const NEWSLETTER_URL = 'https://wewater.us20.list-manage.com/subscribe/post?u=24746d4c48c610cc73f27cb63&id=67239df000';
+const VIDEO_ID = 'zy1MzATrJkc';
+
+const innovations = [
+  { icon: gaugeIcon, title: t('home.innovation.retention'), text: t('home.innovation.retentionText') },
+  { icon: energyIcon, title: t('home.innovation.energy'), text: t('home.innovation.energyText') },
+  { icon: chemicalsIcon, title: t('home.innovation.chemicals'), text: t('home.innovation.chemicalsText') },
+  { icon: cheapIcon, title: t('home.innovation.cheap'), text: t('home.innovation.cheapText') },
+];
+
+const filterSystems = [
+  { image: filterAqqabag, title: t('nav.filter.aqqabag'), text: t('nav.filter.aqqabagText'), path: '/filtersysteme/aqqabag/' },
+  { image: filterAqqacube, title: t('nav.filter.aqqacube'), text: t('nav.filter.aqqacubeText'), path: '/filtersysteme/aqqacube/' },
+  {
+    image: filterAqqasystem,
+    title: t('nav.filter.aqqasystem'),
+    text: t('nav.filter.aqqasystemText'),
+    path: '/filtersysteme/aqqasystem/',
   },
-  en: {
-    claim: 'Clean water worldwide.',
-    text: 'An innovative water filtration technology without need of electrical energy or chemicals, but with maximum purity.',
-  },
-  fr: {
-    claim: "De l'eau potable pour tous.",
-    text: "Une technologie innovante pour la filtration de l'eau sans nécessité d'énergie électrique ou de produits chimiques, mais avec un degré de pureté exceptionnel.",
-  },
-}[locale];
+];
+
+/** Water donation products in the shop, one per amount (EUR). */
+const GIFT_AMOUNTS = [10, 25, 50, 100, 200];
+const GIFT_DEFAULT = 25;
+const giftUrl = (amount: number) => `https://shop.wewater.org/products/wasserspende-uber-${amount}-euro`;
+const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
 ---
 
-<BaseLayout title={t('site.name')}>
-  <HeroOverlay image={heroImage} eyebrow={t('site.name')} title={copy.claim} lead={copy.text}>
-    <Fragment slot="actions">
-      <Button href={localizePath('/spenden/', locale)} size="lg" icon="tint">{t('nav.cta')}</Button>
+<BaseLayout title={t('home.seoTitle')} description={t('home.description')}>
+  <HeroOverlay image={heroImage} imageMobile={heroImageMobile} lead={t('home.intro')}>
+    <Fragment slot="title">
+      <span class="text-accent block">{t('site.name')}</span>{' '}
+      <span class="heading-1 block pt-2 text-white md:pt-3">{t('home.claim')}</span>
     </Fragment>
+    <div class="border-background/15 bg-foreground/45 flex w-fit max-w-full flex-col gap-5 rounded-3xl border p-5 backdrop-blur-md md:p-6">
+      <LiterCounter locale={locale} />
+      <div class="flex flex-wrap gap-3">
+        <Button href={localizePath('/spenden/', locale)} icon="tint">{t('nav.cta')}</Button>
+        {
+          locale === 'de' ? (
+            <Button href={NEWSLETTER_URL} variant="inverted" icon="newspaper" target="_blank" rel="noopener">
+              {t('home.newsletter')}
+              <span class="sr-only"> {t('nav.newTab')}</span>
+            </Button>
+          ) : (
+            <Button href={localizePath('/projekte/', locale)} variant="inverted" icon="grid">
+              {t('home.discoverProjects')}
+            </Button>
+          )
+        }
+      </div>
+    </div>
   </HeroOverlay>
+
+  <Section class="grid items-center gap-8 lg:grid-cols-[3fr_2fr] lg:gap-12" aria-labelledby="home-video">
+    <div class="flex flex-col gap-4">
+      <p class="eyebrow">{t('home.video.eyebrow')}</p>
+      <h2 id="home-video" class="heading-2">{t('home.video.title')}</h2>
+      <p class="lead">{t('home.video.text')}</p>
+    </div>
+    {/* Text first on phones and tablets (and for screen readers); the video on the left on desktop. */}
+    <div class="[&>figure]:shadow-surface lg:order-first [&>figure]:my-0 [&>figure]:rounded-3xl">
+      <YouTube id={VIDEO_ID} title={t('home.video.videoTitle')} poster={videoPoster} />
+    </div>
+  </Section>
+
+  <Section muted aria-labelledby="home-innovation">
+    <header class="flex flex-col gap-3">
+      <p class="eyebrow">{t('home.innovation.eyebrow')}</p>
+      <h2 id="home-innovation" class="heading-2">{t('home.innovation.title')}</h2>
+    </header>
+    <ul class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+      {
+        innovations.map((item) => (
+          <li class="flex flex-col gap-3">
+            <img src={item.icon} width="80" height="80" alt="" loading="lazy" decoding="async" class="size-20" />
+            <h3 class="heading-3 flex items-baseline gap-2">
+              <span class="bg-accent size-2 shrink-0 rounded-full" aria-hidden="true" />
+              {item.title}
+            </h3>
+            <p class="text-muted">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section aria-labelledby="home-filters">
+    <header class="mx-auto flex max-w-(--container-prose) flex-col items-center gap-4 text-center">
+      <p class="eyebrow">{t('home.filters.eyebrow')}</p>
+      <h2 id="home-filters" class="heading-2">{t('home.filters.title')}</h2>
+      <p class="lead">{t('home.filters.text')}</p>
+      <Button href={localizePath('/filtersystem/', locale)} icon="grid">{t('home.filters.cta')}</Button>
+    </header>
+    <ul class="grid gap-6 md:grid-cols-3">
+      {
+        filterSystems.map((item) => (
+          <li class="flex">
+            <Card
+              href={localizePath(item.path, locale)}
+              image={item.image}
+              title={item.title}
+              description={item.text}
+              sizes="(min-width: 75rem) 24rem, (min-width: 48rem) 33vw, 100vw"
+              class="w-full"
+            />
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section muted aria-labelledby="home-news">
+    <CardRow id="home-news-list" label={t('home.news.title')} previousLabel={t('home.news.previous')} nextLabel={t('home.news.next')}>
+      <header slot="header" class="flex flex-col gap-3">
+        <p class="eyebrow">{t('home.news.eyebrow')}</p>
+        <h2 id="home-news" class="heading-2">{t('home.news.title')}</h2>
+      </header>
+      {
+        posts.map((post) => (
+          <li class="flex">
+            <PostCard post={post} sizes="(min-width: 75rem) 24rem, (min-width: 64rem) 31vw, (min-width: 48rem) 46vw, 85vw" />
+          </li>
+        ))
+      }
+    </CardRow>
+    <div class="flex justify-center">
+      <Button href={localizePath('/blog/', locale)} variant="outline" icon="newspaper">{t('blog.allPosts')}</Button>
+    </div>
+  </Section>
+
+  <HeroOverlay
+    image={giftImage}
+    priority={false}
+    size="large"
+    align="end"
+    overlay="dark"
+    titleTag="h2"
+    eyebrow={t('home.gift.eyebrow')}
+    lead={t('home.gift.text')}
+    objectPosition="top"
+  >
+    <span slot="title" class="heading-1 block text-white">{t('home.gift.title')}</span>
+    <div class="gift flex flex-col items-start gap-5">
+      <fieldset class="flex flex-col gap-3">
+        <legend class="pb-3 text-sm font-semibold tracking-wide uppercase">{t('home.gift.amount')}</legend>
+        <div class="flex flex-wrap gap-2">
+          {
+            GIFT_AMOUNTS.map((amount) => (
+              <label class="has-checked:bg-accent has-checked:text-accent-foreground has-checked:ring-accent has-focus-visible:outline-background cursor-pointer rounded-full px-4 py-2 font-semibold text-white ring-2 ring-white/70 transition-colors ring-inset hover:bg-white/15 has-focus-visible:outline-2 has-focus-visible:outline-offset-2">
+                <input type="radio" name="gift-amount" value={amount} checked={amount === GIFT_DEFAULT} class="sr-only" />
+                {euro.format(amount)}
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+      {
+        GIFT_AMOUNTS.map((amount) => (
+          <Button href={giftUrl(amount)} variant="inverted" size="lg" class="gift-cta" data-amount={amount}>
+            {t('home.gift.cta').replace('{amount}', euro.format(amount))}
+            <Icon name="arrow-right" />
+          </Button>
+        ))
+      }
+    </div>
+  </HeroOverlay>
+
+  <Section aria-labelledby="home-projects">
+    <header class="flex flex-col gap-3">
+      <p class="eyebrow">{t('home.projects.eyebrow')}</p>
+      <h2 id="home-projects" class="heading-2">{t('home.projects.title')}</h2>
+    </header>
+    <ul class="grid gap-6 md:grid-cols-2">
+      {
+        projects.map((project) => (
+          <li class="flex">
+            <ProjectCard project={project} sizes="(min-width: 75rem) 36rem, (min-width: 48rem) 50vw, 100vw" />
+          </li>
+        ))
+      }
+    </ul>
+    <div class="flex justify-center">
+      <Button href={localizePath('/projekte/', locale)} variant="outline" icon="grid">{t('projekte.overview')}</Button>
+    </div>
+  </Section>
+
+  <JsonLd type="organization" />
 </BaseLayout>
+
+<style>
+  /* One shop link per amount; only the one for the chosen amount is shown (no JavaScript). */
+  .gift :global(.gift-cta:not([data-amount='25'])) {
+    display: none;
+  }
+
+  .gift:has(:checked) :global(.gift-cta) {
+    display: none;
+  }
+
+  .gift:has([value='10']:checked) :global([data-amount='10']),
+  .gift:has([value='25']:checked) :global([data-amount='25']),
+  .gift:has([value='50']:checked) :global([data-amount='50']),
+  .gift:has([value='100']:checked) :global([data-amount='100']),
+  .gift:has([value='200']:checked) :global([data-amount='200']) {
+    display: inline-flex;
+  }
+</style>

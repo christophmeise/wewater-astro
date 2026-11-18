@@ -1,22 +1,47 @@
 ---
 /**
- * "Der AQQAbag/AQQAcube ist an folgenden Stellen im Einsatz": projects that use a filter system,
- * shown at the end of /filtersysteme/aqqabag/ and /filtersysteme/aqqacube/.
+ * "Der AQQAbag/AQQAcube ist an folgenden Stellen im Einsatz": the newest projects that use a
+ * filter system, shown at the end of /filtersysteme/aqqabag/ and /filtersysteme/aqqacube/.
+ * Renders nothing when there are no such projects in the page language.
  *
  *   <RelatedProjects filter="aqqacube" locale={locale} />
- *
- * PLACEHOLDER: renders nothing until the projects content collection exists (phase 2).
- * TODO: load the projects of this locale whose filter type is `filter` (newest first, at most 4),
- * render them as <Card>s in a grid below a section heading with t(`${filter}.projects.title`)
- * (strings exist in aqqabag.ts / aqqacube.ts), and render nothing when there are none.
  */
-import type { Locale } from '@/i18n';
+import Button from '@/components/ui/Button.astro';
+import Section from '@/components/ui/Section.astro';
+import { localizePath, useTranslations, type Locale } from '@/i18n';
+import { projectsWithFilter } from '@/lib/content';
+import ProjectCard from './ProjectCard.astro';
+import SectionHeading from './SectionHeading.astro';
 
 interface Props {
   filter: 'aqqabag' | 'aqqacube';
   locale: Locale;
+  /** How many projects to show. Default 4, like the old site. */
+  limit?: number | undefined;
 }
 
-// Props are part of the contract for the real implementation.
-const { filter: _filter, locale: _locale } = Astro.props;
+const { filter, locale, limit = 4 } = Astro.props;
+const t = useTranslations(locale);
+const projects = (await projectsWithFilter(filter, locale)).slice(0, limit);
+const headingId = `${filter}-projects`;
 ---
+
+{
+  projects.length > 0 && (
+    <Section muted aria-labelledby={headingId}>
+      <SectionHeading id={headingId} title={t(`${filter}.projects.title`)} />
+      <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {projects.map((project) => (
+          <li class="flex">
+            <ProjectCard project={project} sizes="(min-width: 1024px) 18rem, (min-width: 640px) 45vw, 100vw" />
+          </li>
+        ))}
+      </ul>
+      <div>
+        <Button href={localizePath('/projekte/', locale)} variant="secondary" icon="arrow-right">
+          {t('projekte.allProjects')}
+        </Button>
+      </div>
+    </Section>
+  )
+}

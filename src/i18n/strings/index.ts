@@ -5,6 +5,7 @@
 import aqqabag from './aqqabag';
 import aqqacube from './aqqacube';
 import aqqasystem from './aqqasystem';
+import blog from './blog';
 import common from './common';
 import content from './content';
 import filtersystem from './filtersystem';
@@ -18,6 +19,8 @@ import unterstuetzen from './unterstuetzen';
 import newsletter from './newsletter';
 import presse from './presse';
 import team from './team';
+import home from './home';
+import projekte from './projekte';
 
 export const strings = {
   ...common,
@@ -36,6 +39,9 @@ export const strings = {
   ...faq,
   ...newsletter,
   ...presse,
+  ...home,
+  ...blog,
+  ...projekte,
 };
 
 export type UiKey = keyof typeof strings;

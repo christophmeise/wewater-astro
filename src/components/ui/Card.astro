@@ -13,8 +13,10 @@
  *     description="Was sauberes Wasser in Uvira verändert hat."
  *   />
  *
- * Slots: default (below the description), `footer` (bottom row, e.g. a progress bar).
+ * Slots: default (below the description), `footer` (bottom row, e.g. a progress bar),
+ * `chips` (custom chips above the title, e.g. category chips with a colour dot).
  * Lay cards out with a grid: <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">.
+ * In other layouts pass `sizes` (how wide the image is shown); `size="lg"` for a featured card.
  */
 import { Picture } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
@@ -38,6 +40,12 @@ interface Props {
   titleTag?: 'h2' | 'h3' | 'h4' | undefined;
   /** Card background: white (default) or grey-blue. */
   variant?: 'default' | 'secondary' | undefined;
+  /** lg: featured card with a larger title and more padding. */
+  size?: 'md' | 'lg' | undefined;
+  /** `sizes` attribute of the image. Default: a card in a 3-column grid. */
+  sizes?: string | undefined;
+  /** Eager, high-priority image: only for a card that is the largest element on first screen. */
+  priority?: boolean | undefined;
   class?: string | undefined;
 }
 
@@ -52,11 +60,15 @@ const {
   description,
   titleTag: TitleTag = 'h3',
   variant = 'default',
+  size = 'md',
+  sizes = '(min-width: 1024px) 24rem, (min-width: 768px) 50vw, 100vw',
+  priority = false,
   class: className,
 } = Astro.props;
 
 const card = cardVariants({ variant });
 const chipClasses = chip ? chipVariants({ color: chip.color ?? 'default' }) : undefined;
+const hasChips = Astro.slots.has('chips');
 ---
 
 <article
@@ -73,26 +85,30 @@ const chipClasses = chip ? chipVariants({ color: chip.color ?? 'default' }) : un
         src={image}
         alt={imageAlt}
         formats={['avif', 'webp']}
-        width={800}
-        sizes="(min-width: 1024px) 24rem, (min-width: 768px) 50vw, 100vw"
+        width={size === 'lg' ? 1200 : 800}
+        sizes={sizes}
+        quality={40}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
         class="aspect-4/3 w-full object-cover"
       />
     )
   }
-  <div class="flex flex-1 flex-col gap-3 p-5 md:p-6">
+  <div class:list={['flex flex-1 flex-col gap-3 p-5', size === 'lg' ? 'md:gap-4 md:p-8' : 'md:p-6']}>
     {
-      (chip || eyebrow) && (
+      (chip || eyebrow || hasChips) && (
         <div class="flex flex-wrap items-center gap-2">
           {chip && chipClasses && (
             <span class={chipClasses.base()}>
               <span class={chipClasses.label()}>{chip.label}</span>
             </span>
           )}
+          <slot name="chips" />
           {eyebrow && <p class="eyebrow">{eyebrow}</p>}
         </div>
       )
     }
-    <TitleTag class:list={[card.title(), 'heading-3']}>
+    <TitleTag class:list={[card.title(), size === 'lg' ? 'heading-2' : 'heading-3']}>
       {
         href ? (
           <a href={href} class="hover:text-link after:absolute after:inset-0">
@@ -104,7 +120,7 @@ const chipClasses = chip ? chipVariants({ color: chip.color ?? 'default' }) : un
       }
     </TitleTag>
     {meta && <p class="text-muted text-sm">{meta}</p>}
-    {description && <p class={card.description()}>{description}</p>}
+    {description && <p class:list={[card.description(), size === 'lg' && 'md:text-base']}>{description}</p>}
     <slot />
     {
       Astro.slots.has('footer') && (
