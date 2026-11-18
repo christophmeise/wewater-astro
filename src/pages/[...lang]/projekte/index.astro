@@ -1,0 +1,128 @@
+---
+/**
+ * Projects overview: /projekte/, /en/projekte/, /fr/projekte/. Projects in the page's language,
+ * newest first, with a filter by status and by filter system.
+ *
+ * The filter is two groups of radio buttons; CSS :has() hides the cards that don't match
+ * (no JavaScript). Without :has() support all projects stay visible. A "no projects" note is
+ * rendered only for the combinations that are empty (known at build time).
+ */
+import ProjectCard from '@/components/pages/ProjectCard.astro';
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations, type UiKey } from '@/i18n';
+import { getProjects, type Project } from '@/lib/content';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const projects = await getProjects(locale);
+
+// Values must match the CSS rules below.
+const filterGroups: { name: 'status' | 'system'; legend: UiKey; options: { value: string; label: UiKey }[] }[] = [
+  {
+    name: 'status',
+    legend: 'projekte.filter.status',
+    options: [
+      { value: 'all', label: 'projekte.allProjects' },
+      { value: 'in-progress', label: 'content.status.in-progress' },
+      { value: 'completed', label: 'content.status.completed' },
+    ],
+  },
+  {
+    name: 'system',
+    legend: 'projekte.filter.system',
+    options: [
+      { value: 'all', label: 'projekte.filter.allSystems' },
+      { value: 'aqqabag', label: 'nav.filter.aqqabag' },
+      { value: 'aqqacube', label: 'nav.filter.aqqacube' },
+    ],
+  },
+];
+
+const matches = (p: Project, status: string, system: string) =>
+  (status === 'all' || p.data.status === status) &&
+  (system === 'all' || (p.data.filters as string[]).includes(system));
+const [statusGroup, systemGroup] = filterGroups;
+const emptyCombinations = statusGroup!.options.flatMap((status) =>
+  systemGroup!.options
+    .filter((system) => !projects.some((p) => matches(p, status.value, system.value)))
+    .map((system) => `${status.value}:${system.value}`),
+);
+---
+
+<BaseLayout title={t('projekte.title')} description={t('projekte.description')}>
+  <PlainHeader eyebrow={t('projekte.eyebrow')} title={t('projekte.heading')} />
+
+  <Section>
+    <div class="projects flex flex-col gap-10">
+      <div
+        class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-10"
+        role="group"
+        aria-label={t('projekte.filter.legend')}
+      >
+        {
+          filterGroups.map((group) => (
+            <fieldset class="flex flex-col items-center gap-2">
+              <legend class="text-muted pb-2 text-center text-sm font-semibold">{t(group.legend)}</legend>
+              <div class="flex flex-wrap justify-center gap-2">
+                {group.options.map((option, i) => (
+                  <label class="border-border bg-background text-foreground hover:bg-default has-checked:border-accent has-checked:bg-accent has-checked:text-accent-foreground has-focus-visible:outline-(--focus) cursor-pointer rounded-full border px-4 py-1.5 text-sm font-medium transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2">
+                    <input type="radio" name={group.name} value={option.value} checked={i === 0} class="sr-only" />
+                    {t(option.label)}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ))
+        }
+      </div>
+
+      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {
+          projects.map((project, i) => (
+            <li class="flex" data-status={project.data.status} data-systems={project.data.filters.join(' ')}>
+              <ProjectCard project={project} titleTag="h2" priority={i === 0} />
+            </li>
+          ))
+        }
+      </ul>
+      {
+        emptyCombinations.map((combination) => (
+          <p class="projects-empty text-muted text-center" data-empty={combination}>
+            {t('projekte.filter.empty')}
+          </p>
+        ))
+      }
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  /* Status filter */
+  .projects:has([name='status'][value='in-progress']:checked) [data-status]:not([data-status='in-progress']),
+  .projects:has([name='status'][value='completed']:checked) [data-status]:not([data-status='completed']),
+  /* Filter-system filter */
+  .projects:has([name='system'][value='aqqabag']:checked) [data-systems]:not([data-systems~='aqqabag']),
+  .projects:has([name='system'][value='aqqacube']:checked) [data-systems]:not([data-systems~='aqqacube']) {
+    display: none;
+  }
+
+  /* "No projects" note: only for the selected combination. */
+  .projects-empty {
+    display: none;
+  }
+
+  .projects:has([name='status'][value='all']:checked):has([name='system'][value='aqqabag']:checked) [data-empty='all:aqqabag'],
+  .projects:has([name='status'][value='all']:checked):has([name='system'][value='aqqacube']:checked) [data-empty='all:aqqacube'],
+  .projects:has([name='status'][value='in-progress']:checked):has([name='system'][value='all']:checked) [data-empty='in-progress:all'],
+  .projects:has([name='status'][value='in-progress']:checked):has([name='system'][value='aqqabag']:checked) [data-empty='in-progress:aqqabag'],
+  .projects:has([name='status'][value='in-progress']:checked):has([name='system'][value='aqqacube']:checked) [data-empty='in-progress:aqqacube'],
+  .projects:has([name='status'][value='completed']:checked):has([name='system'][value='all']:checked) [data-empty='completed:all'],
+  .projects:has([name='status'][value='completed']:checked):has([name='system'][value='aqqabag']:checked) [data-empty='completed:aqqabag'],
+  .projects:has([name='status'][value='completed']:checked):has([name='system'][value='aqqacube']:checked) [data-empty='completed:aqqacube'] {
+    display: block;
+  }
+</style>
