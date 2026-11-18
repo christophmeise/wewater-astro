@@ -155,6 +155,71 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * Long-form content (.prose, from @tailwindcss/typography): WeWater colours, headings and
+ * tables. The typography plugin lives in the utilities layer, so these do too.
+ * ------------------------------------------------------------------------- */
+
+@layer utilities {
+  .prose {
+    --tw-prose-body: var(--foreground);
+    --tw-prose-headings: var(--foreground);
+    --tw-prose-lead: var(--muted);
+    --tw-prose-links: var(--link);
+    --tw-prose-bold: var(--foreground);
+    --tw-prose-counters: var(--muted);
+    --tw-prose-bullets: var(--accent);
+    --tw-prose-hr: var(--border);
+    --tw-prose-quotes: var(--foreground);
+    --tw-prose-quote-borders: var(--accent);
+    --tw-prose-captions: var(--muted);
+    --tw-prose-th-borders: var(--border);
+    --tw-prose-td-borders: var(--separator);
+  }
+
+  /* Content headings start at h2 (the page title is the only h1). */
+  .prose :where(h2):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    @apply font-heading mt-[1.75em] mb-[0.6em] text-2xl font-semibold tracking-tight;
+  }
+
+  .prose :where(h3):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    @apply font-heading mt-[1.6em] mb-[0.5em] text-xl font-semibold;
+  }
+
+  .prose :where(h4):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    @apply font-heading mt-[1.5em] mb-[0.5em] text-lg font-semibold;
+  }
+
+  .prose :where(a):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    @apply decoration-1 underline-offset-2 hover:decoration-2;
+  }
+
+  /* Tables (project cost tables): light rows, figures never wrap. */
+  .prose :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    @apply text-sm;
+  }
+
+  .prose :where(th, td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    @apply px-3 py-2.5;
+  }
+
+  .prose :where(tr > :first-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    @apply ps-0;
+  }
+
+  .prose :where(thead):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    @apply border-b-2;
+  }
+
+  /*
+   * Project pages: text centred at a comfortable reading width, like the photos; intro tiles,
+   * galleries and columns use the full page width.
+   */
+  .project-content > :where(p, ul, ol, h2, h3, h4, blockquote, table, hr) {
+    @apply mx-auto max-w-(--container-prose);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

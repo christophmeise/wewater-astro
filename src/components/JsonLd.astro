@@ -1,0 +1,69 @@
+---
+/**
+ * Structured data (schema.org JSON-LD) for search engines.
+ *
+ *   <JsonLd type="organization" />                          home page: WeWater as an NGO
+ *   <JsonLd type="blogPosting" post={post} image={ogUrl} /> blog post
+ *
+ * Search engines read JSON-LD anywhere in the page, so pages render it in their content.
+ */
+import { getImage } from 'astro:assets';
+import logo from '@/assets/site/logo.png';
+import { authors } from '@/data/authors';
+import { getLocale, useTranslations } from '@/i18n';
+import { postUrl, type Post } from '@/lib/content';
+
+type Props = { type: 'organization' } | { type: 'blogPosting'; post: Post; image: string };
+
+const props = Astro.props;
+const site = Astro.site ?? new URL('https://www.wewater.org');
+const abs = (path: string) => new URL(path, site).href;
+const logoImage = await getImage({ src: logo, format: 'png', width: logo.width });
+
+/** Social profiles, as linked in the footer (src/components/layout/Footer.astro). */
+const SOCIAL = [
+  'https://www.facebook.com/wewater.org/',
+  'https://www.instagram.com/wewater_org/',
+  'https://www.youtube.com/channel/UC3zOjWWL5drSnoxzcj3-jqw',
+];
+
+const organization = {
+  '@type': 'NGO',
+  '@id': abs('/#organization'),
+  name: 'WeWater gUG',
+  alternateName: 'WeWater',
+  url: abs('/'),
+  logo: { '@type': 'ImageObject', url: abs(logoImage.src), width: logo.width, height: logo.height },
+  email: 'hi@wewater.org',
+  sameAs: SOCIAL,
+};
+
+let data: Record<string, unknown>;
+if (props.type === 'organization') {
+  const t = useTranslations(getLocale(Astro.currentLocale));
+  data = { '@context': 'https://schema.org', ...organization, description: t('site.description') };
+} else {
+  const { post, image } = props;
+  const url = abs(postUrl(post));
+  data = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    '@id': `${url}#article`,
+    mainEntityOfPage: url,
+    url,
+    headline: post.data.title,
+    description: post.data.description ?? post.data.excerpt,
+    image: [abs(image)],
+    datePublished: post.data.date.toISOString(),
+    dateModified: post.data.date.toISOString(),
+    inLanguage: post.data.lang,
+    author: { '@type': 'Person', name: authors[post.data.author].name },
+    publisher: organization,
+  };
+}
+
+// Escape "<" so the JSON can never close the script element early.
+const json = JSON.stringify(data).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" is:inline set:html={json} />
