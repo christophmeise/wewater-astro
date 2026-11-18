@@ -56,7 +56,9 @@ const t = useTranslations(locale);
       <slot />
     </div>
   </div>
-  <div class="grid content-start gap-6 sm:grid-cols-2 lg:col-span-4 lg:grid-cols-1">
+  {/* Photos: a column next to the text from lg; one row of three equal squares on tablets (their mixed
+      landscape/portrait formats left holes in a two-column grid); stacked on phones. */}
+  <div class="grid content-start gap-6 sm:grid-cols-3 lg:col-span-4 lg:grid-cols-1">
     {
       photos.map((photo) => (
         <Picture
@@ -64,8 +66,8 @@ const t = useTranslations(locale);
           alt={photo.alt}
           formats={['avif', 'webp']}
           width={640}
-          sizes="(min-width: 1024px) 24rem, (min-width: 640px) 50vw, 100vw"
-          class:list={['shadow-surface w-full rounded-3xl object-cover', photo.square && 'aspect-square']}
+          sizes="(min-width: 1024px) 24rem, (min-width: 640px) 33vw, 100vw"
+          class:list={['shadow-surface w-full rounded-3xl object-cover sm:max-lg:aspect-square', photo.square && 'aspect-square']}
         />
       ))
     }
