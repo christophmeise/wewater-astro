@@ -4,8 +4,8 @@
  * to the Lottie animation in the browser.
  *
  *   <AnimatedIcon name="gauge" />                                   80px, loops every 2.5s (home tiles)
- *   <AnimatedIcon name="gears" class="size-5" primary="currentColor" secondary="var(--accent)"
- *     delay={3000} randomDelay={10000} />                            status chip
+ *   <AnimatedIcon name="gears" class="size-7" primary="currentColor" secondary="var(--accent)"
+ *     lineWidth="0.075rem" delay={3000} randomDelay={10000} />       status chip (StatusChip)
  *   <AnimatedIcon name="pin" trigger="hover" />                     plays when its link/card is hovered
  *
  * - The first frame is inline SVG in the HTML: no request, no layout shift, and it is what visitors
@@ -19,7 +19,8 @@
  *   enters the closest link, button or [data-animated-icon-host] around the icon (or the icon).
  * - Colours: the icons' own navy/white (primary) and brand blue (secondary). `primary` and
  *   `secondary` replace them with any CSS colour, e.g. "currentColor" or "var(--accent)".
- * - Size: `class` (default size-20, 80px, as on the old site). Decorative unless `label` is set.
+ * - Size: `class` (default size-20, 80px, as on the old site). Below about 40px pass `lineWidth`
+ *   (e.g. "0.075rem") so the lines keep a fixed on-screen width. Decorative unless `label` is set.
  *
  * Names: see ./animated-icons.ts (files in src/assets/animations/).
  */
