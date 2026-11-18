@@ -18,9 +18,67 @@
  *   </Column>
  *
  *   </Columns>
+ *
+ * Columns with a <DonationForm> (most projects: the form beside "Das Projekt") stay stacked up to
+ * desktop width, where the form has room. Side by side, the text column is sticky: a short text
+ * stays in view beside the tall form instead of leaving a large empty column below it, and a
+ * long one scrolls normally until its end, which then stays in view (a small script measures it).
  */
 ---
 
-<div class="my-8 grid gap-10 md:auto-cols-fr md:grid-flow-col">
+<div class="columns" data-columns>
   <slot />
 </div>
+
+<style>
+  .columns {
+    display: grid;
+    gap: 2.5rem;
+    margin-block: 2rem;
+  }
+
+  @media (width >= 48rem) {
+    .columns:not(:has([data-donation])) {
+      grid-auto-columns: minmax(0, 1fr);
+      grid-auto-flow: column;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .columns:has([data-donation]) {
+      grid-auto-columns: minmax(0, 1fr);
+      grid-auto-flow: column;
+      column-gap: 3rem;
+    }
+
+    /* Set by the script below once it knows the column's height. */
+    .columns :global([data-sticky-column]) {
+      position: sticky;
+      top: var(--sticky-top);
+      align-self: start;
+    }
+  }
+</style>
+
+<script>
+  /*
+   * Text beside a donation form: stick below the site header when it fits the screen; when it is
+   * taller, a negative offset lets it scroll until its end is in view and then stick there.
+   */
+  for (const columns of document.querySelectorAll<HTMLElement>('[data-columns]')) {
+    if (!columns.querySelector('[data-donation]')) continue;
+    for (const column of columns.children) {
+      if (!(column instanceof HTMLElement) || column.querySelector('[data-donation]')) continue;
+      const update = () => {
+        const header = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+        const gap = 24;
+        const top = Math.min(header + gap, window.innerHeight - column.offsetHeight - gap);
+        column.style.setProperty('--sticky-top', `${Math.round(top)}px`);
+      };
+      update();
+      new ResizeObserver(update).observe(column);
+      window.addEventListener('resize', update, { passive: true });
+      column.dataset['stickyColumn'] = '';
+    }
+  }
+</script>
