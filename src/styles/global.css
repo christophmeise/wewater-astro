@@ -73,7 +73,15 @@
   h3,
   h4 {
     @apply font-heading text-balance;
+    /*
+     * Hyphenate only long words (12+ letters, 5+ on each side of the break), so long German
+     * compounds still fit narrow cards and phones, but "sau-berem" or "Trinkwas-ser" never happen.
+     * Safari has no minimum word length; its 5/5 split limit has much the same effect.
+     */
     hyphens: auto;
+    hyphenate-limit-chars: 12 5 5;
+    -webkit-hyphenate-limit-before: 5;
+    -webkit-hyphenate-limit-after: 5;
   }
 
   p,
@@ -106,6 +114,11 @@
 @layer components {
   .text-display {
     @apply font-heading text-display leading-none font-semibold tracking-tighter text-balance;
+    /* Hero headlines move whole words to the next line ("klarma-chen" never); only a word too long
+       for a phone line on its own (16+ letters) may still be hyphenated rather than overflow. */
+    hyphenate-limit-chars: 16 7 7;
+    -webkit-hyphenate-limit-before: 7;
+    -webkit-hyphenate-limit-after: 7;
   }
 
   .heading-1 {
