@@ -26,7 +26,7 @@ const filterGroups: { name: 'status' | 'system'; legend: UiKey; options: { value
     name: 'status',
     legend: 'projekte.filter.status',
     options: [
-      { value: 'all', label: 'projekte.allProjects' },
+      { value: 'all', label: 'projekte.filter.all' },
       { value: 'in-progress', label: 'content.status.in-progress' },
       { value: 'completed', label: 'content.status.completed' },
     ],
@@ -35,7 +35,7 @@ const filterGroups: { name: 'status' | 'system'; legend: UiKey; options: { value
     name: 'system',
     legend: 'projekte.filter.system',
     options: [
-      { value: 'all', label: 'projekte.filter.allSystems' },
+      { value: 'all', label: 'projekte.filter.all' },
       { value: 'aqqabag', label: 'nav.filter.aqqabag' },
       { value: 'aqqacube', label: 'nav.filter.aqqacube' },
     ],
@@ -67,9 +67,9 @@ const emptyCombinations = statusGroup!.options.flatMap((status) =>
           filterGroups.map((group) => (
             <fieldset class="flex flex-col items-center gap-2">
               <legend class="text-muted pb-2 text-center text-sm font-semibold">{t(group.legend)}</legend>
-              <div class="flex flex-wrap justify-center gap-2">
+              <div class="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                 {group.options.map((option, i) => (
-                  <label class="border-border bg-background text-foreground hover:bg-default has-checked:border-accent has-checked:bg-accent has-checked:text-accent-foreground has-focus-visible:outline-(--focus) cursor-pointer rounded-full border px-4 py-1.5 text-sm font-medium transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2">
+                  <label class="border-border bg-background text-foreground not-has-checked:hover:bg-default has-checked:border-accent has-checked:bg-accent has-checked:text-accent-foreground has-focus-visible:outline-(--focus) cursor-pointer rounded-full border px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors select-none has-focus-visible:outline-2 has-focus-visible:outline-offset-2 sm:px-4">
                     <input type="radio" name={group.name} value={option.value} checked={i === 0} class="sr-only" />
                     {t(option.label)}
                   </label>
