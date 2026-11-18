@@ -30,7 +30,7 @@ export default defineStrings({
   'home.counter.info': {
     de: 'Basierend auf der durchschnittlichen Filterleistung unserer sich im Einsatz befindenden Wasserfilter. Die Filterleistung unserer Systeme ist am Anfang ihrer Lebenszyklen bis zu doppelt so hoch. Die Zahl ist bewusst konservativ angegeben, im Realbetrieb kann die Filterleistung noch höher ausfallen.',
     en: 'Based on the average filtration performance of our water filters in use. The filter performance of our systems is up to twice as high at the beginning of their life cycles. The figure is deliberately expressed conservatively; in real operation the filter performance can be even higher.',
-    fr: "Basé sur la performance moyenne de filtration de nos filtres à eau en service. La performance des filtres de nos systèmes est jusqu'à deux fois plus élevée au début de leur cycle de vie. Ce chiffre est délibérément modeste ; en fonctionnement réel, les performances des filtres peuvent être encore plus élevées.",
+    fr: "Basé sur la performance moyenne de filtration de nos filtres à eau en service. La performance des filtres de nos systèmes est jusqu'à deux fois plus élevée au début de leur cycle de vie. Ce chiffre est délibérément modeste\u00A0; en fonctionnement réel, les performances des filtres peuvent être encore plus élevées.",
   },
   'home.newsletter': { de: 'Alle News in mein Postfach', en: 'All news to my inbox', fr: 'Toutes les nouvelles par e-mail' },
   'home.discoverProjects': { de: 'Entdecke unsere Projekte', en: 'Discover our projects', fr: 'Découvrez nos projets' },
@@ -66,7 +66,7 @@ export default defineStrings({
   'home.innovation.energyText': {
     de: 'Kein Strom und keine weitere Infrastruktur benötigt! Filter hinstellen, Wasser durchlaufen lassen. Fertig. Die Filtration erfolgt durch Schwerkraft und physikalischen Druck alleine. So können unsere Wasserfilter nicht verstopfen.',
     en: 'No electricity and no other infrastructure needed! Place the filter, let the water run through it. That’s it. The filtration is achieved by gravity and physical pressure alone. This means that our water filters cannot clog.',
-    fr: "Pas d'électricité nécessaire ! Il suffit de placer le filtre et de laisser l'eau couler. C'est tout. La filtration est réalisée par simple gravité et par pression physique. Ainsi, nos filtres à eau ne se bouchent pas.",
+    fr: "Pas d'électricité nécessaire\u00A0! Il suffit de placer le filtre et de laisser l'eau couler. C'est tout. La filtration est réalisée par simple gravité et par pression physique. Ainsi, nos filtres à eau ne se bouchent pas.",
   },
   'home.innovation.chemicals': { de: 'Keine Chemikalien', en: 'No chemicals', fr: 'Sans produits chimiques' },
   'home.innovation.chemicalsText': {
@@ -78,7 +78,7 @@ export default defineStrings({
   'home.innovation.cheapText': {
     de: 'Höchste Qualität Made in Germany, aber ohne Gewinnabsichten. Unsere Produktionspartner stellen die Filter zum Selbstkostenpreis her. Damit können wir sie preiswert einsetzen – ein Liter gefiltertes Wasser kostet so weniger als 0,01 €!',
     en: 'Highest quality made in Germany, but without profit intentions. Our production partners manufacture the filter systems at cost price. This allows us to use them at particularly favorable prices. One liter of filtered water costs less than €0.01!',
-    fr: 'La plus haute qualité Made in Germany, mais sans but lucratif. Nos partenaires de production fabriquent les filtres à prix coûtant. Cela nous permet de les utiliser à des prix particulièrement avantageux : un litre d’eau filtrée coûte ainsi moins de 0,01 € !',
+    fr: 'La plus haute qualité Made in Germany, mais sans but lucratif. Nos partenaires de production fabriquent les filtres à prix coûtant. Cela nous permet de les utiliser à des prix particulièrement avantageux\u00A0: un litre d’eau filtrée coûte ainsi moins de 0,01\u00A0€\u00A0!',
   },
 
   // Filter systems teaser
@@ -95,7 +95,7 @@ export default defineStrings({
   'home.filters.text': {
     de: 'Seit unserer Gründung im Jahr 2018 setzen wir unsere Filtersysteme sowohl in eigenen Projekten als auch gemeinsam mit NGO-Partnern ein. Seitdem konnten wir mehr als 8300 Menschen in Dörfern, Schulen und Krankenhäusern sauberes Wasser zur Verfügung stellen – eine Existenzgrundlage, auf die sie aufbauen können.',
     en: 'Since our foundation in 2018, we have been using our filter systems in our own projects as well as together with NGO partners. Since then, we have been able to offer clean water to more than 8300 people in villages, schools and hospitals – livelihoods on which they can build.',
-    fr: "Depuis notre fondation en 2018, nous utilisons nos systèmes de filtration à la fois dans nos propres projets et avec des ONG partenaires. Depuis lors, nous avons pu fournir de l'eau potable à plus de 8300 personnes dans des villages, des écoles et des hôpitaux : une base existentielle sur laquelle elles peuvent bâtir.",
+    fr: "Depuis notre fondation en 2018, nous utilisons nos systèmes de filtration à la fois dans nos propres projets et avec des ONG partenaires. Depuis lors, nous avons pu fournir de l'eau potable à plus de 8300 personnes dans des villages, des écoles et des hôpitaux\u00A0: une base existentielle sur laquelle elles peuvent bâtir.",
   },
   'home.filters.cta': {
     de: 'Entdecke alle Filtersysteme',

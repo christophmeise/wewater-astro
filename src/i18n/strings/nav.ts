@@ -10,7 +10,7 @@ export default defineStrings({
   'nav.projects': { de: 'Projekte', en: 'Projects', fr: 'Projets' },
   'nav.blog': { de: 'Blog', en: 'Blog', fr: 'Blog' },
   'nav.shop': { de: 'Shop', en: 'Shop', fr: 'Shop' },
-  'nav.cta': { de: 'Ich will helfen!', en: 'I want to help!', fr: 'Je veux aider !' },
+  'nav.cta': { de: 'Ich will helfen!', en: 'I want to help!', fr: 'Je veux aider\u00A0!' },
   'nav.newTab': { de: '(öffnet in neuem Tab)', en: '(opens in a new tab)', fr: '(s’ouvre dans un nouvel onglet)' },
 
   // Mega-menu "Filtersysteme"

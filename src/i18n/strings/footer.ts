@@ -23,12 +23,12 @@ export default defineStrings({
   'footer.questions': {
     de: 'Fragen? Schreib an hi@wewater.org',
     en: 'Questions? Drop us a line at hi@wewater.org',
-    fr: 'Vous avez des questions ? Écrivez-nous à hi@wewater.org',
+    fr: 'Vous avez des questions\u00A0? Écrivez-nous à hi@wewater.org',
   },
   'footer.donateNow': {
     de: 'Du willst direkt handeln? Spende jetzt!',
     en: 'You want to act now? Donate now!',
-    fr: 'Vous voulez agir directement ? Faites un don maintenant !',
+    fr: 'Vous voulez agir directement\u00A0? Faites un don maintenant\u00A0!',
   },
   'footer.bankNote': {
     de: 'Gib bitte Vor- und Nachnamen sowie die Art deiner Spende (z.B. monatliche Spende oder einmalige Spende) an.',
