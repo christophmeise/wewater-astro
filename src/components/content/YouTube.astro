@@ -6,8 +6,9 @@
  *   <YouTube id="qHDE8HboDBk" title="Projektupdate aus Kayonza, Uganda" />
  *   <YouTube id="zy1MzATrJkc" title="…" poster={posterImage} />   own thumbnail from src/assets/
  *
- * Without `poster` the thumbnail comes from i.ytimg.com. A local `poster` avoids that extra
- * third-party connection, which matters for a video near the top of a page (page speed).
+ * Without `poster` the thumbnail is looked up in src/assets/youtube/<id>.jpg, so no request goes
+ * to YouTube before the click (privacy policy promise, and page speed). Add the thumbnail there for
+ * every new video: curl -o src/assets/youtube/<id>.jpg https://i.ytimg.com/vi/<id>/hqdefault.jpg
  */
 import { YouTube as LiteYouTube } from '@astro-community/astro-embed-youtube';
 import type { ImageMetadata } from 'astro';
@@ -23,7 +24,12 @@ interface Props {
   poster?: ImageMetadata | undefined;
 }
 
-const { id, title, poster } = Astro.props;
+const { id, title } = Astro.props;
+const localThumbs = import.meta.glob<{ default: ImageMetadata }>('/src/assets/youtube/*.jpg', { eager: true });
+const poster = Astro.props.poster ?? localThumbs[`/src/assets/youtube/${id}.jpg`]?.default;
+if (!poster) {
+  throw new Error(`YouTube ${id}: missing thumbnail src/assets/youtube/${id}.jpg (see the comment in YouTube.astro)`);
+}
 const t = useTranslations(getLocale(Astro.currentLocale));
 const posterUrl = poster
   ? (await getImage({ src: poster, width: Math.min(poster.width, 640), format: 'webp', quality: 50 })).src
