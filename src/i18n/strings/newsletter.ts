@@ -5,8 +5,9 @@ import { defineStrings } from '../define';
  * Texts ported from the old sidebar strings in translation.json.
  */
 export default defineStrings({
+  // ­: soft hyphen, so a narrow column breaks "Wasser-newsletter" and not "Was-sernewsletter".
   'newsletter.title': {
-    de: 'Jetzt für unseren Wassernewsletter anmelden',
+    de: 'Jetzt für unseren Wasser­newsletter anmelden',
     en: 'Sign up now for our water newsletter',
     fr: 'Inscrivez-vous à notre newsletter sur l’eau',
   },

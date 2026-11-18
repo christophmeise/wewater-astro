@@ -3,6 +3,8 @@ import { defineStrings } from '../define';
 /** Strings for blog posts, projects and the content components in src/components/content/. */
 export default defineStrings({
   'content.photo': { de: 'Foto', en: 'Photo', fr: 'Photo' },
+  /** Accessible name of the (sideways scrollable) box around a table in a post or project. */
+  'content.table': { de: 'Tabelle', en: 'Table', fr: 'Tableau' },
 
   // Gallery lightbox
   'content.gallery.label': { de: 'Bildergalerie', en: 'Photo gallery', fr: 'Galerie de photos' },

@@ -26,7 +26,7 @@ const more = rest.slice(2);
     {
       newest && (
         <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <li class="flex md:col-span-2 lg:row-span-2">
+          <li class="featured flex md:col-span-2 lg:row-span-2">
             <PostCard
               post={newest}
               size="lg"
@@ -62,3 +62,50 @@ const more = rest.slice(2);
     }
   </Section>
 </BaseLayout>
+
+<style>
+  /* Featured post: the excerpt is cut after a few lines (the card links to the full post). */
+  .featured :global(.card__description) {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+
+  @media (width >= 48rem) {
+    .featured :global(.card__description) {
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+    }
+  }
+
+  /* Tablet: the full-width featured card gets a wide photo instead of a tall 4:3 one. */
+  @media (48rem <= width < 64rem) {
+    .featured :global(picture img) {
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  /* Desktop: the photo grows to the height of the two cards beside it, so the card has no empty bottom. */
+  @media (width >= 64rem) {
+    .featured :global(picture) {
+      position: relative;
+      display: block;
+      flex: 1 1 0;
+      min-height: 16rem;
+    }
+
+    .featured :global(picture img) {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      aspect-ratio: auto;
+    }
+
+    /* The text keeps its natural height; the photo takes the rest. */
+    .featured :global(.card > div) {
+      flex: none;
+    }
+  }
+</style>

@@ -190,6 +190,18 @@
     --tw-prose-captions: var(--muted);
     --tw-prose-th-borders: var(--border);
     --tw-prose-td-borders: var(--separator);
+
+    /* Long URLs and words in migrated text never push the page sideways on phones. */
+    overflow-wrap: break-word;
+  }
+
+  /* No extra space above the first or below the last block (the page section sets the rhythm). */
+  .prose > :first-child {
+    @apply mt-0;
+  }
+
+  .prose > :last-child {
+    @apply mb-0;
   }
 
   /* Content headings start at h2 (the page title is the only h1). */
@@ -205,17 +217,27 @@
     @apply font-heading mt-[1.5em] mb-[0.5em] text-lg font-semibold;
   }
 
+  /* A rule right under a heading (WordPress separator) underlines it instead of floating 3em away. */
+  .prose :where(h2, h3, h4) + :where(hr):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    @apply mt-3 mb-6;
+  }
+
   .prose :where(a):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
     @apply decoration-1 underline-offset-2 hover:decoration-2;
   }
 
-  /* Tables (project cost tables): light rows, figures never wrap. */
+  /*
+   * Tables (project cost tables): light rows, figures in tabular digits. Long words (10+ letters)
+   * in cells hyphenate, so a three- or four-column table still fits a phone screen.
+   */
   .prose :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-    @apply text-sm;
+    @apply text-sm tabular-nums;
   }
 
   .prose :where(th, td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-    @apply px-3 py-2.5;
+    @apply px-2 py-2.5 sm:px-3;
+    hyphens: auto;
+    hyphenate-limit-chars: 10 4 4;
   }
 
   .prose :where(tr > :first-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
@@ -230,7 +252,7 @@
    * Project pages: text centred at a comfortable reading width, like the photos; intro tiles,
    * galleries and columns use the full page width.
    */
-  .project-content > :where(p, ul, ol, h2, h3, h4, blockquote, table, hr) {
+  .project-content > :where(p, ul, ol, h2, h3, h4, blockquote, table, .table-scroll, hr) {
     @apply mx-auto max-w-(--container-prose);
   }
 }

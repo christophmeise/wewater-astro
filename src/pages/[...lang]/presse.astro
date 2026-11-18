@@ -47,7 +47,7 @@ const contactCard = cardVariants({ variant: 'secondary' });
     <span slot="title" class="hyphens-manual">{t('presse.title')}</span>
   </HeroOverlay>
 
-  <Section class="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
+  <Section class="grid items-start gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
     <div class="flex flex-col gap-5">
       <h2 class="heading-2">{t('presse.heading')}</h2>
       <p class="lead">{t('presse.intro')}</p>
@@ -65,13 +65,13 @@ const contactCard = cardVariants({ variant: 'secondary' });
       </ul>
     </div>
 
-    <section class:list={[contactCard.base(), 'items-start gap-5 p-5 sm:flex-row sm:items-center md:p-6']} aria-labelledby="presse-contact">
+    <section class:list={[contactCard.base(), 'items-start gap-4 p-5 min-[22.5rem]:flex-row min-[22.5rem]:items-center sm:gap-5 md:p-6']} aria-labelledby="presse-contact">
       <Image
         src={contactPhoto}
         alt={CONTACT.name}
-        width={192}
+        width={144}
         densities={[1, 2]}
-        class="aspect-square w-24 shrink-0 rounded-2xl object-cover sm:w-32"
+        class="aspect-square w-20 shrink-0 rounded-2xl object-cover sm:w-36"
       />
       <div class="flex min-w-0 flex-col gap-1">
         <h2 id="presse-contact" class="eyebrow">{t('presse.contact')}</h2>
@@ -90,12 +90,12 @@ const contactCard = cardVariants({ variant: 'secondary' });
         </h2>
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {releases.map((post) => (
-            <Card
-              href={postUrl(post)}
-              image={post.data.hero}
-              title={post.data.title}
-              meta={dateFormat.format(post.data.date)}
-            />
+            <Card href={postUrl(post)} image={post.data.hero} title={post.data.title}>
+              {/* At the bottom of the card, so the dates of one row line up (as on the blog cards). */}
+              <p class="text-muted mt-auto text-sm">
+                <time datetime={post.data.date.toISOString()}>{dateFormat.format(post.data.date)}</time>
+              </p>
+            </Card>
           ))}
         </div>
       </Section>

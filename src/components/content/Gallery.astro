@@ -1,8 +1,9 @@
 ---
 /**
- * Photo gallery: a grid of thumbnails (two columns on phones, `columns` from tablet up). Clicking a
- * photo opens it large in a native <dialog> lightbox, a swipeable scroll-snap strip with prev/next
- * buttons, arrow keys and Esc. Without JavaScript the thumbnails link to the large image.
+ * Photo gallery: a grid of thumbnails (two columns on phones, about `columns` from tablet up, see
+ * the layout notes below). Clicking a photo opens it large in a native <dialog> lightbox, a
+ * swipeable scroll-snap strip with prev/next buttons, arrow keys and Esc. Without JavaScript the
+ * thumbnails link to the large image.
  *
  *   <Gallery
  *     columns={3}
@@ -33,7 +34,50 @@ interface Props {
 
 const { images, columns = 3, caption } = Astro.props;
 const t = useTranslations(getLocale(Astro.currentLocale));
-const cols = Math.min(Math.max(columns, 1), 4);
+
+/*
+ * Grid layout without a lonely photo in the last row. `columns` is a wish: from tablet up the
+ * gallery uses up to 3 columns in a blog post's text column and up to 4 on project pages, avoids
+ * a single photo in the last row and empty cells, and may show the first photo large (2 x 2
+ * cells) when that fills the grid exactly (e.g. 5 photos: one large and four small; 13: one large
+ * and twelve small; 4 photos: one row on project pages, 2 x 2 in posts). Phones show two columns;
+ * with an odd count the first photo spans both. Galleries with per-photo captions never get a
+ * large first photo.
+ */
+const n = images.length;
+const maxCols = ((Astro.locals as { contentMaxWidth?: number }).contentMaxWidth ?? 1200) < 900 ? 3 : 4;
+const wish = Math.min(Math.max(columns, 1), maxCols);
+const hasItemCaptions = images.some((img) => img.caption);
+let layout = { cols: Math.max(Math.min(n, wish), 1), feature: false };
+if (n > wish) {
+  // Lower is better: a single photo in the last row is worst, then fewer columns than wished,
+  // empty cells, more columns than wished and a large first photo.
+  let best = { score: Infinity, ...layout };
+  for (let cols = maxCols; cols >= 2; cols--) {
+    for (const feature of hasItemCaptions ? [false] : [false, true]) {
+      const lastRow = (n + (feature ? 3 : 0)) % cols;
+      const score =
+        (lastRow === 0 ? 0 : lastRow === 1 ? 10 : (cols - lastRow) * 3) +
+        (cols < wish ? (wish - cols) * 4 : (cols - wish) * 1.5) +
+        (feature ? 1 : 0) +
+        (maxCols - cols) * 0.5;
+      if (score < best.score) best = { score, cols, feature };
+    }
+  }
+  layout = { cols: best.cols, feature: best.feature };
+}
+const featureOnPhone = n > 1 && n % 2 === 1 && !hasItemCaptions;
+const gridClass = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-2 md:grid-cols-3',
+  4: 'grid-cols-2 md:grid-cols-4',
+}[layout.cols];
+/** Classes of the first item when it is shown large. */
+const featureClass = [
+  featureOnPhone ? 'col-span-2' : '',
+  layout.feature ? 'md:col-span-2 md:row-span-2' : featureOnPhone ? 'md:col-span-1' : '',
+].join(' ');
 
 const items = await Promise.all(
   images.map(async (img) => {
@@ -46,19 +90,13 @@ const items = await Promise.all(
 ---
 
 <figure class="gallery not-prose my-8 flex flex-col gap-3" data-gallery>
-  <ul
-    class:list={[
-      'grid grid-cols-2 gap-3',
-      { 'md:grid-cols-3': cols === 3, 'md:grid-cols-4': cols === 4, 'grid-cols-1 sm:grid-cols-2': cols === 1 },
-    ]}
-    aria-label={t('content.gallery.label')}
-  >
+  <ul class:list={['grid gap-3', gridClass]} aria-label={t('content.gallery.label')}>
     {
       items.map((item, i) => (
-        <li class="flex flex-col gap-2">
+        <li class:list={['flex flex-col gap-2', i === 0 && featureClass]}>
           <a
             href={item.large.src}
-            class="group block overflow-hidden rounded-2xl"
+            class="group relative block flex-1 overflow-hidden rounded-2xl"
             data-open={i}
             aria-label={`${t('content.gallery.open')}: ${item.alt}`}
           >
@@ -67,8 +105,16 @@ const items = await Promise.all(
               alt={item.alt}
               widths={item.thumbWidths}
               quality={60}
-              sizes="(min-width: 75rem) 24rem, (min-width: 48rem) 33vw, calc(50vw - 1.5rem)"
-              class="aspect-4/3 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes={
+                n === 1 || (i === 0 && (layout.feature || featureOnPhone))
+                  ? '(min-width: 75rem) 48rem, (min-width: 48rem) 66vw, 100vw'
+                  : '(min-width: 75rem) 24rem, (min-width: 48rem) 33vw, calc(50vw - 1.5rem)'
+              }
+              class:list={[
+                'aspect-4/3 w-full object-cover transition-transform duration-300 group-hover:scale-105',
+                // The large photo fills its 2 x 2 cells; the small photos set the row heights.
+                i === 0 && layout.feature && 'md:absolute md:inset-0 md:aspect-auto md:h-full',
+              ]}
             />
           </a>
           {item.caption && <p class="text-muted text-sm text-pretty">{item.caption}</p>}

@@ -36,7 +36,8 @@ const { data } = project;
   class:list={['w-full', className]}
 >
   <StatusChip slot="chips" status={data.status} locale={data.lang} />
-  <p class="text-muted text-sm">
+  {/* mt-auto: the dates of cards in one row line up at the bottom. */}
+  <p class="text-muted mt-auto text-sm">
     <time datetime={data.date.toISOString()}>{formatDate(data.date, data.lang)}</time>
   </p>
 </Card>
