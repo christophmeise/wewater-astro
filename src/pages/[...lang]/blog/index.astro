@@ -80,6 +80,13 @@ const more = rest.slice(2);
     }
   }
 
+  /* Tablet: the full-width featured card gets a wide photo instead of a tall 4:3 one. */
+  @media (48rem <= width < 64rem) {
+    .featured :global(picture img) {
+      aspect-ratio: 16 / 9;
+    }
+  }
+
   /* Desktop: the photo grows to the height of the two cards beside it, so the card has no empty bottom. */
   @media (width >= 64rem) {
     .featured :global(picture) {
