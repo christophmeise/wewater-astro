@@ -43,11 +43,11 @@ const icons: AnimatedIconName[] = ['pin', 'map', 'todo', 'people'];
   <ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4" role="list">
     {
       tiles.map((tile, i) => (
-        <li class="dot-tile flex flex-col gap-3">
+        <li class="flex flex-col gap-3">
           <AnimatedIcon name={icons[i % icons.length] ?? 'pin'} />
           <p class="dot-title font-semibold">{tile.title}</p>
           {tile.text.split(/\n{2,}/).map((para) => (
-            <p class="text-muted">{para}</p>
+            <p class="text-foreground">{para}</p>
           ))}
         </li>
       ))

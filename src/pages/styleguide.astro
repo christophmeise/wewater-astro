@@ -303,17 +303,17 @@ const colors = [
   <div class="container-page flex flex-col gap-16 py-(--space-section)">
     <section class="flex flex-col gap-6" aria-labelledby="sg-tiles">
       <h2 id="sg-tiles" class="heading-2">Feature tiles and scroll reveal</h2>
-      <p class="max-w-(--container-prose)"> <code>.dot-tile</code> on the tile and <code>.dot-title</code> on its title: the brand-blue dot hangs in front of the title, so title and text share one left edge (below <code>md</code> the tile moves in instead). <code>.reveal</code>: the block rises gently into place as it scrolls into view (CSS scroll-driven, transform only, off with reduced motion); use it below the first screen, never on a hero. </p>
+      <p class="max-w-(--container-prose)"> <code>.dot-title</code> on a tile title: a small brand-blue dot inside the text box, with a gap before the title text. <code>.reveal</code>: the block rises gently into place as it scrolls into view (CSS scroll-driven, transform only, off with reduced motion); use it below the first screen, never on a hero. </p>
       <ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-        <li class="dot-tile reveal flex flex-col gap-3">
+        <li class="reveal flex flex-col gap-3">
           <AnimatedIcon name="gauge" />
           <h3 class="heading-3 dot-title">Hohe Rückhalterate</h3>
-          <p class="text-muted">Title and text start on the same line; the dot sits in the gutter.</p>
+          <p>Tile text in the text colour, as on the old site.</p>
         </li>
-        <li class="dot-tile reveal flex flex-col gap-3">
+        <li class="reveal flex flex-col gap-3">
           <AnimatedIcon name="energy" />
           <h3 class="heading-3 dot-title">Energiefrei</h3>
-          <p class="text-muted">Each tile rises on its own as it enters the viewport.</p>
+          <p>Each tile rises on its own as it enters the viewport.</p>
         </li>
       </ul>
     </section>

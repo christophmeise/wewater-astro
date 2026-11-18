@@ -110,10 +110,10 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
     <ul class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
       {
         innovations.map((item) => (
-          <li class="dot-tile reveal flex flex-col gap-3">
+          <li class="reveal flex flex-col gap-3">
             <AnimatedIcon name={item.icon} />
             <h3 class="heading-3 dot-title">{item.title}</h3>
-            <p class="text-muted">{item.text}</p>
+            <p>{item.text}</p>
           </li>
         ))
       }

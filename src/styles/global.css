@@ -164,21 +164,16 @@
   }
 
   /*
-   * Feature tiles (home "Innovation", project <IntroTiles>): a small brand-blue dot hangs in front of
-   * the tile title, so title and text share one left edge (as on the old site). Below md the gutter
-   * is too narrow for it, so the whole tile moves in instead.
+   * Feature tiles (home "Innovation", project <IntroTiles>): the tile title starts with a small
+   * brand-blue dot, inside the tile's text box with a gap after it, centred on the first line.
    */
-  .dot-tile {
-    @apply max-md:ps-4;
-  }
-
   .dot-title {
-    @apply relative;
+    @apply relative ps-4;
   }
 
   .dot-title::before {
     content: '';
-    @apply bg-accent absolute -left-3.5 top-[calc(0.5lh-0.25rem)] size-2 rounded-full;
+    @apply bg-accent absolute start-0 top-[calc(0.5lh-0.25rem)] size-2 rounded-full;
   }
 
   /* Brand primary button: brand blue with navy text (8.8:1 contrast). */
