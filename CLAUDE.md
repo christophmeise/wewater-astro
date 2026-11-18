@@ -30,7 +30,7 @@ Before opening a pull request, `npm run check` and `npm run build` must pass.
 
 | What | Where |
 |---|---|
-| UI text (buttons, menus, labels) | `src/i18n/de.ts`, `en.ts`, `fr.ts` |
+| UI text (buttons, menus, labels) | `src/i18n/strings/<group>.ts`: one file per area, each string with `de`, `en` and `fr` side by side |
 | Pages | `src/pages/` |
 | Layout, `<head>`, SEO tags | `src/layouts/BaseLayout.astro`, `src/components/Seo.astro` |
 | Components | `src/components/` |
@@ -45,7 +45,8 @@ Blog posts, projects, team members and FAQ move into `src/content/` in phase 2. 
 ## Rules for editing
 
 **Text and translations**
-- Every UI string key must exist in all three dictionaries. TypeScript fails the build if `en.ts` or `fr.ts` is missing a key from `de.ts`.
+- UI strings are grouped by area in `src/i18n/strings/` (for example `nav.ts`, `footer.ts`, `spenden.ts`). Each key holds `{ de, en, fr }`; TypeScript fails the build if a language is missing. New group files must be registered in `src/i18n/strings/index.ts`.
+- In components: `const t = useTranslations(locale); t('nav.donate')`.
 - When adding German text, add the English and French version in the same change. If no translation is available yet, ask the user instead of copying the German text.
 
 **Styling**

@@ -1,15 +1,10 @@
-import de, { type Dictionary, type UiKey } from './de';
-import en from './en';
-import fr from './fr';
+import { LOCALES, DEFAULT_LOCALE, type Locale } from './locales';
+import { strings, type UiKey } from './strings';
 
-export const LOCALES = ['de', 'en', 'fr'] as const;
-export type Locale = (typeof LOCALES)[number];
-export const DEFAULT_LOCALE: Locale = 'de';
+export { LOCALES, DEFAULT_LOCALE, type Locale, type UiKey };
 
 /** BCP 47 tags for <html lang> and hreflang. */
 export const LOCALE_TAGS: Record<Locale, string> = { de: 'de', en: 'en', fr: 'fr' };
-
-const dictionaries: Record<Locale, Dictionary> = { de, en, fr };
 
 export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (LOCALES as readonly string[]).includes(value);
@@ -22,12 +17,12 @@ export function getLocale(current: string | undefined): Locale {
 
 /** Translator bound to one locale: const t = useTranslations(locale); t('site.name') */
 export function useTranslations(locale: Locale) {
-  return (key: UiKey): string => dictionaries[locale][key];
+  return (key: UiKey): string => strings[key][locale];
 }
 
 /**
  * Prefix a German path with the locale: localizePath('/spenden/', 'en') -> '/en/spenden/'.
- * Paths must start and end with '/'.
+ * Paths must start with '/'.
  */
 export function localizePath(path: string, locale: Locale): string {
   if (!path.startsWith('/')) throw new Error(`localizePath expects an absolute path, got "${path}"`);
