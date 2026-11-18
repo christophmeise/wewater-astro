@@ -91,31 +91,28 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
   </HeroOverlay>
 
   <Section class="grid items-center gap-8 lg:grid-cols-[3fr_2fr] lg:gap-12" aria-labelledby="home-video">
-    <div class="flex flex-col gap-4">
+    <div class="reveal flex flex-col gap-4">
       <p class="eyebrow">{t('home.video.eyebrow')}</p>
       <h2 id="home-video" class="heading-2">{t('home.video.title')}</h2>
       <p class="lead">{t('home.video.text')}</p>
     </div>
     {/* Text first on phones and tablets (and for screen readers); the video on the left on desktop. */}
-    <div class="[&>figure]:shadow-surface lg:order-first [&>figure]:my-0 [&>figure]:rounded-3xl">
+    <div class="reveal [&>figure]:shadow-surface lg:order-first [&>figure]:my-0 [&>figure]:rounded-3xl">
       <YouTube id={VIDEO_ID} title={t('home.video.videoTitle')} poster={videoPoster} />
     </div>
   </Section>
 
   <Section muted aria-labelledby="home-innovation">
-    <header class="flex flex-col gap-3">
+    <header class="reveal flex flex-col gap-3">
       <p class="eyebrow">{t('home.innovation.eyebrow')}</p>
       <h2 id="home-innovation" class="heading-2">{t('home.innovation.title')}</h2>
     </header>
     <ul class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
       {
         innovations.map((item) => (
-          <li class="flex flex-col gap-3">
+          <li class="dot-tile reveal flex flex-col gap-3">
             <AnimatedIcon name={item.icon} />
-            <h3 class="heading-3 flex items-baseline gap-2">
-              <span class="bg-accent size-2 shrink-0 rounded-full" aria-hidden="true" />
-              {item.title}
-            </h3>
+            <h3 class="heading-3 dot-title">{item.title}</h3>
             <p class="text-muted">{item.text}</p>
           </li>
         ))
@@ -124,7 +121,7 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
   </Section>
 
   <Section aria-labelledby="home-filters">
-    <header class="mx-auto flex max-w-(--container-prose) flex-col items-center gap-4 text-center">
+    <header class="reveal mx-auto flex max-w-(--container-prose) flex-col items-center gap-4 text-center">
       <p class="eyebrow">{t('home.filters.eyebrow')}</p>
       <h2 id="home-filters" class="heading-2">{t('home.filters.title')}</h2>
       <p class="lead">{t('home.filters.text')}</p>
@@ -133,7 +130,7 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
     <ul class="grid gap-6 md:grid-cols-3">
       {
         filterSystems.map((item) => (
-          <li class="flex">
+          <li class="reveal flex">
             <Card
               href={localizePath(item.path, locale)}
               image={item.image}
@@ -152,6 +149,7 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
   <Section muted container={false} class="flex flex-col gap-8" aria-labelledby="home-news">
     <CardRow
       id="home-news-list"
+      class="reveal"
       label={t('home.news.title')}
       previousLabel={t('home.news.previous')}
       nextLabel={t('home.news.next')}
@@ -189,12 +187,13 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
   >
     <span slot="title" class="heading-1 block text-white">{t('home.gift.title')}</span>
     <div class="gift flex flex-col items-start gap-5">
-      <fieldset class="flex flex-col gap-3">
+      <fieldset class="flex w-full flex-col gap-3 sm:w-auto">
         <legend class="pb-3 text-sm font-semibold tracking-wide uppercase">{t('home.gift.amount')}</legend>
-        <div class="flex flex-wrap gap-2">
+        {/* One row of five on phones too (equal columns), free-flowing pills from sm. */}
+        <div class="grid grid-cols-5 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
           {
             GIFT_AMOUNTS.map((amount) => (
-              <label class="has-checked:bg-accent has-checked:text-accent-foreground has-checked:ring-accent has-focus-visible:outline-background cursor-pointer rounded-full px-4 py-2 font-semibold text-white ring-2 ring-white/70 transition-colors ring-inset hover:bg-white/15 has-focus-visible:outline-2 has-focus-visible:outline-offset-2">
+              <label class="has-checked:bg-accent has-checked:text-accent-foreground has-checked:ring-accent has-focus-visible:outline-background cursor-pointer rounded-full px-1 py-2 text-center text-sm font-semibold whitespace-nowrap text-white ring-2 ring-white/70 transition-colors ring-inset hover:bg-white/15 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 sm:px-4 sm:text-base">
                 <input type="radio" name="gift-amount" value={amount} checked={amount === GIFT_DEFAULT} class="sr-only" />
                 {euro.format(amount)}
               </label>
@@ -214,14 +213,14 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
   </HeroOverlay>
 
   <Section aria-labelledby="home-projects">
-    <header class="flex flex-col gap-3">
+    <header class="reveal flex flex-col gap-3">
       <p class="eyebrow">{t('home.projects.eyebrow')}</p>
       <h2 id="home-projects" class="heading-2">{t('home.projects.title')}</h2>
     </header>
     <ul class="grid gap-6 md:grid-cols-2">
       {
         projects.map((project) => (
-          <li class="flex">
+          <li class="reveal flex">
             <ProjectCard project={project} sizes="(min-width: 75rem) 36rem, (min-width: 48rem) 50vw, 100vw" />
           </li>
         ))

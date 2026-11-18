@@ -25,23 +25,24 @@ const id = 'liter-counter-info';
 
 <div class:list={['flex flex-col gap-1', className]}>
   <p class="eyebrow text-accent">{t('home.counter.kicker')}</p>
-  <div class="flex items-end gap-3">
-    <p class="flex flex-col gap-1">
-      <span class="heading-1 tabular-nums" data-liters data-locale={locale}>{format.format(litersAt(Date.now()))}</span>
-      <span class="text-sm text-white/90">{t('home.counter.label')}</span>
-    </p>
-    <button
-      type="button"
-      popovertarget={id}
-      class="liter-info-button grid size-8 shrink-0 cursor-pointer place-items-center rounded-full border-2 border-white/70 text-white transition-colors hover:bg-white/15"
-    >
-      <span class="sr-only">{t('home.counter.infoLabel')}</span>
-      <svg viewBox="0 0 24 24" class="size-4" fill="currentColor" aria-hidden="true" focusable="false">
-        <circle cx="12" cy="6" r="2"></circle>
-        <path d="M10 10h3.5v9H16v2H8v-2h2.5v-7H10z"></path>
-      </svg>
-    </button>
-  </div>
+  <p class="flex flex-col gap-1">
+    <span class="heading-1 tabular-nums" data-liters data-locale={locale}>{format.format(litersAt(Date.now()))}</span>
+    <span class="text-sm text-white/90 md:text-base">
+      {t('home.counter.label')}
+      {/* Inline right after the label (as on the old site), so it wraps with the text. */}
+      <button
+        type="button"
+        popovertarget={id}
+        class="liter-info-button ms-1 inline-grid size-7 cursor-pointer place-items-center rounded-full border-2 border-white/70 align-middle text-white transition-colors hover:bg-white/15"
+      >
+        <span class="sr-only">{t('home.counter.infoLabel')}</span>
+        <svg viewBox="0 0 24 24" class="size-3.5" fill="currentColor" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="6" r="2"></circle>
+          <path d="M10 10h3.5v9H16v2H8v-2h2.5v-7H10z"></path>
+        </svg>
+      </button>
+    </span>
+  </p>
   <div id={id} popover class="liter-info bg-background text-foreground shadow-overlay max-w-sm rounded-2xl p-5 text-sm">
     {t('home.counter.info')}
   </div>
