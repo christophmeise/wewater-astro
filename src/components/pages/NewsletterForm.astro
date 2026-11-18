@@ -1,0 +1,60 @@
+---
+/**
+ * Newsletter sign-up: a plain HTML form that posts to Mailchimp (no JavaScript, no embed script).
+ * Mailchimp's confirmation page opens in a new tab. The form target is allowed by the
+ * Content-Security-Policy (form-action) in netlify.toml.
+ *
+ *   <NewsletterForm locale={locale} />
+ *   <NewsletterForm locale={locale} id="footer-newsletter" layout="inline" />
+ *
+ * The caller supplies the heading (t('newsletter.title')); this renders the label, the email
+ * field, Mailchimp's hidden anti-spam field, the submit button and the privacy note.
+ */
+import { inputVariants, labelVariants, textFieldVariants } from '@heroui/styles';
+import Button from '@/components/ui/Button.astro';
+import { localizePath, useTranslations, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  /** Unique id prefix when the form appears more than once on a page. */
+  id?: string | undefined;
+  /** stacked: field above a full-width button (sidebars) · inline: field and button side by side from `sm` up */
+  layout?: 'stacked' | 'inline' | undefined;
+  class?: string | undefined;
+}
+
+const { locale, id = 'newsletter', layout = 'stacked', class: className } = Astro.props;
+const t = useTranslations(locale);
+
+// From Mailchimp's standard embed code for the WeWater audience.
+const ACTION = 'https://wewater.us20.list-manage.com/subscribe/post?u=24746d4c48c610cc73f27cb63&id=67239df000';
+const HONEYPOT = 'b_24746d4c48c610cc73f27cb63_67239df000';
+const inputId = `${id}-email`;
+---
+
+<form action={ACTION} method="post" target="_blank" class:list={['flex flex-col gap-3', className]}>
+  <div class:list={['flex gap-3', layout === 'inline' ? 'flex-col sm:flex-row sm:items-end' : 'flex-col']}>
+    <div class:list={[textFieldVariants({ fullWidth: true }), 'flex-1']}>
+      <label for={inputId} class={labelVariants()}>{t('newsletter.email')}</label>
+      <input
+        id={inputId}
+        class={inputVariants({ fullWidth: true })}
+        type="email"
+        name="EMAIL"
+        autocomplete="email"
+        inputmode="email"
+        required
+      />
+    </div>
+    <!-- Mailchimp's bot trap: real people never see or fill this field. -->
+    <div class="sr-only" aria-hidden="true">
+      <input type="text" name={HONEYPOT} tabindex="-1" value="" autocomplete="off" aria-label={t('newsletter.honeypot')} />
+    </div>
+    <Button type="submit" icon="newspaper" fullWidth={layout === 'stacked'} class="shrink-0">
+      {t('newsletter.submit')}
+    </Button>
+  </div>
+  <p class="text-muted text-xs">
+    {t('newsletter.privacy')}{' '}<a class="text-link underline underline-offset-2" href={localizePath('/dataprotection/', locale)}>{t('newsletter.privacyLink')}</a>.
+  </p>
+</form>

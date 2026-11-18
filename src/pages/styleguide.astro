@@ -6,6 +6,7 @@
  */
 import heroImage from '@/assets/site/hero-home.jpg';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher.astro';
+import NewsletterForm from '@/components/pages/NewsletterForm.astro';
 import Button from '@/components/ui/Button.astro';
 import Card from '@/components/ui/Card.astro';
 import HeroOverlay from '@/components/ui/HeroOverlay.astro';
@@ -155,6 +156,19 @@ const colors = [
           </Fragment>
         </Card>
         <Card variant="secondary" title="Card without image" description="Secondary variant on white, e.g. for teasers in a sidebar." />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-newsletter">
+      <h2 id="sg-newsletter" class="heading-2">NewsletterForm</h2>
+      <p class="max-w-(--container-prose)"> <code>&lt;NewsletterForm locale="de" /&gt;</code> (<code>src/components/pages/NewsletterForm.astro</code>): plain HTML form posting to Mailchimp, with HeroUI <code>textfield</code>, <code>label</code> and <code>input</code> styles, Mailchimp's hidden anti-spam field and a privacy note. The caller supplies the heading. Props: <code>locale</code>, <code>id</code> (unique per page), <code>layout</code> (stacked, inline). </p>
+      <div class="grid items-start gap-6 md:grid-cols-[20rem_minmax(0,1fr)]">
+        <Card variant="secondary" title="Jetzt für unseren Wassernewsletter anmelden">
+          <NewsletterForm locale="de" id="sg-newsletter-stacked" />
+        </Card>
+        <div class="bg-background-secondary rounded-3xl p-6">
+          <NewsletterForm locale="de" id="sg-newsletter-inline" layout="inline" />
+        </div>
       </div>
     </section>
 

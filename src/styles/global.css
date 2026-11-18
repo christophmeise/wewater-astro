@@ -30,6 +30,12 @@
 /* Header mega-menu and language switcher panels (.popover) and their rows (.menu-item). */
 @import '@heroui/styles/components/popover.css' layer(components);
 @import '@heroui/styles/components/menu-item.css' layer(components);
+/* FAQ accordion, built on native <details>/<summary> (see src/pages/[...lang]/faq.astro). */
+@import '@heroui/styles/components/accordion.css' layer(components);
+/* Form fields: newsletter sign-up (src/components/pages/NewsletterForm.astro). */
+@import '@heroui/styles/components/textfield.css' layer(components);
+@import '@heroui/styles/components/label.css' layer(components);
+@import '@heroui/styles/components/input.css' layer(components);
 
 @import '@heroui/styles/utilities';
 @import '@heroui/styles/variants';
