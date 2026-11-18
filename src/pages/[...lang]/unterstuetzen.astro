@@ -1,0 +1,74 @@
+---
+/**
+ * Unterstützen ("Dein 6-Punkte-Plan"): /unterstuetzen/ (+ /en/, /fr/). Ways to help without money.
+ * Changes from the old page (PLAN.md decision 5): the Facebook page plugin and the empty Instagram
+ * embed are link cards now (no third-party iframes or cookies), and Amazon Smile (discontinued in
+ * 2023) is gone, so the plan has 6 points instead of 7.
+ */
+import { CONTACT_EMAIL, SOCIAL } from '@/components/pages/links';
+import LinkCard from '@/components/pages/LinkCard.astro';
+import Step from '@/components/pages/Step.astro';
+import Steps from '@/components/pages/Steps.astro';
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+import { rich } from '@/i18n/rich';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const newTab = t('nav.newTab');
+const links = {
+  facebookLink: { href: SOCIAL.facebook, newTab: true, newTabLabel: newTab },
+  mailLink: { href: `mailto:${CONTACT_EMAIL}` },
+};
+---
+
+<BaseLayout title={t('unterstuetzen.seo.title')} description={t('unterstuetzen.seo.description')}>
+  <PlainHeader title={t('unterstuetzen.title')} lead={t('unterstuetzen.lead')} />
+
+  <Section class="flex max-w-(--container-prose) flex-col gap-10">
+    <p class="text-lg">{t('unterstuetzen.intro')}</p>
+    <Steps>
+      <Step title={t('unterstuetzen.like.title')}>
+        <LinkCard
+          href={SOCIAL.facebook}
+          icon="facebook"
+          title="Facebook"
+          text="facebook.com/wewater.org"
+          external
+          newTabLabel={newTab}
+          class="w-full max-w-sm"
+        />
+      </Step>
+      <Step title={t('unterstuetzen.share.title')}>
+        <p set:html={rich(t('unterstuetzen.share.text'), links)} />
+      </Step>
+      <Step title={t('unterstuetzen.follow.title')}>
+        <LinkCard
+          href={SOCIAL.instagram}
+          icon="instagram"
+          title="Instagram"
+          text="instagram.com/wewater_org"
+          external
+          newTabLabel={newTab}
+          class="w-full max-w-sm"
+        />
+      </Step>
+      <Step title={t('unterstuetzen.status.title')}>
+        <blockquote class="border-accent bg-background-secondary rounded-e-2xl border-s-4 px-5 py-4 text-lg font-medium">
+          <p><q>{t('unterstuetzen.status.quote')}</q></p>
+        </blockquote>
+      </Step>
+      <Step title={t('unterstuetzen.contacts.title')}>
+        <p set:html={rich(t('unterstuetzen.contacts.text'), links)} />
+      </Step>
+      <Step title={t('unterstuetzen.involve.title')}>
+        <p set:html={rich(t('unterstuetzen.involve.text'), links)} />
+      </Step>
+    </Steps>
+  </Section>
+</BaseLayout>
