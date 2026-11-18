@@ -11,6 +11,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "migrate:wp": "node scripts/migrate-wp/index.ts",
     "lighthouse": "lhci autorun",
     "test:visual": "playwright test --pass-with-no-tests",
     "astro": "astro"
@@ -30,6 +31,10 @@
     "@astrojs/check": "^0.9.12",
     "@lhci/cli": "^0.16.1",
     "@playwright/test": "^1.65.1",
-    "typescript": "^6.0.3"
+    "@types/turndown": "^5.0.6",
+    "p-limit": "^7.3.3",
+    "turndown": "^7.2.4",
+    "typescript": "^6.0.3",
+    "yaml": "^2.9.1"
   }
 }

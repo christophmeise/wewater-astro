@@ -11,3 +11,4 @@ tests/__screenshots__/
 
 # Agent worktrees (local only)
 .claude/worktrees/
+scripts/migrate-wp/.cache/
