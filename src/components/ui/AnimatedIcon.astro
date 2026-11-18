@@ -1,0 +1,298 @@
+---
+/**
+ * Animated line icon (the old site's lord-icons), rendered as its static first frame and upgraded
+ * to the Lottie animation in the browser.
+ *
+ *   <AnimatedIcon name="gauge" />                                   80px, loops every 2.5s (home tiles)
+ *   <AnimatedIcon name="gears" class="size-5" primary="currentColor" secondary="var(--accent)"
+ *     delay={3000} randomDelay={10000} />                            status chip
+ *   <AnimatedIcon name="pin" trigger="hover" />                     plays when its link/card is hovered
+ *
+ * - The first frame is inline SVG in the HTML: no request, no layout shift, and it is what visitors
+ *   without JavaScript or with prefers-reduced-motion see (nothing is ever loaded for them).
+ * - The player (lottie-web's light SVG build, about 45 KB gzipped, shared by every icon) and the
+ *   icon's JSON load only when an icon is in or near the viewport, and only once the visitor has
+ *   interacted with the page (pointer, touch, key, wheel, scroll) or the page has loaded and been
+ *   idle for a few seconds. Lighthouse's page-load measurement is over before that.
+ * - trigger="loop" (default, as on the old site): plays, waits `delay` ms (+ up to `randomDelay`),
+ *   plays again; paused while the icon is out of view. trigger="hover": plays once when the pointer
+ *   enters the closest link, button or [data-animated-icon-host] around the icon (or the icon).
+ * - Colours: the icons' own navy/white (primary) and brand blue (secondary). `primary` and
+ *   `secondary` replace them with any CSS colour, e.g. "currentColor" or "var(--accent)".
+ * - Size: `class` (default size-20, 80px, as on the old site). Decorative unless `label` is set.
+ *
+ * Names: see ./animated-icons.ts (files in src/assets/animations/).
+ */
+import { animatedIcon, nextIdPrefix, type AnimatedIconName } from './animated-icons';
+
+interface Props {
+  name: AnimatedIconName;
+  trigger?: 'loop' | 'hover' | undefined;
+  /** Pause between two plays of a looping icon, in ms. Default 2500 (lord-icon's delay on the old site). */
+  delay?: number | undefined;
+  /** Up to this many ms are added to `delay`, at random for each loop (keeps several icons out of step). */
+  randomDelay?: number | undefined;
+  /** CSS colour for the main lines (navy, or white for gears/thumb). */
+  primary?: string | undefined;
+  /** CSS colour for the brand-blue accent lines. */
+  secondary?: string | undefined;
+  /**
+   * Draw every line this wide on screen (a CSS length), whatever the icon's size. For small icons:
+   * the icons' own line widths are made for 80px and get too thin below about 40px.
+   */
+  lineWidth?: string | undefined;
+  /** Accessible name. Omit for decorative icons next to text. */
+  label?: string | undefined;
+  /** Size utilities. Default "size-20". */
+  class?: string | undefined;
+}
+
+const {
+  name,
+  trigger = 'loop',
+  delay = 2500,
+  randomDelay = 0,
+  primary,
+  secondary,
+  lineWidth,
+  label,
+  class: className = 'size-20',
+} = Astro.props;
+
+const { poster, src } = animatedIcon(name);
+// Unique mask/clip ids per instance; the poster svg is replaced by the player's svg once it is ready.
+const posterHtml = poster
+  .replaceAll('__lottie_element_', nextIdPrefix())
+  .replace('<svg ', '<svg data-poster aria-hidden="true" focusable="false" ');
+const style = [
+  primary && `--icon-primary: ${primary}`,
+  secondary && `--icon-secondary: ${secondary}`,
+  lineWidth && `--icon-line-width: ${lineWidth}`,
+]
+  .filter(Boolean)
+  .join('; ');
+---
+
+<span
+  class:list={[
+    'animated-icon',
+    primary && 'animated-icon--primary',
+    secondary && 'animated-icon--secondary',
+    lineWidth && 'animated-icon--line-width',
+    className,
+  ]}
+  style={style || undefined}
+  data-animated-icon={src}
+  data-trigger={trigger}
+  data-delay={delay}
+  data-delay-random={randomDelay || undefined}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  set:html={posterHtml}
+/>
+
+<style>
+  .animated-icon {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+
+  /* Poster and player svg on top of each other, so the swap never shifts anything. */
+  .animated-icon > :global(svg) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /*
+   * Colour overrides. The icons use one palette (primary navy rgb(0,13,61) or white, brand blue
+   * rgb(90,189,230) secondary, red only as the edge under white fills), written by the Lottie renderer
+   * as presentation attributes; CSS beats those, in the poster and in the player's output alike.
+   * Masks and their sources (in <defs>) keep their colours: they only shape other paths.
+   */
+  .animated-icon--primary
+    :global(:is([stroke='rgb(0,13,61)'], [stroke='rgb(255,255,255)'], [stroke='rgb(255,0,0)']):not(defs *, mask *)) {
+    stroke: var(--icon-primary);
+  }
+
+  .animated-icon--primary
+    :global(:is([fill='rgb(0,13,61)'], [fill='rgb(255,255,255)'], [fill='rgb(255,0,0)']):not(defs *, mask *)) {
+    fill: var(--icon-primary);
+  }
+
+  .animated-icon--secondary :global([stroke='rgb(90,189,230)']:not(defs *, mask *)) {
+    stroke: var(--icon-secondary);
+  }
+
+  .animated-icon--secondary :global([fill='rgb(90,189,230)']:not(defs *, mask *)) {
+    fill: var(--icon-secondary);
+  }
+
+  /* Fixed on-screen line width: strokes ignore the icon's scale; filled shapes get a matching edge. */
+  .animated-icon--line-width :global(path:not(defs *, mask *)) {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .animated-icon--line-width :global(path[stroke]:not(defs *, mask *)) {
+    stroke-width: var(--icon-line-width);
+  }
+
+  .animated-icon--line-width
+    :global(:is([fill='rgb(0,13,61)'], [fill='rgb(255,255,255)'], [fill='rgb(255,0,0)']):not(defs *, mask *)) {
+    stroke: var(--icon-primary, currentColor);
+    stroke-width: calc(var(--icon-line-width) / 2);
+  }
+
+  .animated-icon--line-width :global([fill='rgb(90,189,230)']:not(defs *, mask *)) {
+    stroke: var(--icon-secondary, var(--color-brand));
+    stroke-width: calc(var(--icon-line-width) / 2);
+  }
+</style>
+
+<script>
+  import type { AnimationItem, LottiePlayer } from 'lottie-web';
+
+  interface Icon {
+    el: HTMLElement;
+    anim?: AnimationItem | undefined;
+    loading: boolean;
+    visible: boolean;
+    timer?: number | undefined;
+  }
+
+  /** After the load event, wait this long (then for an idle moment) before animating without interaction. */
+  const IDLE_FALLBACK_MS = 4000;
+  /** Start loading a little before the icon scrolls into view. */
+  const ROOT_MARGIN = '200px 0px';
+  const INTERACTIONS = ['pointerdown', 'pointermove', 'keydown', 'wheel', 'touchstart', 'scroll'] as const;
+
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const elements = [...document.querySelectorAll<HTMLElement>('[data-animated-icon]')];
+  const icons = new Map<Element, Icon>(elements.map((el) => [el, { el, loading: false, visible: false }]));
+
+  let player: Promise<LottiePlayer> | undefined;
+  const loadPlayer = () =>
+    (player ??= import('lottie-web/build/player/esm/lottie_light.min.js').then((module) => module.default));
+
+  const animations = new Map<string, Promise<unknown>>();
+  function loadAnimationData(url: string): Promise<unknown> {
+    let data = animations.get(url);
+    if (!data) {
+      data = fetch(url).then((response) => {
+        if (!response.ok) throw new Error(`${response.status} ${url}`);
+        return response.json();
+      });
+      animations.set(url, data);
+    }
+    return data;
+  }
+
+  function nextDelay(el: HTMLElement): number {
+    return Number(el.dataset['delay'] ?? 2500) + Math.random() * Number(el.dataset['delayRandom'] ?? 0);
+  }
+
+  function playLater(icon: Icon, ms: number) {
+    window.clearTimeout(icon.timer);
+    icon.timer = window.setTimeout(() => {
+      if (icon.visible && !reducedMotion.matches) icon.anim?.goToAndPlay(0, true);
+    }, ms);
+  }
+
+  async function upgrade(icon: Icon) {
+    if (icon.anim || icon.loading) return;
+    icon.loading = true;
+    try {
+      const [lottie, data] = await Promise.all([loadPlayer(), loadAnimationData(icon.el.dataset['animatedIcon'] ?? '')]);
+      const anim = lottie.loadAnimation({
+        container: icon.el,
+        renderer: 'svg',
+        loop: false,
+        autoplay: false,
+        // The player completes the data in place: every instance gets its own copy.
+        animationData: structuredClone(data),
+        rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: false, hideOnTransparent: true },
+      });
+      anim.addEventListener('DOMLoaded', () => {
+        const svg = icon.el.querySelector<SVGElement>(':scope > svg:not([data-poster])');
+        svg?.setAttribute('aria-hidden', 'true');
+        svg?.setAttribute('focusable', 'false');
+        icon.el.querySelector(':scope > svg[data-poster]')?.remove();
+        icon.anim = anim;
+        if (icon.el.dataset['trigger'] === 'hover') {
+          const host = icon.el.closest('a, button, [data-animated-icon-host]') ?? icon.el;
+          host.addEventListener('pointerenter', () => {
+            if (!reducedMotion.matches && anim.isPaused) anim.goToAndPlay(0, true);
+          });
+        } else {
+          anim.addEventListener('complete', () => playLater(icon, nextDelay(icon.el)));
+          playLater(icon, 300 + Math.random() * 400);
+        }
+      });
+    } catch {
+      // Network or player error: the static first frame simply stays.
+    } finally {
+      icon.loading = false;
+    }
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        const icon = icons.get(entry.target);
+        if (!icon) continue;
+        icon.visible = entry.isIntersecting;
+        if (!entry.isIntersecting) {
+          window.clearTimeout(icon.timer);
+          icon.anim?.pause();
+        } else if (!icon.anim) {
+          void upgrade(icon);
+        } else if (icon.el.dataset['trigger'] !== 'hover') {
+          playLater(icon, 300);
+        }
+      }
+    },
+    { rootMargin: ROOT_MARGIN },
+  );
+
+  let started = false;
+  function start() {
+    if (started || reducedMotion.matches) return;
+    started = true;
+    for (const type of INTERACTIONS) removeEventListener(type, onInteraction);
+    for (const el of elements) observer.observe(el);
+  }
+
+  function whenLoaded(callback: () => void) {
+    if (document.readyState === 'complete') callback();
+    else addEventListener('load', callback, { once: true });
+  }
+
+  function onInteraction() {
+    whenLoaded(start);
+  }
+
+  if (elements.length) {
+    for (const type of INTERACTIONS) addEventListener(type, onInteraction, { passive: true });
+    whenLoaded(() =>
+      window.setTimeout(() => {
+        if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 2000 });
+        else start();
+      }, IDLE_FALLBACK_MS),
+    );
+    reducedMotion.addEventListener('change', () => {
+      if (!reducedMotion.matches) {
+        start();
+        for (const icon of icons.values()) if (icon.anim && icon.visible) playLater(icon, 300);
+        return;
+      }
+      for (const icon of icons.values()) {
+        window.clearTimeout(icon.timer);
+        icon.anim?.goToAndStop(0, true);
+      }
+    });
+  }
+</script>

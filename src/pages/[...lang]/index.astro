@@ -14,13 +14,10 @@ import heroImage from '@/assets/site/hero-home.jpg';
 import YouTube from '@/components/content/YouTube.astro';
 import JsonLd from '@/components/JsonLd.astro';
 import CardRow from '@/components/pages/CardRow.astro';
-import cheapIcon from '@/components/pages/icons/cheap.svg?url';
-import chemicalsIcon from '@/components/pages/icons/chemicals.svg?url';
-import energyIcon from '@/components/pages/icons/energy.svg?url';
-import gaugeIcon from '@/components/pages/icons/gauge.svg?url';
 import LiterCounter from '@/components/pages/LiterCounter.astro';
 import PostCard from '@/components/pages/PostCard.astro';
 import ProjectCard from '@/components/pages/ProjectCard.astro';
+import AnimatedIcon from '@/components/ui/AnimatedIcon.astro';
 import Button from '@/components/ui/Button.astro';
 import Card from '@/components/ui/Card.astro';
 import HeroOverlay from '@/components/ui/HeroOverlay.astro';
@@ -43,11 +40,11 @@ const NEWSLETTER_URL = 'https://wewater.us20.list-manage.com/subscribe/post?u=24
 const VIDEO_ID = 'zy1MzATrJkc';
 
 const innovations = [
-  { icon: gaugeIcon, title: t('home.innovation.retention'), text: t('home.innovation.retentionText') },
-  { icon: energyIcon, title: t('home.innovation.energy'), text: t('home.innovation.energyText') },
-  { icon: chemicalsIcon, title: t('home.innovation.chemicals'), text: t('home.innovation.chemicalsText') },
-  { icon: cheapIcon, title: t('home.innovation.cheap'), text: t('home.innovation.cheapText') },
-];
+  { icon: 'gauge', title: t('home.innovation.retention'), text: t('home.innovation.retentionText') },
+  { icon: 'energy', title: t('home.innovation.energy'), text: t('home.innovation.energyText') },
+  { icon: 'chemicals', title: t('home.innovation.chemicals'), text: t('home.innovation.chemicalsText') },
+  { icon: 'cheap', title: t('home.innovation.cheap'), text: t('home.innovation.cheapText') },
+] as const;
 
 const filterSystems = [
   { image: filterAqqabag, title: t('nav.filter.aqqabag'), text: t('nav.filter.aqqabagText'), path: '/filtersysteme/aqqabag/' },
@@ -114,7 +111,7 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
       {
         innovations.map((item) => (
           <li class="flex flex-col gap-3">
-            <img src={item.icon} width="80" height="80" alt="" loading="lazy" decoding="async" class="size-20" />
+            <AnimatedIcon name={item.icon} />
             <h3 class="heading-3 flex items-baseline gap-2">
               <span class="bg-accent size-2 shrink-0 rounded-full" aria-hidden="true" />
               {item.title}

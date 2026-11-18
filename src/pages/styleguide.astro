@@ -9,6 +9,8 @@ import heroImage from '@/assets/site/hero-home.jpg';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher.astro';
 import FaqAccordion from '@/components/pages/FaqAccordion.astro';
 import NewsletterForm from '@/components/pages/NewsletterForm.astro';
+import AnimatedIcon from '@/components/ui/AnimatedIcon.astro';
+import { ANIMATED_ICON_NAMES } from '@/components/ui/animated-icons';
 import Button from '@/components/ui/Button.astro';
 import Card from '@/components/ui/Card.astro';
 import HeroOverlay from '@/components/ui/HeroOverlay.astro';
@@ -162,6 +164,31 @@ const colors = [
       </ul>
     </section>
 
+    <section class="flex flex-col gap-6" aria-labelledby="sg-animated-icons">
+      <h2 id="sg-animated-icons" class="heading-2">Animated icons</h2>
+      <p class="max-w-(--container-prose)"> <code>&lt;AnimatedIcon name="…" /&gt;</code> (<code>src/components/ui/AnimatedIcon.astro</code>): the old site's lord-icons. The first frame is inline SVG; the Lottie player (light build, loaded on demand) takes over once the icon is near the viewport and the visitor has interacted or the page has been idle for a few seconds. Static with <code>prefers-reduced-motion</code> and without JavaScript. Props: <code>name</code>, <code>trigger</code> (loop, hover), <code>delay</code> (ms between loops, default 2500), <code>randomDelay</code>, <code>primary</code> and <code>secondary</code> (CSS colours replacing navy/white and brand blue), <code>label</code>, <code>class</code> (size, default <code>size-20</code>). Files: <code>src/assets/animations/</code>, list in <code>animated-icons.ts</code>. </p>
+      <ul class="grid grid-cols-[repeat(auto-fill,minmax(8rem,1fr))] gap-3">
+        {
+          ANIMATED_ICON_NAMES.map((name) => (
+            <li class="bg-background-secondary flex flex-col items-center gap-2 rounded-2xl p-4 text-sm">
+              <AnimatedIcon name={name} class={name === 'gears' || name === 'thumb' ? 'bg-foreground size-20 rounded-full' : 'size-20'} />
+              <code>{name}</code>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="flex flex-wrap items-center gap-6">
+        <a href="/projekte/" class="bg-background-secondary hover:bg-default flex items-center gap-3 rounded-2xl p-3 pe-5 font-semibold transition-colors">
+          <AnimatedIcon name="map" trigger="hover" class="size-12" />
+          trigger="hover": plays when the link is hovered
+        </a>
+        <span class="text-link flex items-center gap-3 font-semibold">
+          <AnimatedIcon name="pin" primary="currentColor" secondary="var(--color-brand-orange)" class="size-12" />
+          primary="currentColor" secondary="var(--color-brand-orange)"
+        </span>
+      </div>
+    </section>
+
     <section class="flex flex-col gap-6" aria-labelledby="sg-logo">
       <h2 id="sg-logo" class="heading-2">Logo</h2>
       <p class="max-w-(--container-prose)"> <code>&lt;Logo alt="…" class="size-14" /&gt;</code>: optimised WebP (1x/2x). Size with <code>size-*</code> up to 4rem. Use <code>alt=""</code> inside a link that is already named. </p>
@@ -214,7 +241,7 @@ const colors = [
 
     <section class="flex flex-col gap-6" aria-labelledby="sg-content-cards">
       <h2 id="sg-content-cards" class="heading-2">Post and project cards</h2>
-      <p class="max-w-(--container-prose)"> <code>&lt;PostCard post=&#123;post&#125; /&gt;</code> and <code>&lt;ProjectCard project=&#123;project&#125; /&gt;</code> (<code>src/components/pages/</code>), built on <code>&lt;Card&gt;</code>: hero image, chips, title, date in the entry's language, the whole card one link. Post chips: the first three categories with their colour dot (<code>&lt;CategoryChips&gt;</code>). Project chip: the status with a static icon (<code>&lt;StatusChip&gt;</code>). Props: <code>titleTag</code>, <code>sizes</code>, <code>priority</code>; PostCard also <code>size="lg"</code> (featured, with excerpt). In a grid: <code>&lt;ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"&gt;</code> with each card in <code>&lt;li class="flex"&gt;</code>. </p>
+      <p class="max-w-(--container-prose)"> <code>&lt;PostCard post=&#123;post&#125; /&gt;</code> and <code>&lt;ProjectCard project=&#123;project&#125; /&gt;</code> (<code>src/components/pages/</code>), built on <code>&lt;Card&gt;</code>: hero image, chips, title, date in the entry's language, the whole card one link. Post chips: the first three categories with their colour dot (<code>&lt;CategoryChips&gt;</code>). Project chip: the status with its animated icon (<code>&lt;StatusChip&gt;</code>: turning gears or a check mark). Props: <code>titleTag</code>, <code>sizes</code>, <code>priority</code>; PostCard also <code>size="lg"</code> (featured, with excerpt). In a grid: <code>&lt;ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"&gt;</code> with each card in <code>&lt;li class="flex"&gt;</code>. </p>
       {
         samplePost && sampleProject && (
           <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

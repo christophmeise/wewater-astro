@@ -1,12 +1,14 @@
 ---
 /**
- * Project status chip: "In Arbeit" (half-filled circle) or "Abgeschlossen" (check mark).
- * Static icons replace the old animated gears/thumb lord-icons (decision 7).
+ * Project status chip: "In Arbeit" (turning gears) or "Abgeschlossen" (check mark in a circle),
+ * with the old site's animated lord-icons (<AnimatedIcon>, looping at random intervals as on the
+ * old project cards). The icon lines take the chip's text colour, the accents stay brand blue.
  *
  *   <StatusChip status={project.data.status} locale="de" />
  *   <StatusChip status="completed" locale="en" tone="light" />    on photos
  */
 import { chipVariants } from '@heroui/styles';
+import AnimatedIcon from '@/components/ui/AnimatedIcon.astro';
 import { useTranslations, type Locale } from '@/i18n';
 
 interface Props {
@@ -23,15 +25,14 @@ const chip = chipVariants({ color: status === 'completed' ? 'success' : 'accent'
 ---
 
 <span class:list={[chip.base(), 'gap-1.5', tone === 'light' && 'bg-background', className]}>
-  <svg viewBox="0 0 24 24" class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
-    <circle cx="12" cy="12" r="9"></circle>
-    {
-      status === 'completed' ? (
-        <path d="m8 12.5 2.75 2.75L16.5 9.5" stroke-linecap="round" stroke-linejoin="round" />
-      ) : (
-        <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none" />
-      )
-    }
-  </svg>
+  <AnimatedIcon
+    name={status === 'completed' ? 'thumb' : 'gears'}
+    class="-my-1.5 -ms-1 size-7"
+    primary="currentColor"
+    secondary="var(--accent)"
+    lineWidth="0.075rem"
+    delay={3000}
+    randomDelay={10000}
+  />
   <span class={chip.label()}>{t(`content.status.${status}`)}</span>
 </span>

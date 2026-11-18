@@ -2,8 +2,7 @@
 /**
  * "Projektdetails" block at the top of a project: kicker, title and four tiles
  * (country, goal, implementation, people helped) with fixed icons in this order:
- * pin, map, to-do list, people. Icons are static SVGs exported from the old animated
- * lord-icons (decision 7).
+ * pin, map, to-do list, people: the old site's animated lord-icons (<AnimatedIcon>, looping).
  *
  *   <IntroTiles subtitle="Projektdetails" title="Uvira, Provinz Süd-Kivu, DR Kongo"
  *     tiles={[
@@ -16,10 +15,8 @@
  *
  * A tile text may contain several paragraphs separated by a blank line ("\n\n").
  */
-import pin from './icons/pin.svg?url';
-import map from './icons/map.svg?url';
-import todo from './icons/todo.svg?url';
-import people from './icons/people.svg?url';
+import AnimatedIcon from '@/components/ui/AnimatedIcon.astro';
+import type { AnimatedIconName } from '@/components/ui/animated-icons';
 
 interface Tile {
   title: string;
@@ -35,7 +32,7 @@ interface Props {
 }
 
 const { subtitle, title, tiles } = Astro.props;
-const icons = [pin, map, todo, people];
+const icons: AnimatedIconName[] = ['pin', 'map', 'todo', 'people'];
 ---
 
 <section class="not-prose my-10 flex flex-col gap-8">
@@ -47,7 +44,7 @@ const icons = [pin, map, todo, people];
     {
       tiles.map((tile, i) => (
         <li class="flex flex-col gap-3">
-          <img src={icons[i % icons.length]} width="80" height="80" alt="" loading="lazy" decoding="async" class="size-20" />
+          <AnimatedIcon name={icons[i % icons.length] ?? 'pin'} />
           <p class="tile-title relative font-semibold">{tile.title}</p>
           {tile.text.split(/\n{2,}/).map((para) => (
             <p class="text-muted">{para}</p>
