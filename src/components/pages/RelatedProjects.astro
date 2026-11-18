@@ -28,12 +28,12 @@ const headingId = `${filter}-projects`;
 
 {
   projects.length > 0 && (
-    <Section muted aria-labelledby={headingId}>
+    <Section aria-labelledby={headingId}>
       <SectionHeading id={headingId} title={t(`${filter}.projects.title`)} />
-      <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <ul class="related-projects grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {projects.map((project) => (
           <li class="flex">
-            <ProjectCard project={project} sizes="(min-width: 1024px) 18rem, (min-width: 640px) 45vw, 100vw" />
+            <ProjectCard project={project} sizes="(min-width: 1280px) 18rem, (min-width: 640px) 45vw, 100vw" />
           </li>
         ))}
       </ul>
@@ -45,3 +45,10 @@ const headingId = `${filter}-projects`;
     </Section>
   )
 }
+
+<style>
+  /* Four narrow cards per row: only hyphenate long compounds (Binnen-vertriebene), not "sau-berem". */
+  .related-projects :global(:is(h2, h3, h4)) {
+    hyphenate-limit-chars: 12 5 5;
+  }
+</style>
