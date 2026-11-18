@@ -1,6 +1,6 @@
 # WeWater rebuild plan
 
-Status: draft for review, 2026-11-18.
+Status (2026-11-18): plan approved with the recommended defaults for all decisions below. Phase 0 (setup) done; phase 1 next.
 
 ## Goal
 
@@ -144,7 +144,7 @@ The project status (in progress / completed) and filter type (AQQAbag / AQQAcube
 
 | # | Phase | Output |
 |---|---|---|
-| 0 | **Setup** | Astro 7 skeleton, TypeScript, CI (check, build, Lighthouse CI, visual diff), Netlify site with deploy previews, `CLAUDE.md` with the editing guide for maintainers |
+| 0 ✅ | **Setup** | Astro 7 skeleton, TypeScript, CI (check, build, Lighthouse CI, visual diff), Netlify site with deploy previews, `CLAUDE.md` with the editing guide for maintainers |
 | 1 | **Design foundation** | Tokens, fonts, base layout, header with mega-menu, mobile menu, footer, language switcher, buttons, cards, the 5 header-overlay variants. Visual diff against the live site at 375, 768 and 1280 px. |
 | 2 | **Content migration** | `migrate-wp.ts`, collection schemas, all posts, projects, team, FAQ, press and media in the repo, with translation pairing |
 | 3 | **Static pages** | Home, Spenden (plus einmalig, monatlich), Filtersystem plus 4 subpages, Team, Presse, FAQ, Unterstützen, Impressum, Datenschutz, 404 |
@@ -155,9 +155,9 @@ The project status (in progress / completed) and filter type (AQQAbag / AQQAcube
 
 Phases 3 and 4 can run in parallel once phases 1 and 2 land.
 
-## Decisions needed
+## Decisions
 
-Each decision has a recommendation; tell me if you want something else.
+Approved 2026-11-18: the recommendation is taken for each decision below. Revisit any of them by updating this section.
 
 **1. Betterplace donation form (the biggest Lighthouse factor).**
 The form itself pulls in about 4 MB of Stripe and hCaptcha and sets third-party cookies. We cannot fix that inside the iframe.

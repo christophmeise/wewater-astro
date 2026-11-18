@@ -1,0 +1,8 @@
+{
+  "$comment": "Pages checked in CI. lighthouse: assert 100/100/100/100 (mobile and desktop). visual: compare against the live wewater.org page at the same path; set to true once the page is ported.",
+  "routes": [
+    { "path": "/", "lighthouse": true, "visual": false },
+    { "path": "/en/", "lighthouse": true, "visual": false },
+    { "path": "/fr/", "lighthouse": true, "visual": false }
+  ]
+}

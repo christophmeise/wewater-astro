@@ -1,0 +1,52 @@
+---
+/**
+ * <head> metadata: title, description, canonical, hreflang alternates, Open Graph, Twitter, JSON-LD.
+ *
+ * alternates: map of locale -> path of the same page in that language.
+ * Pages that exist in every language with the same slug can omit it; it is then derived from the URL.
+ * Posts and projects pass only the translations that actually exist.
+ */
+import { LOCALES, LOCALE_TAGS, DEFAULT_LOCALE, localizePath, unlocalizePath, type Locale } from '@/i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  alternates?: Partial<Record<Locale, string>> | undefined;
+  image?: string | undefined;
+  type?: 'website' | 'article' | undefined;
+  noindex?: boolean | undefined;
+}
+
+const { title, description, locale, image, type = 'website', noindex = false } = Astro.props;
+const site = Astro.site ?? new URL('https://www.wewater.org');
+const canonical = new URL(Astro.url.pathname, site).href;
+
+const basePath = unlocalizePath(Astro.url.pathname);
+const alternates: Partial<Record<Locale, string>> =
+  Astro.props.alternates ?? Object.fromEntries(LOCALES.map((l) => [l, localizePath(basePath, l)]));
+const xDefault = alternates[DEFAULT_LOCALE];
+
+const ogImage = new URL(image ?? '/og-default.jpg', site).href;
+const fullTitle = title === 'WeWater' ? title : `${title} | WeWater`;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex" />}
+{
+  Object.entries(alternates).map(([l, path]) => (
+    <link rel="alternate" hreflang={LOCALE_TAGS[l as Locale]} href={new URL(path, site).href} />
+  ))
+}
+{xDefault && <link rel="alternate" hreflang="x-default" href={new URL(xDefault, site).href} />}
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content="WeWater" />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:locale" content={locale === 'de' ? 'de_DE' : locale === 'fr' ? 'fr_FR' : 'en_US'} />
+<meta name="twitter:card" content="summary_large_image" />

@@ -1,0 +1,31 @@
+---
+/**
+ * Home page in all three languages: / (de), /en/, /fr/.
+ * Placeholder until phase 3 ports the real home page.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+---
+
+<BaseLayout title={t('site.name')}>
+  <section class="container placeholder">
+    <h1>{t('site.name')}</h1>
+    <h2>{t('home.title')}</h2>
+    <p>{t('site.description')}</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .placeholder {
+    padding-block: 7.5rem 3rem;
+  }
+
+  h1 {
+    color: var(--color-dark);
+  }
+</style>

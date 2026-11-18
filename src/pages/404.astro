@@ -1,0 +1,18 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Seite nicht gefunden" noindex alternates={{}}>
+  <section class="container not-found">
+    <h1>404</h1>
+    <h2>Diese Seite gibt es nicht (mehr).</h2>
+    <p lang="en">This page does not exist (anymore).</p>
+    <p><a href="/">Zur Startseite</a> · <a href="/en/" lang="en">Go to the home page</a> · <a href="/fr/" lang="fr">Page d’accueil</a></p>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-block: 7.5rem 3rem;
+  }
+</style>

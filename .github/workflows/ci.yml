@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Check and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  links:
+    name: Internal links
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --root-dir "${{ github.workspace }}/dist" --no-progress 'dist/**/*.html'
+          fail: true
+
+  lighthouse:
+    name: Lighthouse (${{ matrix.preset }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [mobile, desktop]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - run: npm run lighthouse
+        env:
+          LIGHTHOUSE_PRESET: ${{ matrix.preset }}
+
+  visual:
+    name: Visual diff against wewater.org
+    needs: build
+    runs-on: ubuntu-latest
+    # Informational until phase 6 sign-off: differences are reported, not blocking.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - run: npm run test:visual
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: visual-report
+          path: playwright-report
+          retention-days: 14

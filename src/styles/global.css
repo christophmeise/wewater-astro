@@ -1,0 +1,186 @@
+/*
+ * Global design tokens and base typography.
+ * Ported from the old site's src/semantic/site/globals/site.variables,
+ * site.overrides and src/styles/global.less.
+ *
+ * Breakpoints (use these exact values in component media queries):
+ *   mobile          width <= 767px
+ *   tablet          768px - 1023px
+ *   desktop         width >= 1024px
+ *   desktop large   width >= 1200px  (container is fixed at 1200px)
+ */
+
+:root {
+  /* Brand colours */
+  --color-primary: #5abee6; /* backgrounds, decoration, large display text */
+  --color-primary-text: #1878a8; /* same hue, 4.9:1 on white: small text, links, button backgrounds */
+  --color-dark: #000d3e; /* main text colour, "secondary" in the old theme */
+  --color-bright: #fff;
+  --color-extra-1: #e6955a; /* orange */
+  --color-extra-2: #7e5ae6; /* violet */
+  --color-extra-3: #74e3a2; /* green */
+  --color-bg: #fff;
+  --color-bg-secondary: #f6f9fc;
+
+  /* Typography */
+  --font-body: var(--font-poppins), 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+
+  /* Shape */
+  --radius: 25px;
+  --radius-small: 15px;
+  --shadow: 0 5px 12px 0 rgb(0 13 62 / 15%), 0 10px 30px 0 rgb(0 13 62 / 8.5%);
+  --shadow-lg: 0 1rem 3rem rgb(0 13 62 / 17.5%);
+
+  /* Layout */
+  --container: 1200px;
+  --gutter: 1rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 14px; /* Semantic UI base size; rem values in components assume this */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-dark);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.4285em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: calc(2rem - 0.1428em) 0 1rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+  line-height: 1.2857em;
+  hyphens: auto;
+}
+
+:is(h1, h2, h3, h4, h5, h6):first-child {
+  margin-top: 0;
+}
+
+h1 {
+  font-size: 72px;
+  letter-spacing: -0.05em;
+}
+
+h2 {
+  color: var(--color-dark);
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 43px;
+  letter-spacing: -0.025em;
+}
+
+h3 {
+  /* The old site used the light brand blue here; it fails contrast at 18px. */
+  color: var(--color-primary-text);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 23px;
+}
+
+h4 {
+  color: var(--color-dark);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 23px;
+}
+
+p {
+  margin: 0 0 1em;
+  color: var(--color-dark);
+  font-size: 15px;
+  line-height: 20px;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+a {
+  color: var(--color-primary-text);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-primary-text);
+  outline-offset: 2px;
+}
+
+.container {
+  width: min(100% - 2 * var(--gutter), var(--container));
+  margin-inline: auto;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  z-index: 1000;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-small);
+  background: var(--color-dark);
+  color: var(--color-bright);
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+@media (width <= 767px) {
+  h2 {
+    font-size: 32px;
+    line-height: 40px;
+    word-break: break-word;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

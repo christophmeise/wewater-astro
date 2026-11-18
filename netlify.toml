@@ -1,0 +1,61 @@
+# Netlify build and hosting config. The site is fully static: Netlify only serves dist/.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+  ASTRO_TELEMETRY_DISABLED = "1"
+
+# ---------------------------------------------------------------------------
+# Redirects. Content redirects (old cross-language URLs etc.) are generated
+# into dist/_redirects at build time; these are the fixed ones from the old site.
+# ---------------------------------------------------------------------------
+
+[[redirects]]
+  from = "/shop"
+  to = "https://shop.wewater.org/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/shop"
+  to = "https://shop.wewater.org/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/fr/shop"
+  to = "https://shop.wewater.org/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/spende"
+  to = "/spenden/"
+  status = 301
+  force = true
+
+# ---------------------------------------------------------------------------
+# Headers
+# ---------------------------------------------------------------------------
+
+# Hashed build assets (CSS, JS, fonts, optimised images) never change: cache for a year.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    X-Frame-Options = "SAMEORIGIN"
+    # When adding a new third-party embed or form target, add its origin here.
+    # frame-src: betterplace donation form, YouTube (privacy mode).
+    # form-action: PayPal donate buttons, Mailchimp newsletter.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://i.ytimg.com; font-src 'self'; connect-src 'self'; frame-src https://www.betterplace.org https://www.youtube-nocookie.com; form-action 'self' https://www.paypal.com https://wewater.us20.list-manage.com; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; upgrade-insecure-requests"

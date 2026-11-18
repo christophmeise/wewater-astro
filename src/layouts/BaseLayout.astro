@@ -1,0 +1,51 @@
+---
+/**
+ * Outer HTML shell for every page: <html lang>, <head> metadata, fonts and global styles.
+ * Header and footer are added in phase 1 (design foundation).
+ */
+import { Font } from 'astro:assets';
+import Seo from '@/components/Seo.astro';
+import { getLocale, useTranslations, LOCALE_TAGS, type Locale } from '@/i18n';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string | undefined;
+  alternates?: Partial<Record<Locale, string>> | undefined;
+  image?: string | undefined;
+  type?: 'website' | 'article' | undefined;
+  noindex?: boolean | undefined;
+}
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const { title, description = t('site.description'), alternates, image, type, noindex } = Astro.props;
+---
+
+<!doctype html>
+<html lang={LOCALE_TAGS[locale]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#5abee6" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <Font cssVariable="--font-poppins" preload={[{ weight: 400 }, { weight: 500 }]} />
+    <Seo
+      title={title}
+      description={description}
+      locale={locale}
+      alternates={alternates}
+      image={image}
+      type={type}
+      noindex={noindex}
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t('a11y.skipToContent')}</a>
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>

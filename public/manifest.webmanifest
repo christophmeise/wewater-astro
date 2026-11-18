@@ -1,0 +1,11 @@
+{
+  "name": "WeWater",
+  "short_name": "WeWater",
+  "start_url": "/",
+  "display": "minimal-ui",
+  "background_color": "#ffffff",
+  "theme_color": "#5abee6",
+  "icons": [
+    { "src": "/maskable_icon_x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
