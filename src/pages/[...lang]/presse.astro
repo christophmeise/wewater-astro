@@ -47,7 +47,7 @@ const contactCard = cardVariants({ variant: 'secondary' });
     <span slot="title" class="hyphens-manual">{t('presse.title')}</span>
   </HeroOverlay>
 
-  <Section class="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
+  <Section class="grid items-start gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
     <div class="flex flex-col gap-5">
       <h2 class="heading-2">{t('presse.heading')}</h2>
       <p class="lead">{t('presse.intro')}</p>
@@ -69,9 +69,9 @@ const contactCard = cardVariants({ variant: 'secondary' });
       <Image
         src={contactPhoto}
         alt={CONTACT.name}
-        width={192}
+        width={144}
         densities={[1, 2]}
-        class="aspect-square w-24 shrink-0 rounded-2xl object-cover sm:w-32"
+        class="aspect-square w-24 shrink-0 rounded-2xl object-cover sm:w-36"
       />
       <div class="flex min-w-0 flex-col gap-1">
         <h2 id="presse-contact" class="eyebrow">{t('presse.contact')}</h2>

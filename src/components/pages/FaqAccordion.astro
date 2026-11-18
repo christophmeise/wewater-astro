@@ -57,9 +57,16 @@ const items = await Promise.all(
 </div>
 
 <style>
-  /* An open last question keeps square bottom corners on its trigger (HeroUI keys this on aria-expanded). */
+  /*
+   * HeroUI keys the open state on aria-expanded, which <summary> does not have. An open question:
+   * square bottom corners (it continues into the answer), no grey hover band (the answer below
+   * is white, so the band looked cut off), and the question in link blue, so it stands out
+   * from the answer.
+   */
   .faq-item[open] > summary {
     border-end-start-radius: 0;
     border-end-end-radius: 0;
+    background-color: transparent;
+    color: var(--link);
   }
 </style>
