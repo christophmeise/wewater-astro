@@ -1,0 +1,117 @@
+---
+/**
+ * Content card (HeroUI `.card`): rounded image, eyebrow or category chip, title, meta line,
+ * short description. With `href` the whole card is clickable (the title link stretches over it),
+ * so there is a single link per card for screen readers and keyboards.
+ *
+ *   <Card
+ *     href="/blog/50-prozent-weniger-krankheiten/"
+ *     image={post.hero} imageAlt=""
+ *     chip={{ label: 'Projekt-Update', color: 'accent' }}
+ *     title="50 % weniger Krankheiten"
+ *     meta="12. März 2026 · 4 Min."
+ *     description="Was sauberes Wasser in Uvira verändert hat."
+ *   />
+ *
+ * Slots: default (below the description), `footer` (bottom row, e.g. a progress bar).
+ * Lay cards out with a grid: <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">.
+ */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { cardVariants, chipVariants } from '@heroui/styles';
+
+interface Props {
+  title: string;
+  /** Makes the whole card a link to this URL. */
+  href?: string | undefined;
+  image?: ImageMetadata | undefined;
+  /** Alt text of the image. Default "" (the title describes the card). */
+  imageAlt?: string | undefined;
+  /** Small blue kicker above the title. */
+  eyebrow?: string | undefined;
+  /** Category or status chip above the title, e.g. { label: 'In Arbeit', color: 'accent' }. */
+  chip?: { label: string; color?: 'default' | 'accent' | 'success' | 'warning' | undefined } | undefined;
+  /** Muted line below the title: date, author, reading time, location. */
+  meta?: string | undefined;
+  description?: string | undefined;
+  /** Heading level for the title. Default h3 (cards sit below a section h2). */
+  titleTag?: 'h2' | 'h3' | 'h4' | undefined;
+  /** Card background: white (default) or grey-blue. */
+  variant?: 'default' | 'secondary' | undefined;
+  class?: string | undefined;
+}
+
+const {
+  title,
+  href,
+  image,
+  imageAlt = '',
+  eyebrow,
+  chip,
+  meta,
+  description,
+  titleTag: TitleTag = 'h3',
+  variant = 'default',
+  class: className,
+} = Astro.props;
+
+const card = cardVariants({ variant });
+const chipClasses = chip ? chipVariants({ color: chip.color ?? 'default' }) : undefined;
+---
+
+<article
+  class:list={[
+    card.base(),
+    'gap-0 overflow-hidden p-0',
+    href && 'transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-overlay',
+    className,
+  ]}
+>
+  {
+    image && (
+      <Picture
+        src={image}
+        alt={imageAlt}
+        formats={['avif', 'webp']}
+        width={800}
+        sizes="(min-width: 1024px) 24rem, (min-width: 768px) 50vw, 100vw"
+        class="aspect-4/3 w-full object-cover"
+      />
+    )
+  }
+  <div class="flex flex-1 flex-col gap-3 p-5 md:p-6">
+    {
+      (chip || eyebrow) && (
+        <div class="flex flex-wrap items-center gap-2">
+          {chip && chipClasses && (
+            <span class={chipClasses.base()}>
+              <span class={chipClasses.label()}>{chip.label}</span>
+            </span>
+          )}
+          {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        </div>
+      )
+    }
+    <TitleTag class:list={[card.title(), 'heading-3']}>
+      {
+        href ? (
+          <a href={href} class="hover:text-link after:absolute after:inset-0">
+            {title}
+          </a>
+        ) : (
+          title
+        )
+      }
+    </TitleTag>
+    {meta && <p class="text-muted text-sm">{meta}</p>}
+    {description && <p class={card.description()}>{description}</p>}
+    <slot />
+    {
+      Astro.slots.has('footer') && (
+        <div class:list={[card.footer(), 'mt-auto gap-3 pt-2']}>
+          <slot name="footer" />
+        </div>
+      )
+    }
+  </div>
+</article>

@@ -1,37 +1,37 @@
 ---
 /**
- * Button or button-styled link. Renders <a> when `href` is set, otherwise <button>.
+ * Button or button-styled link (HeroUI `.button`). Renders <a> when `href` is set, otherwise <button>.
  *
  *   <Button href={localizePath('/spenden/', locale)} icon="tint">Ich will helfen!</Button>
- *   <Button variant="inverted" size="large" href="#newsletter" icon="newspaper">Alle News</Button>
+ *   <Button variant="inverted" size="lg" href="#newsletter" icon="newspaper">Alle News</Button>
  *   <Button type="submit" variant="secondary">Senden</Button>
  *
- * Variants (from the old Semantic UI buttons):
- *   primary   – blue, white text (the "Ich will helfen!" button)
- *   inverted  – transparent with a white outline, for use on photos
- *   secondary – dark blue, white text
- *   basic     – transparent with a dark outline
- * White text always sits on --color-primary-text or darker (contrast, see PLAN.md decision 4).
+ * Variants:
+ *   primary   brand blue with navy text: the main call to action ("Ich will helfen!")
+ *   secondary light grey with blue text
+ *   tertiary  light grey with navy text
+ *   outline   thin border, transparent
+ *   ghost     transparent, grey on hover (toolbar-style buttons)
+ *   inverted  white outline and text, for photos and navy backgrounds
  */
+import { buttonVariants } from '@heroui/styles';
 import type { HTMLAttributes } from 'astro/types';
 import Icon from './Icon.astro';
 import type { IconName } from './icons';
 
 type OwnProps = {
-  variant?: 'primary' | 'inverted' | 'secondary' | 'basic' | undefined;
-  size?: 'tiny' | 'small' | 'medium' | 'large' | undefined;
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'outline' | 'ghost' | 'inverted' | undefined;
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Renders an <a>. */
   href?: string | undefined;
   /** Only for <button>. Defaults to "button". */
   type?: 'button' | 'submit' | 'reset' | undefined;
   /** Icon before the label. */
   icon?: IconName | undefined;
-  /** Full width. */
-  fluid?: boolean | undefined;
-  /** Drop shadow (the old `.shadow` class). */
-  shadow?: boolean | undefined;
-  /** Lift by 2px on hover/focus (the old `.hover-animate` class). */
-  hoverAnimate?: boolean | undefined;
+  /** Stretch to the full width of the parent. */
+  fullWidth?: boolean | undefined;
+  /** Square button with only an icon; pass `aria-label`. */
+  iconOnly?: boolean | undefined;
   class?: string | undefined;
 };
 
@@ -39,22 +39,25 @@ type Props = OwnProps & Omit<HTMLAttributes<'a'> & HTMLAttributes<'button'>, key
 
 const {
   variant = 'primary',
-  size = 'medium',
+  size = 'md',
   href,
   type = 'button',
   icon,
-  fluid = false,
-  shadow = false,
-  hoverAnimate = false,
+  fullWidth = false,
+  iconOnly = false,
   class: className,
   ...attrs
 } = Astro.props;
 
 const classes = [
-  'btn',
-  `btn--${variant}`,
-  `btn--${size}`,
-  { 'btn--fluid': fluid, 'btn--shadow': shadow, 'btn--lift': hoverAnimate },
+  buttonVariants({
+    // `inverted` is a WeWater variant on top of HeroUI's transparent ghost button (global.css).
+    variant: variant === 'inverted' ? 'ghost' : variant,
+    size,
+    fullWidth,
+    isIconOnly: iconOnly,
+  }),
+  { 'button--inverted': variant === 'inverted' },
   className,
 ];
 ---
@@ -62,105 +65,13 @@ const classes = [
 {
   href ? (
     <a href={href} class:list={classes} {...attrs}>
-      {icon && <Icon name={icon} class="btn__icon" />}
+      {icon && <Icon name={icon} />}
       <slot />
     </a>
   ) : (
     <button type={type} class:list={classes} {...attrs}>
-      {icon && <Icon name={icon} class="btn__icon" />}
+      {icon && <Icon name={icon} />}
       <slot />
     </button>
   )
 }
-
-<style>
-  .btn {
-    display: inline-flex;
-    gap: 0.4em;
-    align-items: center;
-    justify-content: center;
-    padding: 0.7857em 1.5em;
-    border: 0;
-    border-radius: var(--radius);
-    font: inherit;
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1;
-    text-align: center;
-    text-decoration: none;
-    cursor: pointer;
-    transition:
-      background-color 0.1s ease,
-      color 0.1s ease,
-      transform 0.2s ease-in-out;
-  }
-
-  .btn:hover {
-    text-decoration: none;
-  }
-
-  .btn--tiny {
-    font-size: 0.7857rem;
-  }
-
-  .btn--small {
-    font-size: 0.9286rem;
-  }
-
-  .btn--large {
-    font-size: 1.1429rem;
-  }
-
-  .btn--fluid {
-    display: flex;
-    width: 100%;
-  }
-
-  .btn--primary {
-    background: var(--color-primary-text);
-    color: var(--color-bright);
-    text-shadow: 2px 2px 2px rgb(0 13 62 / 25%);
-  }
-
-  .btn--primary:hover {
-    background: var(--color-primary-text-hover);
-  }
-
-  .btn--inverted {
-    background: transparent;
-    box-shadow: inset 0 0 0 2px var(--color-bright);
-    color: var(--color-bright);
-    text-shadow: 2px 2px 2px rgb(0 13 62 / 25%);
-  }
-
-  .btn--inverted:hover {
-    background: var(--color-bg-secondary);
-    color: var(--color-dark);
-    text-shadow: none;
-  }
-
-  .btn--secondary {
-    background: var(--color-dark);
-    color: var(--color-bright);
-  }
-
-  .btn--basic {
-    background: transparent;
-    box-shadow: inset 0 0 0 1px var(--color-dark);
-    color: var(--color-dark);
-    font-weight: 400;
-  }
-
-  .btn--shadow {
-    box-shadow: var(--shadow);
-  }
-
-  .btn--lift:hover,
-  .btn--lift:focus-visible {
-    transform: translateY(-2px);
-  }
-
-  .btn :global(.btn__icon) {
-    height: 1em;
-  }
-</style>

@@ -1,14 +1,16 @@
 ---
 /**
- * Language switcher: the current language (flag + name) opens a small list of plain links
- * to the same page in every language. Works without JavaScript (<details>); a few lines of
- * script close it on Escape or a click elsewhere.
+ * Language switcher: the current language (flag + name) opens a small list of plain links to the
+ * same page in every language; the current one is marked with aria-current="page".
+ * Works without JavaScript (<details>); a few lines of script close it on Escape or a click outside.
  *
  * alternates: locale -> path of this page in that language (same prop as BaseLayout/Seo).
  * Omitted = the page exists in every language under the same path. A language missing from
  * `alternates` links to that language's home page.
  */
+import { buttonVariants } from '@heroui/styles';
 import { LOCALES, localizePath, unlocalizePath, useTranslations, type Locale } from '@/i18n';
+import { FLAGS } from './flags';
 
 interface Props {
   locale: Locale;
@@ -23,34 +25,42 @@ const basePath = unlocalizePath(Astro.url.pathname);
 
 function hrefFor(l: Locale): string {
   if (!alternates) return localizePath(basePath, l);
-  // Pages with explicit alternates (posts, projects, 404) list only real URLs.
+  // Pages with explicit alternates (posts, projects, 404) list only URLs that exist.
   return alternates[l] ?? localizePath('/', l);
 }
 
-const languages = LOCALES.map((l) => ({
-  locale: l,
-  name: t(`lang.${l}`),
-  href: hrefFor(l),
-  current: l === locale,
-}));
-
-/** Small inline flags (16x11), as on the old site. English uses the US flag like before. */
-const FLAGS: Record<Locale, string> = {
-  de: '<rect width="5" height="3" fill="#ffce00"/><rect width="5" height="2" fill="#d00"/><rect width="5" height="1" fill="#000"/>',
-  en: '<rect width="16" height="13" fill="#fff"/><path d="M0 0h16v1H0zm0 2h16v1H0zm0 2h16v1H0zm0 2h16v1H0zm0 2h16v1H0zm0 2h16v1H0zm0 2h16v1H0z" fill="#b22234"/><rect width="7" height="7" fill="#3c3b6e"/>',
-  fr: '<rect width="3" height="2" fill="#ef4135"/><rect width="2" height="2" fill="#fff"/><rect width="1" height="2" fill="#0055a4"/>',
-};
-const FLAG_VIEWBOX: Record<Locale, string> = { de: '0 0 5 3', en: '0 0 16 13', fr: '0 0 3 2' };
+const languages = LOCALES.map((l) => ({ locale: l, name: t(`lang.${l}`), href: hrefFor(l), current: l === locale }));
+const flagClass = 'h-[0.6875rem] w-4 shrink-0 rounded-xs';
 ---
 
-<details class:list={['lang', `lang--${placement}`]} data-lang-switcher>
-  <summary class="lang__toggle">
-    <span class="visually-hidden">{t('nav.language')}: </span>
-    <svg class="lang__flag" viewBox={FLAG_VIEWBOX[locale]} preserveAspectRatio="none" aria-hidden="true" focusable="false" set:html={FLAGS[locale]} />
+<details class:list={['group relative', placement === 'inline' && 'w-full']} data-lang-switcher>
+  <summary
+    class:list={[
+      buttonVariants({ variant: 'ghost', size: placement === 'inline' ? 'md' : 'sm' }),
+      'list-none [&::-webkit-details-marker]:hidden',
+      placement === 'inline' && 'px-0',
+    ]}
+  >
+    <span class="sr-only">{t('nav.language')}: </span>
+    <svg
+      class={flagClass}
+      viewBox={FLAGS[locale].viewBox}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      focusable="false"
+      set:html={FLAGS[locale].body}
+    />
     <span>{t(`lang.${locale}`)}</span>
-    <svg class="lang__caret" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="M0 0h10L5 6z" fill="currentColor"></path></svg>
+    <svg class="size-3 transition-transform group-open:rotate-180" viewBox="0 0 10 6" aria-hidden="true" focusable="false">
+      <path d="M0 0h10L5 6z" fill="currentColor"></path>
+    </svg>
   </summary>
-  <ul class="lang__menu">
+  <ul
+    class:list={[
+      'flex flex-col gap-1',
+      placement === 'dropdown' ? 'popover absolute end-0 top-full z-10 mt-2 min-w-44 p-1' : 'pt-1 pb-2',
+    ]}
+  >
     {
       languages.map((lang) => (
         <li>
@@ -59,9 +69,16 @@ const FLAG_VIEWBOX: Record<Locale, string> = { de: '0 0 5 3', en: '0 0 16 13', f
             hreflang={lang.locale}
             lang={lang.locale}
             aria-current={lang.current ? 'page' : undefined}
-            class="lang__link"
+            class="menu-item aria-[current=page]:font-semibold"
           >
-            <svg class="lang__flag" viewBox={FLAG_VIEWBOX[lang.locale]} preserveAspectRatio="none" aria-hidden="true" focusable="false" set:html={FLAGS[lang.locale]} />
+            <svg
+              class={flagClass}
+              viewBox={FLAGS[lang.locale].viewBox}
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              focusable="false"
+              set:html={FLAGS[lang.locale].body}
+            />
             {lang.name}
           </a>
         </li>
@@ -85,66 +102,3 @@ const FLAG_VIEWBOX: Record<Locale, string> = { de: '0 0 5 3', en: '0 0 16 13', f
     }
   });
 </script>
-
-<style>
-  .lang {
-    position: relative;
-  }
-
-  .lang__toggle {
-    display: inline-flex;
-    gap: 0.5em;
-    align-items: center;
-    font-weight: 500;
-    list-style: none;
-    cursor: pointer;
-  }
-
-  .lang__toggle::-webkit-details-marker {
-    display: none;
-  }
-
-  .lang__flag {
-    width: 16px;
-    height: 11px;
-  }
-
-  .lang__caret {
-    width: 0.6em;
-    height: auto;
-    transition: transform 0.2s ease;
-  }
-
-  .lang[open] .lang__caret {
-    transform: rotate(180deg);
-  }
-
-  .lang__menu {
-    margin: 0;
-    padding: 0.25rem 0;
-    list-style: none;
-  }
-
-  .lang--dropdown .lang__menu {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    right: 0;
-    z-index: 10;
-    min-width: 10rem;
-    border-radius: var(--radius-small);
-    background: var(--color-bg);
-    box-shadow: var(--shadow);
-  }
-
-  .lang__link {
-    display: flex;
-    gap: 0.75em;
-    align-items: center;
-    padding: 0.6em 1em;
-    color: inherit;
-  }
-
-  .lang__link[aria-current='page'] {
-    font-weight: 700;
-  }
-</style>

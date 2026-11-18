@@ -1,16 +1,15 @@
 ---
 /**
- * Site header (the page's banner landmark), fixed to the top of the viewport and translucent,
- * so hero photos run underneath it like on the old site.
+ * Site header (the page's banner landmark): fixed to the top and translucent, so hero photos
+ * run underneath it. Pages start with <HeroOverlay> or <PlainHeader>, which leave room for it.
  *
- * - Desktop (≥1024px): logo, main navigation with the "Filtersysteme" mega-menu, the
- *   "Ich will helfen!" button and the language switcher.
- *   The mega-menu opens on hover and on keyboard focus (:focus-within) – no JS needed.
- *   Escape closes it (small script below).
- * - Phones and tablets (<1024px): <MobileMenu> (top bar + burger + full-screen menu).
+ * - Desktop (lg, ≥1024px): logo, main navigation with the "Filtersysteme" mega-menu, the
+ *   "Ich will helfen!" button and the language switcher. The mega-menu opens on hover and on
+ *   keyboard focus (:focus-within), no JS needed; Escape dismisses it (small script below).
+ * - Phones and tablets: <MobileMenu> (top bar, burger, full-screen menu).
  *
- * The link to the current page gets aria-current="page"; its section (e.g. "Blog" on a blog
- * post) is highlighted too. Both work in every language.
+ * The link to the current page gets aria-current="page"; its section is highlighted too
+ * (e.g. "Blog" on a blog post), in every language.
  */
 import Button from '@/components/ui/Button.astro';
 import Icon from '@/components/ui/Icon.astro';
@@ -30,59 +29,63 @@ const t = useTranslations(locale);
 const pathname = Astro.url.pathname;
 ---
 
-<header class="site-header">
-  <div class="desktop-nav">
-    <div class="container desktop-nav__bar">
-      <a class="desktop-nav__logo" href={localizePath('/', locale)}>
+<header class="site-header fixed inset-x-0 top-0 z-40">
+  <div class="bg-background/75 shadow-surface hidden backdrop-blur-xl backdrop-saturate-150 lg:block" data-desktop-nav>
+    <div class="container-page flex h-(--header-height) items-center gap-8">
+      <a href={localizePath('/', locale)} class="shrink-0 rounded-2xl">
         <Logo alt={t('nav.home')} loading="eager" />
       </a>
 
-      <nav class="desktop-nav__nav" aria-label={t('nav.label')}>
-        <ul class="desktop-nav__list">
+      <nav class="h-full" aria-label={t('nav.label')}>
+        <ul class="flex h-full items-center gap-1">
           {
             NAV_ITEMS.map((item) => {
               const state = linkState(pathname, item.path, item.sectionPaths);
-              const href = item.external ? item.path : localizePath(item.path, locale);
               return (
-                <li class:list={['desktop-nav__item', { 'has-mega': item.children }]} data-mega={item.children ? '' : undefined}>
+                <li class:list={['flex h-full items-center', item.children && 'has-mega relative']} data-mega={item.children ? '' : undefined}>
                   <a
-                    class:list={['desktop-nav__link', { 'is-active': state }]}
-                    href={href}
+                    href={item.external ? item.path : localizePath(item.path, locale)}
+                    class="text-foreground hover:bg-default data-active:bg-default rounded-2xl px-3 py-2 transition-colors"
+                    data-active={state ? '' : undefined}
                     aria-current={state === 'page' ? 'page' : undefined}
                     target={item.external ? '_blank' : undefined}
                     rel={item.external ? 'noopener' : undefined}
                   >
                     {t(item.label)}
-                    {item.external && <span class="visually-hidden"> {t('nav.newTab')}</span>}
+                    {item.external && <span class="sr-only"> {t('nav.newTab')}</span>}
                   </a>
                   {item.children && (
-                    <div class="mega">
-                      <ul class="mega__panel">
-                        {item.children.map((child) => {
-                          const childState = linkState(pathname, child.path);
-                          return (
-                            <li class:list={['mega__item', { 'mega__item--icon': child.icon }]}>
-                              <a
-                                class="mega__link"
-                                href={localizePath(child.path, locale)}
-                                aria-current={childState === 'page' ? 'page' : undefined}
-                              >
-                                {child.icon && (
-                                  <span class="mega__circle">
-                                    <img src={child.icon.src} alt="" width="32" height="32" loading="lazy" decoding="async" />
-                                  </span>
-                                )}
-                                <span class="mega__text">
-                                  <span class="mega__title">
-                                    {t(child.label)}
-                                    {!child.icon && <Icon name="arrow-small-right" class="mega__arrow" />}
-                                  </span>
-                                  <span class="mega__description">{t(child.description)}</span>
+                    <div class="mega absolute top-full left-0 pt-1">
+                      <ul class="popover flex w-120 flex-col gap-1 p-2">
+                        {item.children.map((child) => (
+                          <li>
+                            <a
+                              href={localizePath(child.path, locale)}
+                              class="menu-item group/item items-center gap-4 p-3"
+                              aria-current={linkState(pathname, child.path) === 'page' ? 'page' : undefined}
+                            >
+                              {child.icon && (
+                                <span class="bg-accent grid size-12 shrink-0 place-items-center rounded-full">
+                                  <img src={child.icon.src} alt="" width="32" height="32" loading="lazy" decoding="async" class="size-8" />
                                 </span>
-                              </a>
-                            </li>
-                          );
-                        })}
+                              )}
+                              <span class="flex flex-col gap-0.5">
+                                <span data-slot="label" class="text-link flex items-center gap-1 text-lg font-semibold">
+                                  {t(child.label)}
+                                  {!child.icon && (
+                                    <Icon
+                                      name="arrow-small-right"
+                                      class="text-2xl opacity-0 transition-opacity group-hover/item:opacity-100 group-focus-visible/item:opacity-100"
+                                    />
+                                  )}
+                                </span>
+                                <span data-slot="description" class="text-muted text-sm">
+                                  {t(child.description)}
+                                </span>
+                              </span>
+                            </a>
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   )}
@@ -93,8 +96,8 @@ const pathname = Astro.url.pathname;
         </ul>
       </nav>
 
-      <div class="desktop-nav__actions">
-        <Button href={localizePath(DONATE_PATH, locale)} size="small" shadow hoverAnimate>{t('nav.cta')}</Button>
+      <div class="ms-auto flex items-center gap-4">
+        <Button href={localizePath(DONATE_PATH, locale)} size="sm">{t('nav.cta')}</Button>
         <LanguageSwitcher locale={locale} alternates={alternates} />
       </div>
     </div>
@@ -104,7 +107,7 @@ const pathname = Astro.url.pathname;
 </header>
 
 <script>
-  // Escape closes the hover/focus mega-menu (WCAG 1.4.13) until the pointer or focus leaves it.
+  // Escape dismisses the hover/focus mega-menu (WCAG 1.4.13) until pointer or focus leave it.
   for (const item of document.querySelectorAll<HTMLElement>('[data-mega]')) {
     const reset = () => item.removeAttribute('data-dismissed');
     item.addEventListener('keydown', (event) => {
@@ -120,167 +123,20 @@ const pathname = Astro.url.pathname;
 </script>
 
 <style>
-  .site-header {
-    position: fixed;
-    inset: 0 0 auto;
-    z-index: 100;
-  }
-
-  /* Without JS the mobile menu is a plain list in the page flow (see MobileMenu). */
-  @media (width <= 1023px) {
-    :global(html:not(.js)) .site-header {
-      position: static;
-    }
-  }
-
-  /* ---------- Desktop bar ---------- */
-  .desktop-nav {
-    display: none;
-    background: rgb(255 255 255 / 60%);
-    box-shadow: 0 3px 7px 2px rgb(0 0 0 / 7%);
-    backdrop-filter: saturate(180%) blur(40px);
-  }
-
-  @media (width >= 1024px) {
-    .desktop-nav {
-      display: block;
-    }
-  }
-
-  .desktop-nav__bar {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    height: var(--header-height);
-  }
-
-  .desktop-nav__logo {
-    display: block;
-    flex-shrink: 0;
-  }
-
-  .desktop-nav__list {
-    display: flex;
-    gap: 0.75rem;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .desktop-nav__nav {
-    align-self: stretch;
-  }
-
-  .desktop-nav__item {
-    display: flex;
-    align-items: center;
-  }
-
-  .desktop-nav__link {
-    padding: 0.8em 0.95em;
-    border-radius: 4px;
-    color: #0d0c22;
-    font-size: 16px;
-    line-height: 1;
-  }
-
-  .desktop-nav__link:hover,
-  .desktop-nav__link.is-active,
-  .has-mega:hover > .desktop-nav__link {
-    background: rgb(0 0 0 / 5%);
-    text-decoration: none;
-  }
-
-  .desktop-nav__actions {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    margin-left: auto;
-  }
-
-  /* ---------- Mega-menu ---------- */
-  .has-mega {
-    position: relative;
-  }
-
+  /* Mega-menu: shown while the "Filtersysteme" item is hovered or holds keyboard focus. */
   .mega {
-    position: absolute;
-    top: 100%;
-    left: 0;
     display: none;
-    padding-top: 7px;
   }
 
   .has-mega:is(:hover, :focus-within):not([data-dismissed]) .mega {
     display: block;
+    animation: heroui-overlay-enter-90-ny 150ms var(--ease-smooth);
   }
 
-  .mega__panel {
-    width: 490px;
-    margin: 0;
-    padding: 0.25rem 0 0.5rem;
-    border-radius: 6px;
-    background: var(--color-bg);
-    box-shadow:
-      0 50px 100px -20px rgb(50 50 93 / 25%),
-      0 30px 60px -30px rgb(0 0 0 / 30%);
-    list-style: none;
-  }
-
-  .mega__link {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    padding: 1rem;
-    color: inherit;
-  }
-
-  .mega__link:hover {
-    background: #eff9fd;
-    text-decoration: none;
-  }
-
-  .mega__circle {
-    display: grid;
-    flex: 0 0 48px;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--color-primary);
-  }
-
-  .mega__circle img {
-    width: 32px;
-    height: 32px;
-  }
-
-  .mega__text {
-    display: grid;
-    gap: 2px;
-  }
-
-  .mega__title {
-    display: flex;
-    gap: 0.25rem;
-    align-items: center;
-    color: var(--color-primary-text);
-    font-size: 18px;
-    font-weight: 600;
-  }
-
-  .mega__description {
-    color: #5c6b80;
-    font-size: 14px;
-  }
-
-  .mega__link :global(.mega__arrow) {
-    font-size: 28px;
-    opacity: 0;
-  }
-
-  .mega__link:is(:hover, :focus-visible) :global(.mega__arrow) {
-    opacity: 1;
+  /* Without JS the mobile menu is a plain link list in the page flow (see MobileMenu). */
+  @media (width < 64rem) {
+    :global(html:not(.js)) .site-header {
+      position: static;
+    }
   }
 </style>

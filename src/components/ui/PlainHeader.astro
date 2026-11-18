@@ -1,35 +1,55 @@
 ---
 /**
- * Centred page title on a white background, for pages without a hero photo
- * (FAQ, Impressum, Datenschutz, Unterstützen, tutorials, donation sub-pages, 404).
- * Leaves room for the fixed site header above it.
+ * Centred page title on white, for pages without a hero photo (FAQ, Impressum, Datenschutz,
+ * Unterstützen, tutorials, donation sub-pages, 404). Leaves room for the fixed site header.
  *
- *   <PlainHeader>
- *     <h1 class="hero-headline">FAQ</h1>
- *     <p class="hero-subheadline">Häufig gestellte Fragen</p>
- *   </PlainHeader>
+ *   <PlainHeader eyebrow="Hilfe" title="FAQ" lead="Häufig gestellte Fragen" />
+ *   <PlainHeader title="Team"><Fragment slot="lead">…rich markup…</Fragment></PlainHeader>
+ *
+ * Text as props or named slots (`eyebrow`, `title`, `lead`); the default slot renders below
+ * (e.g. buttons or a photo).
  */
 interface Props {
+  eyebrow?: string | undefined;
+  title?: string | undefined;
+  lead?: string | undefined;
+  /** Element for the title. Default h1. */
+  titleTag?: 'h1' | 'h2' | 'p' | undefined;
   class?: string | undefined;
 }
 
-const { class: className } = Astro.props;
+const { eyebrow, title, lead, titleTag: TitleTag = 'h1', class: className } = Astro.props;
+const hasEyebrow = Boolean(eyebrow) || Astro.slots.has('eyebrow');
+const hasTitle = Boolean(title) || Astro.slots.has('title');
+const hasLead = Boolean(lead) || Astro.slots.has('lead');
 ---
 
-<div class:list={['container', 'plain-header', className]}>
+<div
+  class:list={[
+    'container-page flex flex-col items-center gap-4 pt-[calc(var(--header-height)+var(--space-section))] text-center',
+    className,
+  ]}
+>
+  {
+    hasEyebrow && (
+      <p class="eyebrow">
+        <slot name="eyebrow">{eyebrow}</slot>
+      </p>
+    )
+  }
+  {
+    hasTitle && (
+      <TitleTag class="heading-1 text-link">
+        <slot name="title">{title}</slot>
+      </TitleTag>
+    )
+  }
+  {
+    hasLead && (
+      <p class="lead max-w-(--container-prose)">
+        <slot name="lead">{lead}</slot>
+      </p>
+    )
+  }
   <slot />
 </div>
-
-<style>
-  .plain-header {
-    padding-block: 7.5rem 2rem;
-    text-align: center;
-    overflow-wrap: break-word;
-  }
-
-  @media (width <= 767px) {
-    .plain-header {
-      padding-top: 7rem;
-    }
-  }
-</style>

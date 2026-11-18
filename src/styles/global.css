@@ -27,6 +27,9 @@
 @import '@heroui/styles/components/separator.css' layer(components);
 @import '@heroui/styles/components/surface.css' layer(components);
 @import '@heroui/styles/components/avatar.css' layer(components);
+/* Header mega-menu and language switcher panels (.popover) and their rows (.menu-item). */
+@import '@heroui/styles/components/popover.css' layer(components);
+@import '@heroui/styles/components/menu-item.css' layer(components);
 
 @import '@heroui/styles/utilities';
 @import '@heroui/styles/variants';

@@ -1,12 +1,13 @@
 ---
 /**
  * Inline SVG icon, rendered at build time (no JS, no icon font).
- * Sized by font-size: 1em high, width from the icon's aspect ratio. Colour = currentColor.
+ * 1em high (so it follows the surrounding font size; set `text-*` to resize), width from the
+ * icon's aspect ratio, colour = currentColor. Inside HeroUI buttons the button sizes it.
  *
- *   <Icon name="facebook" />                      decorative (aria-hidden)
- *   <Icon name="mail" label="E-Mail" />           meaningful on its own (role="img")
+ *   <Icon name="facebook" />                    decorative (aria-hidden), next to visible text
+ *   <Icon name="mail" label="E-Mail" />         meaningful on its own (role="img")
  *
- * Available names are the keys of ./icons.ts.
+ * Available names: the keys of ./icons.ts (generated from the old site's icon sources).
  */
 import { icons, type IconName } from './icons';
 
@@ -25,7 +26,7 @@ const [, , w = 1, h = 1] = viewBox.split(' ').map(Number);
 <svg
   xmlns="http://www.w3.org/2000/svg"
   viewBox={viewBox}
-  class:list={['icon', className]}
+  class:list={['icon inline-block h-[1em] w-[calc(1em*var(--icon-ratio))] shrink-0 align-[-0.125em]', className]}
   style={`--icon-ratio: ${Math.round((w / h) * 1000) / 1000}`}
   fill="currentColor"
   focusable="false"
@@ -34,13 +35,3 @@ const [, , w = 1, h = 1] = viewBox.split(' ').map(Number);
   aria-hidden={label ? undefined : 'true'}
   set:html={body}
 />
-
-<style>
-  .icon {
-    display: inline-block;
-    flex-shrink: 0;
-    width: calc(1em * var(--icon-ratio, 1));
-    height: 1em;
-    vertical-align: -0.125em;
-  }
-</style>
