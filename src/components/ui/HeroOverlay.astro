@@ -40,7 +40,7 @@ interface Props {
   lead?: string | undefined;
   /** Element for the title. Default h1 (the hero is the page title). */
   titleTag?: 'h1' | 'h2' | 'p' | undefined;
-  /** screen: full viewport up to 56rem (home, landing pages) · large: blog index · medium: compact */
+  /** screen: 90% of the viewport up to 56rem (home, landing pages) · large: blog index · medium: compact */
   size?: 'screen' | 'large' | 'medium' | undefined;
   /** Horizontal placement and text alignment of the content. */
   align?: 'start' | 'center' | 'end' | undefined;
@@ -102,9 +102,11 @@ const MOBILE = '(max-width: 767px)';
 const VIDEO_MOBILE = '(max-width: 768px)';
 
 // A minimum height (not a fixed one): on short phones a hero with a lot of text grows instead of
-// clipping it.
+// clipping it. "screen" stops at 90% of the viewport: Chrome ignores an image that fills the whole
+// viewport as the Largest Contentful Paint (it counts as background), which made phone LCP
+// fall back to text and Lighthouse results flaky. The peek of the next section also hints at more.
 const heightClass = {
-  screen: 'min-h-[clamp(32rem,100svh,56rem)]',
+  screen: 'min-h-[clamp(28rem,90svh,56rem)]',
   large: 'min-h-[clamp(28rem,90svh,46rem)]',
   medium: 'min-h-[clamp(22rem,80svh,31rem)]',
 }[size];
@@ -181,8 +183,8 @@ const hasLead = Boolean(lead) || Astro.slots.has('lead');
         inset ? 'py-8 md:py-12' : 'pt-(--header-height)',
         position === 'bottom' ? 'items-end' : 'items-center',
         position === 'bottom' && !inset && (wave ? 'pb-[12vw]' : 'pb-12'),
-        // Keep grown content (see heightClass) clear of the wave on phones and tablets.
-        position === 'center' && wave && 'max-md:pb-[11vw]',
+        // Centre the content in the photo above the wave, so it never runs under the wave.
+        position === 'center' && wave && 'pb-[10vw]',
         alignClass,
       ]}
     >

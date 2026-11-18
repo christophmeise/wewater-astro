@@ -93,14 +93,15 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
     </div>
   </HeroOverlay>
 
-  <Section class="grid items-center gap-8 md:grid-cols-[3fr_2fr] lg:gap-12" aria-labelledby="home-video">
-    <div class="[&>figure]:shadow-surface [&>figure]:my-0 [&>figure]:rounded-3xl">
-      <YouTube id={VIDEO_ID} title={t('home.video.videoTitle')} poster={videoPoster} />
-    </div>
+  <Section class="grid items-center gap-8 lg:grid-cols-[3fr_2fr] lg:gap-12" aria-labelledby="home-video">
     <div class="flex flex-col gap-4">
       <p class="eyebrow">{t('home.video.eyebrow')}</p>
       <h2 id="home-video" class="heading-2">{t('home.video.title')}</h2>
       <p class="lead">{t('home.video.text')}</p>
+    </div>
+    {/* Text first on phones and tablets (and for screen readers); the video on the left on desktop. */}
+    <div class="[&>figure]:shadow-surface lg:order-first [&>figure]:my-0 [&>figure]:rounded-3xl">
+      <YouTube id={VIDEO_ID} title={t('home.video.videoTitle')} poster={videoPoster} />
     </div>
   </Section>
 
