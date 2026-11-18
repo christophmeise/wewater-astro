@@ -99,7 +99,9 @@ const {
 const wave = Astro.props.wave ?? !inset;
 const whole = photoOnPhones === 'whole' && !video;
 
-const WIDTHS = [480, 640, 828, 1080, 1280, 1600, 1920, 2560];
+// 750: the most common phones (375pt at 2x) and Lighthouse's phone (412px at 1.75x) get an exact
+// fit instead of the 828px file, about a fifth fewer bytes for the hero (the usual LCP image).
+const WIDTHS = [480, 640, 750, 828, 1080, 1280, 1600, 1920, 2560];
 async function srcsets(src: ImageMetadata) {
   const widths = WIDTHS.filter((w) => w < src.width).concat(Math.min(src.width, 2560));
   const [avif, webp] = await Promise.all(
