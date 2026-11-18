@@ -42,7 +42,7 @@ What drags the scores down:
 | Runtime | Node 24 LTS (Astro 7 needs Node ≥ 22.23) | Pin it in `.nvmrc` and Netlify. |
 | Language | TypeScript (strict) + `astro check` | Typos in content or missing translations fail the build instead of reaching production. |
 | Content | Astro content collections, **MDX** files with Zod schemas | One file per post, project or team member, with frontmatter validated at build. MDX lets content use components (`<Gallery>`, `<YouTube>`, `<DonationForm>`) instead of raw WordPress HTML. Easy for Claude to edit safely. |
-| Styling | **Plain modern CSS**: Astro scoped `<style>` per component plus a global tokens file (custom properties, native nesting) | The current Less ports to native CSS almost mechanically, which keeps the design identical. Each component keeps its markup and styles in one file, which suits editing via Claude. No CSS framework to learn, and the smallest possible CSS. Semantic UI (5.6 MB of vendored Less) goes away. Tailwind 4.3 would also work; see Decision 6. |
+| Styling | **Tailwind CSS 4.3 + HeroUI v3 styles (`@heroui/styles`, CSS-only)** with WeWater tokens | One coherent design system with semantic tokens, a fluid type scale and ready-made accessible component styles, consistent with the Scripe project. Compiles to about 9 KB of gzipped CSS and no JS. Semantic UI (5.6 MB of vendored Less) goes away. See Decision 6. |
 | Images | `astro:assets` `<Picture>` → AVIF + WebP with responsive `srcset` | The hero/LCP image loads eagerly with `fetchpriority="high"`; everything else is lazy. |
 | Fonts | Astro Fonts API, local Poppins woff2, latin subset | Only the weights actually used. The above-the-fold weight is preloaded. Generated fallback metrics give zero layout shift. |
 | i18n | Astro built-in i18n: `defaultLocale: 'de'`, no prefix for German, `/en/` and `/fr/` | URLs stay exactly as today. UI strings move from i18next JSON to typed TS dictionaries, so a missing French key is a type error. |
@@ -176,10 +176,11 @@ Today the site runs GA4 plus a Google Ads tag, and the cookie banner auto-accept
 They currently read and write live from WordPress (14 comments in total), which can't survive a CMS-free site.
 - **Recommendation:** show the existing comments as static content and drop the comment form.
 
-**4. Colour contrast.**
-The brand blue `#5ABEE6` has 2.1:1 contrast against white; 4.5:1 is needed for normal text. It's used for h3 text and the white-on-blue "Ich will helfen!" button.
-- **Recommendation:** keep `#5ABEE6` for backgrounds, decoration and large display text. Use a darker blue of the same hue (about `#1878A8`, 4.9:1) for small text and button backgrounds.
-- This is the one visible design change. Lighthouse accessibility 100 is not reachable without it.
+**4. Colour contrast.** *(updated 2026-11-18)*
+The brand blue `#5ABEE6` has 2.1:1 contrast against white; 4.5:1 is needed for normal text.
+- **Decided:** keep brand blue as the button and highlight colour, but with **navy text on it (8.8:1)** instead of white.
+- Blue text on white (links, eyebrows) uses `#1878A8` (4.9:1).
+- This keeps the light brand blue prominent and passes Lighthouse accessibility.
 
 **5. Content to drop.**
 - Amazon Smile banner (the programme ended in 2023)
@@ -191,9 +192,14 @@ The brand blue `#5ABEE6` has 2.1:1 contrast against white; 4.5:1 is needed for n
 
 The **Datenschutzerklärung must be rewritten** for the new setup. It names Matomo, Quantcast and others. That text needs an owner at WeWater; we can draft it.
 
-**6. Styling approach.**
-- **Recommendation:** plain scoped CSS (see the stack table).
-- Tailwind 4.3 is the alternative, if the maintainers or Claude workflows already prefer utility classes.
+**6. Styling approach.** *(updated 2026-11-18, user request)*
+- **Decided:** one coherent design system instead of copying the old site's ad-hoc CSS. It stays true to the current look: Poppins, navy and brand blue, the grey-blue section background, rounded cards, soft shadows and photo heroes.
+- **Built on:** Tailwind CSS v4 plus HeroUI v3's framework-agnostic styles (`@heroui/styles`: BEM classes and variant functions, no React, no runtime JS).
+- **Tokens:** WeWater colours mapped onto HeroUI's semantic variables in `src/styles/tokens.css`.
+- **Type scale:** fluid and rem-based (16px body, `clamp()` headings), with typography roles (`text-display`, `heading-1..3`, `eyebrow`, `lead`, `prose`).
+- **Layout:** fluid gutters and section spacing, with `gap`-based layouts.
+- **Living reference:** `/styleguide/`.
+- **Trade-off:** the visual diff against the live site becomes a reference for structure and layout rather than a pixel-match gate.
 
 **7. Animated icons (Lord-icon / Lottie).**
 - **Recommendation:** export the animations as static SVGs, plus CSS hover motion where it matters. That's 0 KB of JS.

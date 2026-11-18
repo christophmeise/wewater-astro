@@ -1,0 +1,110 @@
+/*
+ * WeWater design tokens.
+ *
+ * Colours keep the old site's palette (brand blue #5ABEE6, navy #000D3E, light grey-blue
+ * #F6F9FC, orange/violet/green accents) and map it onto HeroUI's semantic variables, so every
+ * HeroUI component and Tailwind utility (bg-accent, text-muted, ...) speaks the WeWater palette.
+ *
+ * Contrast rules (WCAG AA, required for Lighthouse 100):
+ *   - Text on white: use foreground (navy), muted, or link. Never brand blue for text below 24px.
+ *   - On brand blue (accent) backgrounds: navy text (accent-foreground), 8.8:1.
+ *   - White text only on photos with an overlay, on navy, or on --link blue.
+ */
+
+/* Tailwind theme: utility classes are generated from these (text-3xl, font-heading, ...). */
+@theme {
+  /* Fonts: Poppins is loaded and preloaded by Astro's Fonts API (see astro.config.mjs). */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, 'Helvetica Neue', Arial, sans-serif;
+  --font-heading: var(--font-poppins), ui-sans-serif, system-ui, 'Helvetica Neue', Arial, sans-serif;
+
+  /*
+   * Fluid type scale (1rem = 16px, viewport 360px -> 1240px).
+   * Sizes grow smoothly with the viewport and respect the reader's browser font size.
+   */
+  --text-xs: 0.8125rem; /* 13px */
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.875rem; /* 14px */
+  --text-sm--line-height: 1.5;
+  --text-base: 1rem; /* 16px: body text */
+  --text-base--line-height: 1.65;
+  --text-lg: clamp(1.0625rem, 1.0369rem + 0.1136vw, 1.125rem); /* 17 -> 18px */
+  --text-lg--line-height: 1.6;
+  --text-xl: clamp(1.1875rem, 1.1364rem + 0.2273vw, 1.3125rem); /* 19 -> 21px */
+  --text-xl--line-height: 1.4;
+  --text-2xl: clamp(1.375rem, 1.2727rem + 0.4545vw, 1.625rem); /* 22 -> 26px */
+  --text-2xl--line-height: 1.3;
+  --text-3xl: clamp(1.75rem, 1.5455rem + 0.9091vw, 2.25rem); /* 28 -> 36px: section titles */
+  --text-3xl--line-height: 1.2;
+  --text-4xl: clamp(2.125rem, 1.7159rem + 1.8182vw, 3.125rem); /* 34 -> 50px: page titles */
+  --text-4xl--line-height: 1.1;
+  --text-display: clamp(2.625rem, 1.8068rem + 3.6364vw, 4.625rem); /* 42 -> 74px: hero */
+  --text-display--line-height: 1;
+
+  /* Extra brand colours (category dots, illustrations, highlights; not for text on white). */
+  --color-brand: oklch(0.7574 0.1091 227.16); /* #5ABEE6 */
+  --color-brand-navy: oklch(0.192 0.0958 262.9); /* #000D3E */
+  --color-brand-orange: oklch(0.7402 0.1233 55.55); /* #E6955A */
+  --color-brand-violet: oklch(0.579 0.2022 290.52); /* #7E5AE6 */
+  --color-brand-green: oklch(0.8331 0.1385 156.01); /* #74E3A2 */
+  --color-brand-pink: oklch(0.6553 0.1741 12.03); /* #E65A74 */
+
+  /* Layout */
+  --container-page: 75rem; /* 1200px */
+  --container-prose: 42rem; /* comfortable reading width for long text */
+}
+
+/* Semantic tokens (HeroUI variable names). Unlayered so they override HeroUI's defaults. */
+:root {
+  color-scheme: light;
+
+  --white: oklch(1 0 0);
+  --snow: oklch(1 0 0);
+  --eclipse: oklch(0.192 0.0958 262.9); /* navy */
+
+  /* Page */
+  --background: oklch(1 0 0); /* white */
+  --background-secondary: oklch(0.9807 0.0051 247.88); /* #F6F9FC */
+  --foreground: oklch(0.192 0.0958 262.9); /* #000D3E navy */
+  --muted: oklch(0.5012 0.0524 272.23); /* #596282, 6.0:1 on white */
+
+  /* Brand blue as the accent: buttons, highlights, active states. */
+  --accent: oklch(0.7574 0.1091 227.16); /* #5ABEE6 */
+  --accent-foreground: oklch(0.192 0.0958 262.9); /* navy on blue, 8.8:1 */
+  --accent-hover: oklch(0.71 0.115 227.16);
+  --accent-soft: oklch(0.7574 0.1091 227.16 / 15%);
+  --accent-soft-hover: oklch(0.7574 0.1091 227.16 / 25%);
+  --accent-soft-foreground: oklch(0.47 0.1 238); /* darker than link: passes on grey and soft-blue tints */
+
+  /* Text-safe blue for links and small coloured text: #1878A8, 4.9:1 on white. */
+  --link: oklch(0.5436 0.1113 237.15);
+  --focus: oklch(0.5436 0.1113 237.15);
+
+  /* Surfaces (cards) and overlays */
+  --surface: oklch(1 0 0);
+  --surface-foreground: var(--foreground);
+  --surface-secondary: oklch(0.9807 0.0051 247.88);
+  --surface-secondary-foreground: var(--foreground);
+  --overlay: oklch(1 0 0);
+  --overlay-foreground: var(--foreground);
+
+  --default: oklch(0.955 0.01 247.88);
+  --default-foreground: var(--foreground);
+
+  --border: oklch(0.192 0.0958 262.9 / 12%);
+  --separator: oklch(0.192 0.0958 262.9 / 10%);
+
+  /* Soft navy shadows from the old site (.shadow, .shadow-lg). */
+  --surface-shadow: 0 5px 12px 0 oklch(0.192 0.0958 262.9 / 12%), 0 10px 30px 0 oklch(0.192 0.0958 262.9 / 7%);
+  --overlay-shadow: 0 1rem 3rem oklch(0.192 0.0958 262.9 / 17.5%);
+
+  /*
+   * Radius base. HeroUI derives every radius from it:
+   * rounded-2xl = 1rem (images, small cards), rounded-3xl = 1.5rem (cards, ~ the old 25px).
+   */
+  --radius: 0.5rem;
+
+  /* Layout rhythm */
+  --gutter: clamp(1rem, 0.6rem + 1.8vw, 2rem); /* page side padding */
+  --space-section: clamp(3rem, 2.2rem + 3.6vw, 6rem); /* between page sections */
+  --header-height: 4.5rem;
+}

@@ -49,11 +49,31 @@ Blog posts, projects, team members and FAQ move into `src/content/` in phase 2. 
 - In components: `const t = useTranslations(locale); t('nav.donate')`.
 - When adding German text, add the English and French version in the same change. If no translation is available yet, ask the user instead of copying the German text.
 
-**Styling**
-- Styles live in a `<style>` block inside the component that uses them; Astro scopes them to that component.
-- Use the tokens from `src/styles/global.css` (`var(--color-primary)`, `var(--radius)` and so on) instead of new hex values.
-- Brand blue `--color-primary` (#5ABEE6) fails contrast for small text. Use `--color-primary-text` for text, links and buttons with white text. `--color-primary` is fine for backgrounds behind dark text, decoration and headings of 24px and larger.
-- Breakpoints: mobile `width <= 767px`, tablet 768–1023px, desktop `width >= 1024px`, large desktop `width >= 1200px`.
+**Styling: the design system**
+
+The site has one design system: Tailwind CSS v4 utilities plus HeroUI v3 component classes from `@heroui/styles`. HeroUI is used CSS-only, so there is no React and no JavaScript; its classes and variant functions compile to static CSS. Open `/styleguide/` (run `npm run dev`) to see every token and component.
+
+- **Tokens.** Colours, type scale, radii and spacing live in `src/styles/tokens.css`. Use the semantic utilities they generate: `bg-background`, `bg-background-secondary`, `text-foreground`, `text-muted`, `bg-accent`, `text-link`, `bg-brand-orange`, `rounded-3xl`, `shadow-surface`. Never add raw hex values or one-off pixel sizes in components. If something new is needed, add a token in `tokens.css` and show it in the styleguide.
+- **Typography roles.** Use these instead of picking font sizes:
+  - `text-display`: hero headline
+  - `heading-1`: page title
+  - `heading-2`: section title
+  - `heading-3`: card title
+  - `eyebrow`: small blue kicker above a title
+  - `lead`: intro paragraph
+  - `prose`: long-form content such as blog posts, projects and legal pages
+
+  The type scale is fluid (`clamp()`) and rem-based, and body text is 16px. Never set font sizes in px.
+- **Layout.** `container-page` for the 1200px page container with fluid side padding. `section` for vertical rhythm between sections, plus `section--muted` for the grey-blue background. Space children with `flex`/`grid` and `gap-*`, not margins.
+- **Components.** Use HeroUI classes through their variant functions in the frontmatter, for example `import { buttonVariants } from '@heroui/styles'` then `<a class={buttonVariants({ variant: 'primary' })}>`. For components with slots, call the slot: `chipVariants({ color: 'accent' }).base()`. WeWater-specific variants (for example `button--inverted` for outline buttons on photos) live in `src/styles/global.css`.
+  - If you start using a HeroUI component that isn't imported yet, add its `@import '@heroui/styles/components/<name>.css'` line in `global.css`.
+  - HeroUI component docs list the BEM classes. Interactive components (menus, popovers, modals) need their state set via `data-*` attributes or native elements like `<details>` and `<dialog>`.
+- **Contrast.**
+  - Brand blue (`accent`, #5ABEE6) is for backgrounds, buttons and decoration, with navy text on it.
+  - For blue text on white, use `text-link` (#1878A8).
+  - White text only goes on navy, on photos with an overlay, or on `link` blue.
+- **Component-specific CSS.** Write it in a `<style>` block in the component (Astro scopes it), using the tokens via `var(--…)` or `@apply`. Prefer utilities first.
+- **Breakpoints.** Tailwind defaults: `sm` 40rem, `md` 48rem (768px), `lg` 64rem (1024px), `xl` 80rem. Mobile-first: unprefixed utilities are for phones, `md:` and up for larger screens.
 
 **Images**
 - Put images in `src/assets/` and render them with `<Picture>` or `<Image>` from `astro:assets`. Never put photos in `public/`: those are not optimised.

@@ -1,0 +1,104 @@
+---
+/**
+ * Living design-system reference: tokens, typography roles and components.
+ * Not linked from the site, excluded from the sitemap, noindex.
+ * When you add a component or token to the design system, add an example here.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { buttonVariants, chipVariants } from '@heroui/styles';
+
+const colors = [
+  ['background', 'bg-background', 'Page background'],
+  ['background-secondary', 'bg-background-secondary', 'Alternating sections (#F6F9FC)'],
+  ['foreground', 'bg-foreground', 'Text, navy #000D3E'],
+  ['muted', 'bg-muted', 'Secondary text'],
+  ['accent', 'bg-accent', 'Brand blue #5ABEE6: buttons, highlights'],
+  ['link', 'bg-link', 'Text-safe blue #1878A8: links, eyebrows'],
+  ['brand-orange', 'bg-brand-orange', 'Category / decoration'],
+  ['brand-violet', 'bg-brand-violet', 'Category / decoration'],
+  ['brand-green', 'bg-brand-green', 'Category / decoration'],
+  ['brand-pink', 'bg-brand-pink', 'Category / decoration'],
+] as const;
+---
+
+<BaseLayout title="Styleguide" noindex alternates={{}}>
+  <div class="container-page section flex flex-col gap-16">
+    <header class="flex flex-col gap-3">
+      <p class="eyebrow">WeWater design system</p>
+      <h1 class="heading-1">Styleguide</h1>
+      <p class="lead max-w-(--container-prose)">
+        Tokens and components every page is built from. Tailwind CSS v4 utilities plus HeroUI v3 component classes,
+        compiled to static CSS.
+      </p>
+    </header>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-type">
+      <h2 id="sg-type" class="heading-2">Typography</h2>
+      <p class="text-display">Wasser weltweit klarmachen.</p>
+      <p class="heading-1">Page title (heading-1)</p>
+      <p class="heading-2">Section title (heading-2)</p>
+      <p class="heading-3">Card title (heading-3)</p>
+      <p class="eyebrow">Eyebrow above a section title</p>
+      <p class="lead max-w-(--container-prose)">Lead paragraph. Introduces a section in one or two sentences.</p>
+      <p class="max-w-(--container-prose)">
+        Body text at 16px with a 1.65 line height. Hinter WeWater steht ein engagiertes, überwiegend ehrenamtliches Team.
+        Um unsere Projekte weltweit umzusetzen, sind wir auf Spenden angewiesen. <a class="link" href="/spenden/">Ein Link im Text</a>.
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-colors">
+      <h2 id="sg-colors" class="heading-2">Colours</h2>
+      <ul class="grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] gap-4">
+        {
+          colors.map(([name, cls, use]) => (
+            <li class="card">
+              <div class:list={['h-16 rounded-2xl border border-border', cls]} />
+              <div class="card__header">
+                <p class="font-semibold">{name}</p>
+                <p class="text-muted text-sm">{use}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-buttons">
+      <h2 id="sg-buttons" class="heading-2">Buttons</h2>
+      <div class="flex flex-wrap items-center gap-3">
+        <a class={buttonVariants({ variant: 'primary' })} href="/spenden/">Ich will helfen!</a>
+        <a class={buttonVariants({ variant: 'secondary' })} href="/projekte/">Alle Projekte</a>
+        <a class={buttonVariants({ variant: 'tertiary' })} href="/blog/">Zum Blog</a>
+        <a class={buttonVariants({ variant: 'outline' })} href="/team/">Outline</a>
+        <a class={buttonVariants({ variant: 'ghost' })} href="/faq/">Ghost</a>
+        <a class={buttonVariants({ variant: 'primary', size: 'lg' })} href="/spenden/">Large</a>
+        <a class={buttonVariants({ variant: 'primary', size: 'sm' })} href="/spenden/">Small</a>
+      </div>
+      <div class="bg-foreground flex flex-wrap gap-3 rounded-3xl p-6">
+        <a class="button button--inverted" href="/projekte/">Inverted on dark</a>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-chips">
+      <h2 id="sg-chips" class="heading-2">Chips</h2>
+      <div class="flex flex-wrap gap-2">
+        <span class={chipVariants({}).base()}><span class="chip__label">AQQAcube</span></span>
+        <span class={chipVariants({ color: 'accent' }).base()}><span class="chip__label">In Arbeit</span></span>
+        <span class={chipVariants({ color: 'success' }).base()}><span class="chip__label">Abgeschlossen</span></span>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-cards">
+      <h2 id="sg-cards" class="heading-2">Cards</h2>
+      <div class="grid gap-6 md:grid-cols-3">
+        <article class="card">
+          <div class="card__header">
+            <h3 class="card__title heading-3">Card title</h3>
+            <p class="card__description">Card description in muted text.</p>
+          </div>
+          <div class="card__content"><p>Content of the card.</p></div>
+        </article>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
