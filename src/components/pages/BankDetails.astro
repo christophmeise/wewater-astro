@@ -5,6 +5,7 @@
  *   <BankDetails />
  *
  * The account itself is in ./links.ts (BANK); the footer shows the same account.
+ * IBAN and BIC never break inside the number: on narrow phones the value moves below its label.
  */
 import { BANK } from './links';
 
@@ -13,11 +14,25 @@ interface Props {
 }
 
 const { class: className } = Astro.props;
+const numbers = [
+  { label: 'IBAN', value: BANK.iban },
+  { label: 'BIC/SWIFT', value: BANK.bic },
+];
 ---
 
-<p class:list={['bg-background-secondary rounded-2xl px-5 py-4', className]}>
-  <strong class="font-semibold">{BANK.holder}</strong><br />
-  {BANK.bank}<br />
-  <span class="text-muted">IBAN:</span> <span class="font-medium tabular-nums">{BANK.iban}</span><br />
-  <span class="text-muted">BIC/SWIFT:</span> <span class="font-medium">{BANK.bic}</span>
-</p>
+<div class:list={['bg-background-secondary flex w-full max-w-md flex-col gap-2 rounded-2xl px-5 py-4', className]}>
+  <p>
+    <strong class="font-semibold">{BANK.holder}</strong><br />
+    {BANK.bank}
+  </p>
+  <dl class="grid gap-x-3 gap-y-1 sm:grid-cols-[auto_minmax(0,1fr)]">
+    {
+      numbers.map((number) => (
+        <>
+          <dt class="text-muted max-sm:text-sm">{number.label}</dt>
+          <dd class="font-medium whitespace-nowrap tabular-nums max-sm:not-last:mb-1">{number.value}</dd>
+        </>
+      ))
+    }
+  </dl>
+</div>

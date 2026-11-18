@@ -26,6 +26,9 @@ interface Props {
 
 const { href, icon, title, text, external = false, newTabLabel, titleTag: TitleTag = 'p', class: className } = Astro.props;
 const card = cardVariants({ variant: 'default' });
+// URLs such as "facebook.com/wewater.org" may wrap after a slash on narrow phones (never mid-word).
+const escape = (value: string) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
+const textHtml = text ? escape(text).replaceAll('/', '/<wbr />') : undefined;
 ---
 
 <a
@@ -43,7 +46,7 @@ const card = cardVariants({ variant: 'default' });
   </span>
   <span class="flex min-w-0 flex-col gap-0.5">
     <TitleTag class="font-heading group-hover:text-link font-semibold">{title}</TitleTag>
-    {text && <span class="text-muted truncate text-sm">{text}</span>}
+    {textHtml && <span class="text-muted text-sm" set:html={textHtml} />}
     {external && newTabLabel && <span class="sr-only">{newTabLabel}</span>}
   </span>
   <Icon name="arrow-small-right" class="text-link ms-auto shrink-0 text-2xl transition-transform group-hover:translate-x-0.5" />

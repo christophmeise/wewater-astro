@@ -30,16 +30,19 @@ const widths = [...CONTENT_WIDTHS.filter((w) => w < image.width), Math.min(image
 const sizes = `(min-width: ${display}px) ${display}px, 100vw`;
 const external = href ? /^https?:\/\//.test(href) : false;
 const hasCaption = Astro.slots.has('default');
+// Portrait photos are at most 80% of the screen height, so the text around them stays in view.
+const style =
+  image.height > image.width ? `max-width: min(100%, calc(80svh * ${(image.width / image.height).toFixed(4)}))` : undefined;
 ---
 
 <figure class="not-prose mx-auto my-8 flex flex-col gap-3">
   {
     href ? (
       <a href={href} rel={external ? 'noopener' : undefined} class="block">
-        <Image src={image} alt={alt} widths={widths} sizes={sizes} loading={eager ? 'eager' : 'lazy'} class="mx-auto rounded-2xl" />
+        <Image src={image} alt={alt} widths={widths} sizes={sizes} loading={eager ? 'eager' : 'lazy'} class="mx-auto rounded-2xl" style={style} />
       </a>
     ) : (
-      <Image src={image} alt={alt} widths={widths} sizes={sizes} loading={eager ? 'eager' : 'lazy'} class="mx-auto rounded-2xl" />
+      <Image src={image} alt={alt} widths={widths} sizes={sizes} loading={eager ? 'eager' : 'lazy'} class="mx-auto rounded-2xl" style={style} />
     )
   }
   {

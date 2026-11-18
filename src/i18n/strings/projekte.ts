@@ -16,7 +16,8 @@ export default defineStrings({
   'projekte.filter.legend': { de: 'Projekte filtern', en: 'Filter projects', fr: 'Filtrer les projets' },
   'projekte.filter.status': { de: 'Status', en: 'Status', fr: 'Statut' },
   'projekte.filter.system': { de: 'Filtersystem', en: 'Filter system', fr: 'Système de filtration' },
-  'projekte.filter.allSystems': { de: 'Alle Systeme', en: 'All systems', fr: 'Tous les systèmes' },
+  /** First option of each filter group (the group's legend says what it covers). */
+  'projekte.filter.all': { de: 'Alle', en: 'All', fr: 'Tous' },
   'projekte.filter.empty': {
     de: 'Für diese Auswahl gibt es noch keine Projekte.',
     en: 'There are no projects for this selection yet.',

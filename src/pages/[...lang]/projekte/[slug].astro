@@ -8,6 +8,7 @@
  */
 import { getImage } from 'astro:assets';
 import { render } from 'astro:content';
+import Table from '@/components/content/Table.astro';
 import PostCard from '@/components/pages/PostCard.astro';
 import StatusChip from '@/components/pages/StatusChip.astro';
 import Button from '@/components/ui/Button.astro';
@@ -44,7 +45,7 @@ const { Content } = await render(project);
 
     <Section class="flex flex-col gap-12">
       <div class="prose project-content max-w-none">
-        <Content />
+        <Content components={{ table: Table }} />
       </div>
       <div class="flex justify-center">
         <Button href={localizePath('/projekte/', locale)} variant="outline" icon="chevron-left">

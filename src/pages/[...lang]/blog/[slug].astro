@@ -10,6 +10,7 @@
 import { Image, getImage } from 'astro:assets';
 import { render } from 'astro:content';
 import JsonLd from '@/components/JsonLd.astro';
+import Table from '@/components/content/Table.astro';
 import CategoryChips from '@/components/pages/CategoryChips.astro';
 import PostCard from '@/components/pages/PostCard.astro';
 import Button from '@/components/ui/Button.astro';
@@ -64,19 +65,19 @@ const commentDepth = (id: number | undefined, depth = 0): number => {
   <article>
     <HeroOverlay image={data.hero} alt={data.heroAlt} inset size="medium" position="bottom" overlay="dark" width="full">
       <CategoryChips slot="eyebrow" categories={data.categories} locale={locale} tone="light" inline />
-      <span slot="title" class="heading-1 block text-white">{data.title}</span>
-      <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-white/90">
+      {/* Hyphenate only long words, so product names such as "AQQAcube" are not split on phones. */}
+      <span slot="title" class="heading-1 block text-white [hyphenate-limit-chars:10_4_4]">{data.title}</span>
+      <p class="post-meta flex flex-wrap items-center gap-x-4 gap-y-1 overflow-hidden text-sm text-white/90">
         <span>{t('content.by')} {author.name}</span>
-        <span aria-hidden="true">·</span>
         <time datetime={data.date.toISOString()}>{formatDate(data.date, locale)}</time>
-        <span aria-hidden="true">·</span>
         <span>{readingMinutes(post.body)} {t('content.minRead')}</span>
       </p>
     </HeroOverlay>
 
-    <Section class="flex flex-col gap-16">
+    {/* Half the usual section spacing above the text: the hero card already sets it apart. */}
+    <Section class="flex flex-col gap-16" style="padding-top: calc(var(--space-section) / 2)">
       <div class="prose mx-auto w-full max-w-(--container-prose)">
-        <Content />
+        <Content components={{ table: Table }} />
       </div>
 
       <section
@@ -152,3 +153,20 @@ const commentDepth = (id: number | undefined, depth = 0): number => {
 
   <JsonLd type="blogPosting" post={post} image={ogImage.src} />
 </BaseLayout>
+
+<style>
+  /*
+   * "Von … · 3. Februar 2020 · 4 Min. Lesezeit": the dot sits in the gap before each item.
+   * When the line wraps, the dot of the item that starts the new line falls outside the box
+   * and is clipped, so no line ends or starts with a stray dot.
+   */
+  .post-meta > * {
+    position: relative;
+  }
+
+  .post-meta > * + *::before {
+    content: '·' / '';
+    position: absolute;
+    inset-inline-start: -0.625rem;
+  }
+</style>

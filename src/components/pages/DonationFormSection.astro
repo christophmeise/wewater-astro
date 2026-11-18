@@ -5,6 +5,8 @@
  * the first screen, which it needs because it lazy-loads near the viewport (PLAN.md decision 1).
  *
  *   <DonationFormSection locale={locale} />
+ *
+ * The section has id="spendenformular" so a page can link to it (<a href="#spendenformular">).
  */
 import Section from '@/components/ui/Section.astro';
 import { useTranslations, type Locale } from '@/i18n';
@@ -21,8 +23,9 @@ const t = useTranslations(locale);
 const trust = [t('spenden.trust1'), t('spenden.trust2'), t('spenden.trust3'), t('spenden.trust4')];
 ---
 
-<Section class="flex flex-col items-center gap-10" aria-labelledby="donation-form-title">
+{/* Same reading-width container as the steps above it, so both start at the same left edge. */}
+<Section id="spendenformular" class="flex max-w-(--container-prose) flex-col items-center gap-10" aria-labelledby="donation-form-title">
   <SectionHeading id="donation-form-title" title={t('spenden.form.title')} align="center" />
-  <IconList items={trust} class="max-w-(--container-prose)" />
+  <IconList items={trust} class="self-stretch" />
   <DonationFormSlot />
 </Section>

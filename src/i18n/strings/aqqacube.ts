@@ -31,7 +31,7 @@ export default defineStrings({
   'aqqacube.text2': {
     de: 'Die Anwendung ist dabei genauso einfach wie beim AQQAbag: Es wird Wasser aus einem See oder einem Fluss in den Filterkasten hinein gegeben und mit einer Membran gefiltert. Dabei kann der AQQAcube an einem festen Einsatzort stehen oder transportiert werden. Ein Transport ist jedoch nur in leerem Zustand möglich.',
     en: 'The application is just as simple as with the AQQAbag: water from a lake or a river is put into the filter box and filtered with a membrane. The AQQAcube can be placed in a fixed location or transported. However, transport is only possible when empty.',
-    fr: "L'utilisation est aussi simple que celle de l'AQQAbag : l'eau d'un lac ou d'une rivière est versée dans le caisson de filtration et filtrée par une membrane. L'AQQAcube peut être placé à un endroit fixe ou être transporté. Le transport n'est toutefois possible qu'à l'état vide.",
+    fr: "L'utilisation est aussi simple que celle de l'AQQAbag : l'eau d'un lac ou d'une rivière est versée dans le caisson de filtration et filtrée par une membrane. L'AQQAcube peut être placé à un endroit fixe ou être transporté. Le transport n'est toutefois possible qu'à l'état vide.",
   },
   'aqqacube.text3': {
     de: 'Berechnet man die Kosten für den Filter, Zoll und Versand und die enorme Filterleistung um, kostet ein Liter hygienisch sauberes Wasser etwa 0,12 Cent. Zum Vergleich: Trinkwasser wird in ostafrikanischen Ländern in Plastikflaschen zu je 1,5 Liter für ca. einen Euro verkauft. Damit bietet das Produkt sauberes Trinkwasser bei hoher Geldersparnis und Einsparung von Plastikmüll.',

@@ -81,7 +81,7 @@ const faqJsonLd = {
       }
     </div>
 
-    <aside class="grid gap-6 md:grid-cols-2 lg:grid-cols-1" aria-label={t('faq.sidebar.label')}>
+    <aside class="faq-sidebar grid gap-6 md:grid-cols-2 lg:grid-cols-1" aria-label={t('faq.sidebar.label')}>
       <Card variant="secondary" title={t('faq.about.title')} titleTag="h2" description={t('faq.about.text')}>
         <Fragment slot="footer">
           <Button href={localizePath('/', locale)} variant="secondary" size="sm" icon="arrow-right">
@@ -100,3 +100,10 @@ const faqJsonLd = {
     </aside>
   </Section>
 </BaseLayout>
+
+<style>
+  /* Sidebar titles break only at the soft hyphens in the strings ("Wasser-newsletter"). */
+  .faq-sidebar :global(h2) {
+    hyphens: manual;
+  }
+</style>

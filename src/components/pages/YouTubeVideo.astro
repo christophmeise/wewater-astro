@@ -32,7 +32,9 @@ const { id, title, playLabel, poster, class: className } = Astro.props;
 const posterUrl = poster ? (await getImage({ src: poster, width: 720, format: 'webp' })).src : undefined;
 ---
 
-<div class:list={['bg-foreground shadow-surface overflow-hidden rounded-3xl', className]}>
+{/* Light placeholder behind the poster: the poster is drawn at whole pixels, and a navy background
+    showed as a dark hairline along the right edge at fractional widths. */}
+<div class:list={['bg-background-secondary shadow-surface overflow-hidden rounded-3xl', className]}>
   <YouTube id={id} title={title} playlabel={`${playLabel}: ${title}`} {...posterUrl ? { poster: posterUrl } : {}} />
 </div>
 

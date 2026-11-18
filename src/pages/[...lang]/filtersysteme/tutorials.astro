@@ -40,10 +40,11 @@ const videos = VIDEOS.map(({ key, poster }) => ({
 
   <Section>
     <p class="mx-auto max-w-(--container-prose) text-center text-lg">{t('tutorials.intro')}</p>
+    {/* Two columns from md; an odd last video is centred below the others instead of hanging on the left. */}
     <ul class="grid gap-x-8 gap-y-12 md:grid-cols-2">
       {
         videos.map((video) => (
-          <li class="flex flex-col gap-4">
+          <li class="flex flex-col gap-4 md:last:odd:col-span-2 md:last:odd:w-[calc(50%-1rem)] md:last:odd:justify-self-center">
             <h2 class="heading-3">{video.title}</h2>
             <YouTubeVideo id={video.id} title={video.title} playLabel={t('tutorials.play')} poster={video.poster} />
           </li>

@@ -1,0 +1,59 @@
+---
+/**
+ * Markdown tables in posts and projects (wired up by the post and project pages via
+ * <Content components={{ table: Table }} />, so content files keep plain Markdown tables).
+ *
+ * The table keeps the full text width; a table that is wider than the screen even with
+ * hyphenated cells (e.g. the six-column cost table of the Belutschistan project on a phone)
+ * scrolls sideways inside this box instead of widening the page. While it scrolls, the box is
+ * focusable, so keyboard users can scroll it too.
+ */
+import type { HTMLAttributes } from 'astro/types';
+import { getLocale, useTranslations } from '@/i18n';
+
+type Props = HTMLAttributes<'table'>;
+
+const t = useTranslations(getLocale(Astro.currentLocale));
+---
+
+<div class="table-scroll" role="group" aria-label={t('content.table')} data-table-scroll>
+  <table {...Astro.props}><slot /></table>
+</div>
+
+<style>
+  .table-scroll {
+    overflow-x: auto;
+    margin-block: 2em;
+    overscroll-behavior-x: contain;
+  }
+
+  .table-scroll > :global(table) {
+    margin-block: 0;
+  }
+
+  /*
+   * Phones: a table with five or more columns cannot fit, and squeezing it gives one word per
+   * line. It keeps its natural column widths instead and scrolls sideways, like a spreadsheet.
+   */
+  @media (width < 40rem) {
+    .table-scroll > :global(table:has(tr > :nth-child(5))) {
+      width: max-content;
+      min-width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Only a box that actually scrolls becomes a tab stop.
+  const boxes = document.querySelectorAll<HTMLElement>('[data-table-scroll]');
+  const update = () => {
+    for (const box of boxes) {
+      if (box.scrollWidth > box.clientWidth + 1) box.tabIndex = 0;
+      else box.removeAttribute('tabindex');
+    }
+  };
+  if (boxes.length) {
+    update();
+    window.addEventListener('resize', update, { passive: true });
+  }
+</script>

@@ -15,7 +15,7 @@ export default defineStrings({
   'legal.privacy.description': {
     de: 'Datenschutzerklärung der WeWater gemeinnützige UG: welche Daten beim Besuch dieser Website verarbeitet werden.',
     en: 'Privacy policy of WeWater gemeinnützige UG: which data is processed when you visit this website.',
-    fr: 'Politique de confidentialité de WeWater gemeinnützige UG : quelles données sont traitées lors de la visite de ce site.',
+    fr: 'Politique de confidentialité de WeWater gemeinnützige UG : quelles données sont traitées lors de la visite de ce site.',
   },
   'legal.germanOnly': {
     de: 'Dieser Rechtstext ist nur auf Deutsch verfügbar.',

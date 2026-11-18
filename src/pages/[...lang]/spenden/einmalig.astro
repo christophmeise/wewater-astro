@@ -9,6 +9,8 @@ import DonationFormSection from '@/components/pages/DonationFormSection.astro';
 import PayPalDonateButton from '@/components/pages/PayPalDonateButton.astro';
 import Step from '@/components/pages/Step.astro';
 import Steps from '@/components/pages/Steps.astro';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
 import PlainHeader from '@/components/ui/PlainHeader.astro';
 import Section from '@/components/ui/Section.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
@@ -31,7 +33,12 @@ const t = useTranslations(locale);
       <Step title={t('spenden.once.bank')}>
         <BankDetails />
       </Step>
-      <Step title={t('spenden.once.betterplace')} />
+      <Step title={t('spenden.once.betterplace')}>
+        <Button href="#spendenformular" variant="secondary" size="lg">
+          <Icon name="arrow-right" class="rotate-90" />
+          {t('spenden.once.toForm')}
+        </Button>
+      </Step>
     </Steps>
   </Section>
 

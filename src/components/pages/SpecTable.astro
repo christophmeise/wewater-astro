@@ -9,7 +9,10 @@
  *
  * Values are HTML (they may contain links); build them from translated strings in the page.
  * The caption is for screen readers; show a visible heading above the table if needed.
- * Comparisons scroll sideways on narrow screens (the scroll area is keyboard-focusable).
+ *
+ * Phones: a key/value sheet stacks each label above its value (no squeezed second column).
+ * A comparison becomes a list per row instead of a table (label, then each product's value),
+ * so all products are visible without scrolling sideways; the table takes over from md.
  */
 import { Picture } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
@@ -33,7 +36,29 @@ const table = tableVariants({ variant: 'primary' });
 const comparison = Boolean(columns && columns.length > 1);
 ---
 
-<div class:list={[table.base(), className]}>
+{
+  comparison && columns && (
+    <dl class:list={['spec-list bg-surface shadow-surface divide-separator/50 divide-y rounded-3xl md:hidden', className]}>
+      {rows.map((row) => (
+        <div class="flex flex-col gap-3 px-5 py-4">
+          <dt class="font-heading font-semibold">{row.label}</dt>
+          <dd>
+            <ul class="flex flex-col gap-2 text-sm">
+              {columns.map((column, index) => (
+                <li class="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-3">
+                  <span class="text-link font-semibold">{column.title}</span>
+                  <span set:html={row.values[index]} />
+                </li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
+<div class:list={[table.base(), 'spec', comparison ? 'spec--comparison max-md:hidden' : 'spec--sheet', className]}>
   <div
     class={table.scrollContainer()}
     tabindex={comparison ? 0 : undefined}
@@ -78,7 +103,7 @@ const comparison = Boolean(columns && columns.length > 1);
         {
           rows.map((row) => (
             <tr class={table.row()}>
-              <th scope="row" class:list={[table.cell(), 'text-muted text-start align-top font-medium', !comparison && 'w-2/5']}>
+              <th scope="row" class:list={[table.cell(), 'text-muted text-start align-top font-medium', !comparison && 'sm:w-2/5']}>
                 {row.label}
               </th>
               {row.values.map((value) => (
@@ -91,3 +116,46 @@ const comparison = Boolean(columns && columns.length > 1);
     </table>
   </div>
 </div>
+
+<style>
+  /* Long German words (Flüchtlingsunterkünfte) wrap instead of pushing the table wider. */
+  .spec :is(th, td),
+  .spec-list dd {
+    hyphens: auto;
+    hyphenate-limit-chars: 14 6 6;
+    overflow-wrap: break-word;
+  }
+
+  /* The header row holds photos; HeroUI's short column separators would float next to them. */
+  .spec .table__column::after {
+    content: none;
+  }
+
+  /* Phones: a key/value sheet stacks each label above its value. */
+  @media (width < 40rem) {
+    .spec--sheet :is(table, tbody, tr, th, td) {
+      display: block;
+    }
+
+    .spec--sheet table {
+      border-radius: min(32px, var(--radius-2xl));
+    }
+
+    .spec--sheet :is(th, td) {
+      border-radius: 0 !important;
+    }
+
+    .spec--sheet th {
+      border-bottom: 0;
+      padding-bottom: 0.125rem;
+    }
+
+    .spec--sheet td {
+      padding-top: 0;
+    }
+
+    .spec--sheet tr:last-child td {
+      border-bottom: 0;
+    }
+  }
+</style>
