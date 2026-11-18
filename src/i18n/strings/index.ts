@@ -8,12 +8,16 @@ import aqqasystem from './aqqasystem';
 import common from './common';
 import content from './content';
 import filtersystem from './filtersystem';
+import faq from './faq';
 import footer from './footer';
 import legal from './legal';
 import nav from './nav';
 import spenden from './spenden';
 import tutorials from './tutorials';
 import unterstuetzen from './unterstuetzen';
+import newsletter from './newsletter';
+import presse from './presse';
+import team from './team';
 
 export const strings = {
   ...common,
@@ -28,6 +32,10 @@ export const strings = {
   ...tutorials,
   ...unterstuetzen,
   ...legal,
+  ...team,
+  ...faq,
+  ...newsletter,
+  ...presse,
 };
 
 export type UiKey = keyof typeof strings;

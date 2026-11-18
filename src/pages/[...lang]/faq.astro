@@ -1,0 +1,102 @@
+---
+/**
+ * FAQ page: /faq/, /en/faq/, /fr/faq/.
+ * Questions come from src/content/faq/<lang>/ (one file per question), grouped by `section` in
+ * the order of their `order` field, each group a <FaqAccordion> (native <details>, no JS).
+ * A sidebar teases "Wer wir sind", donations and the newsletter.
+ * Emits FAQPage structured data built from the same questions and answers.
+ */
+import { getCollection } from 'astro:content';
+import JsonLd from '@/components/JsonLd.astro';
+import FaqAccordion from '@/components/pages/FaqAccordion.astro';
+import NewsletterForm from '@/components/pages/NewsletterForm.astro';
+import Button from '@/components/ui/Button.astro';
+import Card from '@/components/ui/Card.astro';
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, localizePath, useTranslations } from '@/i18n';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const site = Astro.site ?? new URL('https://www.wewater.org');
+
+const entries = (await getCollection('faq', (entry) => entry.data.lang === locale)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+/** Language an entry is actually written in, when it differs from the page (untranslated en/fr). */
+const foreignLang = (entry: (typeof entries)[number]) =>
+  entry.data.contentLang && entry.data.contentLang !== locale ? entry.data.contentLang : undefined;
+
+// Group by section, keeping the order in which sections first appear.
+const groups = new Map<string, typeof entries>();
+for (const entry of entries) {
+  groups.set(entry.data.section, [...(groups.get(entry.data.section) ?? []), entry]);
+}
+const sections = [...groups].map(([title, sectionEntries]) => {
+  const langs = new Set(sectionEntries.map(foreignLang));
+  return {
+    title,
+    entries: sectionEntries,
+    // The section name is untranslated too when every question in it is.
+    lang: langs.size === 1 ? [...langs][0] : undefined,
+    id: `faq-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+  };
+});
+const hasUntranslated = entries.some((entry) => foreignLang(entry));
+
+// FAQPage structured data: answer HTML with absolute links.
+const absolutize = (html: string) => html.replace(/href="\/(?!\/)/g, `href="${site.origin}/`);
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  inLanguage: locale,
+  mainEntity: entries.map((entry) => ({
+    '@type': 'Question',
+    name: entry.data.question,
+    acceptedAnswer: { '@type': 'Answer', text: absolutize(entry.rendered?.html ?? entry.body ?? '').trim() },
+  })),
+};
+---
+
+<BaseLayout title={t('faq.title')} description={t('faq.description')}>
+  <JsonLd data={faqJsonLd} />
+  <PlainHeader title={t('faq.title')} lead={t('faq.lead')} />
+
+  <Section class="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
+    <div class="flex flex-col gap-12">
+      {hasUntranslated && <p class="text-muted">{t('faq.untranslated')}</p>}
+      {
+        sections.map((section) => (
+          <section class="flex flex-col gap-5" aria-labelledby={section.id}>
+            <h2 id={section.id} class="heading-2" lang={section.lang}>
+              {section.title}
+            </h2>
+            <FaqAccordion entries={section.entries} locale={locale} />
+          </section>
+        ))
+      }
+    </div>
+
+    <aside class="grid gap-6 md:grid-cols-2 lg:grid-cols-1" aria-label={t('faq.sidebar.label')}>
+      <Card variant="secondary" title={t('faq.about.title')} titleTag="h2" description={t('faq.about.text')}>
+        <Fragment slot="footer">
+          <Button href={localizePath('/', locale)} variant="secondary" size="sm" icon="arrow-right">
+            {t('faq.about.cta')}
+          </Button>
+        </Fragment>
+      </Card>
+      <Card variant="secondary" title={t('faq.donate.title')} titleTag="h2" description={t('faq.donate.text')}>
+        <Fragment slot="footer">
+          <Button href={localizePath('/spenden/', locale)} size="sm" icon="tint">{t('nav.cta')}</Button>
+        </Fragment>
+      </Card>
+      <Card variant="secondary" title={t('newsletter.title')} titleTag="h2" class="md:col-span-2 lg:col-span-1">
+        <NewsletterForm locale={locale} id="faq-newsletter" />
+      </Card>
+    </aside>
+  </Section>
+</BaseLayout>

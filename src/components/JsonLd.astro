@@ -1,0 +1,17 @@
+---
+/**
+ * Structured data for search engines: one <script type="application/ld+json"> block.
+ * It is not executed, so it needs no CSP entry and costs no JavaScript.
+ *
+ *   <JsonLd data={{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [...] }} />
+ */
+interface Props {
+  /** A schema.org object (or an array / @graph of them). */
+  data: Record<string, unknown> | Record<string, unknown>[];
+}
+
+// Escape "<" so text such as "</script>" inside the data cannot end the script element.
+const json = JSON.stringify(Astro.props.data).replace(/</g, '\\u003c');
+---
+
+<script is:inline type="application/ld+json" set:html={json} />

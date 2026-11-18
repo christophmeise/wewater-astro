@@ -1,0 +1,117 @@
+---
+/**
+ * Press page: /presse/, /en/presse/, /fr/presse/.
+ * Photo hero; press kit links (Dropbox) and the media contact; press releases (blog posts in a
+ * category flagged isPress, see src/data/categories.ts); the press coverage list
+ * ("Pressespiegel") from src/content/press/<lang>.md.
+ */
+import { getEntry, render } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import { cardVariants } from '@heroui/styles';
+import banner from '@/assets/pages/presse/banner.jpg';
+import contactPhoto from '@/assets/pages/presse/contact-thilo-kunz.jpg';
+import Button from '@/components/ui/Button.astro';
+import Card from '@/components/ui/Card.astro';
+import HeroOverlay from '@/components/ui/HeroOverlay.astro';
+import type { IconName } from '@/components/ui/icons';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations, type UiKey } from '@/i18n';
+import { postUrl, pressReleases } from '@/lib/content';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+/** Press kit folders on Dropbox (from the old site). */
+const PRESS_KIT: { label: UiKey; icon: IconName; href: string }[] = [
+  { label: 'presse.logos', icon: 'draw-text', href: 'https://www.dropbox.com/sh/hnpshh4sw3x30dq/AACy2I-sBYeIIZi4xv5huEEya?dl=0' },
+  { label: 'presse.images', icon: 'image', href: 'https://www.dropbox.com/sh/nddqbymudy3x7xb/AAAkAePDC9RviQs-kPpPYwU-a?dl=0' },
+];
+
+const CONTACT = { name: 'Thilo Kunz', email: 'thilo.kunz@wewater.org' };
+
+const releases = await pressReleases(locale);
+const coverage = await getEntry('press', locale);
+const Coverage = coverage ? (await render(coverage)).Content : undefined;
+
+const ogImage = await getImage({ src: banner, width: 1200, format: 'jpg' });
+const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'Europe/Berlin' });
+const contactCard = cardVariants({ variant: 'secondary' });
+---
+
+<BaseLayout title={t('presse.title')} description={t('presse.description')} image={ogImage.src}>
+  <HeroOverlay image={banner} size="large" align="center" overlay="dark">
+    <!-- No automatic hyphenation: it would split "WeWater" on phones. -->
+    <span slot="title" class="hyphens-manual">{t('presse.title')}</span>
+  </HeroOverlay>
+
+  <Section class="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
+    <div class="flex flex-col gap-5">
+      <h2 class="heading-2">{t('presse.heading')}</h2>
+      <p class="lead">{t('presse.intro')}</p>
+      <ul class="flex flex-wrap gap-3" aria-label={t('presse.kit')}>
+        {
+          PRESS_KIT.map((item) => (
+            <li>
+              <Button href={item.href} variant="outline" icon={item.icon} target="_blank" rel="noopener">
+                {t(item.label)}
+                <span class="sr-only">{t('nav.newTab')}</span>
+              </Button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <section class:list={[contactCard.base(), 'items-start gap-5 p-5 sm:flex-row sm:items-center md:p-6']} aria-labelledby="presse-contact">
+      <Image
+        src={contactPhoto}
+        alt={CONTACT.name}
+        width={192}
+        densities={[1, 2]}
+        class="aspect-square w-24 shrink-0 rounded-2xl object-cover sm:w-32"
+      />
+      <div class="flex min-w-0 flex-col gap-1">
+        <h2 id="presse-contact" class="eyebrow">{t('presse.contact')}</h2>
+        <p class="text-muted">{t('presse.contactText')}</p>
+        <p class="heading-3">{CONTACT.name}</p>
+        <a class="text-link wrap-anywhere underline underline-offset-2" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+      </div>
+    </section>
+  </Section>
+
+  {
+    releases.length > 0 && (
+      <Section muted aria-labelledby="presse-releases">
+        <h2 id="presse-releases" class="heading-2">
+          {t('presse.releases')}
+        </h2>
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {releases.map((post) => (
+            <Card
+              href={postUrl(post)}
+              image={post.data.hero}
+              title={post.data.title}
+              meta={dateFormat.format(post.data.date)}
+            />
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  {
+    coverage && Coverage && (
+      <Section aria-labelledby="presse-coverage">
+        <h2 id="presse-coverage" class="heading-2">
+          {coverage.data.title}
+        </h2>
+        <div class="prose max-w-(--container-prose)">
+          <Coverage />
+        </div>
+      </Section>
+    )
+  }
+</BaseLayout>

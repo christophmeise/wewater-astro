@@ -22,6 +22,21 @@
       "visual": false
     },
     {
+      "path": "/faq/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/en/faq/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/presse/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
       "path": "/styleguide/",
       "lighthouse": true,
       "visual": false

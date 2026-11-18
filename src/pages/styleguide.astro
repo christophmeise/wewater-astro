@@ -4,8 +4,11 @@
  * Not linked from the site, excluded from the sitemap, noindex.
  * When you add a component or token to the design system, add an example here.
  */
+import { getCollection } from 'astro:content';
 import heroImage from '@/assets/site/hero-home.jpg';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher.astro';
+import FaqAccordion from '@/components/pages/FaqAccordion.astro';
+import NewsletterForm from '@/components/pages/NewsletterForm.astro';
 import Button from '@/components/ui/Button.astro';
 import Card from '@/components/ui/Card.astro';
 import HeroOverlay from '@/components/ui/HeroOverlay.astro';
@@ -31,6 +34,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { buttonVariants, chipVariants } from '@heroui/styles';
 
 const iconNames = Object.keys(icons) as IconName[];
+const faqSample = (await getCollection('faq', (entry) => entry.data.lang === 'de'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
 
 const colors = [
   ['background', 'bg-background', 'Page background'],
@@ -176,6 +182,25 @@ const colors = [
         </Card>
         <Card variant="secondary" title="Card without image" description="Secondary variant on white, e.g. for teasers in a sidebar." />
       </div>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-newsletter">
+      <h2 id="sg-newsletter" class="heading-2">NewsletterForm</h2>
+      <p class="max-w-(--container-prose)"> <code>&lt;NewsletterForm locale="de" /&gt;</code> (<code>src/components/pages/NewsletterForm.astro</code>): plain HTML form posting to Mailchimp, with HeroUI <code>textfield</code>, <code>label</code> and <code>input</code> styles, Mailchimp's hidden anti-spam field and a privacy note. The caller supplies the heading. Props: <code>locale</code>, <code>id</code> (unique per page), <code>layout</code> (stacked, inline). </p>
+      <div class="grid items-start gap-6 md:grid-cols-[20rem_minmax(0,1fr)]">
+        <Card variant="secondary" title="Jetzt für unseren Wassernewsletter anmelden">
+          <NewsletterForm locale="de" id="sg-newsletter-stacked" />
+        </Card>
+        <div class="bg-background-secondary rounded-3xl p-6">
+          <NewsletterForm locale="de" id="sg-newsletter-inline" layout="inline" />
+        </div>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-faq">
+      <h2 id="sg-faq" class="heading-2">FaqAccordion</h2>
+      <p class="max-w-(--container-prose)"> <code>&lt;FaqAccordion entries={'{…}'} locale="de" /&gt;</code> (<code>src/components/pages/FaqAccordion.astro</code>): HeroUI accordion classes (surface variant) on native <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code>, so it works without JavaScript. Renders entries of the <code>faq</code> collection; one question per <code>name</code> group is open at a time. </p>
+      <FaqAccordion entries={faqSample} locale="de" name="sg-faq" class="max-w-(--container-prose)" />
     </section>
 
     <section class="flex flex-col gap-6" aria-labelledby="sg-section">

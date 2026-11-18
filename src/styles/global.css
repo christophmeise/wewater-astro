@@ -34,6 +34,12 @@
 @import '@heroui/styles/components/table.css' layer(components);
 /* Notes such as "this legal text is only available in German" (Notice.astro). */
 @import '@heroui/styles/components/alert.css' layer(components);
+/* FAQ accordion, built on native <details>/<summary> (see src/pages/[...lang]/faq.astro). */
+@import '@heroui/styles/components/accordion.css' layer(components);
+/* Form fields: newsletter sign-up (src/components/pages/NewsletterForm.astro). */
+@import '@heroui/styles/components/textfield.css' layer(components);
+@import '@heroui/styles/components/label.css' layer(components);
+@import '@heroui/styles/components/input.css' layer(components);
 
 @import '@heroui/styles/utilities';
 @import '@heroui/styles/variants';
