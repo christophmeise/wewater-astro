@@ -111,8 +111,9 @@ const headingClass = 'text-sm font-semibold uppercase tracking-widest';
           <p>
             WeWater gUG<br />
             Bank für Sozialwirtschaft<br />
-            IBAN: DE90 3702 0500 0001 6026 01<br />
-            BIC-/SWIFT: BFSWDE33XXX
+            {/* Account numbers never break across lines. */}
+            IBAN: <span class="whitespace-nowrap">DE90 3702 0500 0001 6026 01</span><br />
+            BIC-/SWIFT: <span class="whitespace-nowrap">BFSWDE33XXX</span>
           </p>
           <p class="text-muted text-sm">{t('footer.bankNote')}</p>
         </div>
