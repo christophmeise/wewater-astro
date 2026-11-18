@@ -150,6 +150,24 @@
     @apply bg-foreground text-background fixed top-2 left-2 z-50 -translate-y-24 rounded-xl px-4 py-3 font-medium transition-transform focus:translate-y-0;
   }
 
+  /*
+   * Feature tiles (home "Innovation", project <IntroTiles>): a small brand-blue dot hangs in front of
+   * the tile title, so title and text share one left edge (as on the old site). Below md the gutter
+   * is too narrow for it, so the whole tile moves in instead.
+   */
+  .dot-tile {
+    @apply max-md:ps-4;
+  }
+
+  .dot-title {
+    @apply relative;
+  }
+
+  .dot-title::before {
+    content: '';
+    @apply bg-accent absolute -left-3.5 top-[calc(0.5lh-0.25rem)] size-2 rounded-full;
+  }
+
   /* Brand primary button: brand blue with navy text (8.8:1 contrast). */
   .button--primary {
     @apply font-semibold;
@@ -158,6 +176,33 @@
   /* Link inside running text (e.g. UI strings rendered with rich()): underlined, so it is not told apart by colour alone. */
   .link-inline {
     @apply text-link decoration-link/40 hover:decoration-link font-medium underline decoration-1 underline-offset-2 transition-colors;
+  }
+
+  /*
+   * On phones a label too long for one line (French CTAs on a 320px screen) wraps inside the button
+   * instead of pushing the page sideways. Short labels keep HeroUI's height.
+   */
+  @media (width < 40rem) {
+    .button:not(.button--icon-only) {
+      @apply h-auto min-h-10 max-w-full py-2 text-center text-balance whitespace-normal;
+    }
+
+    .button--sm:not(.button--icon-only) {
+      @apply min-h-9;
+    }
+
+    .button--lg:not(.button--icon-only) {
+      @apply min-h-11;
+    }
+  }
+
+  /* Outline buttons: a clearer edge than HeroUI's hairline, closer to the old site's navy outline. */
+  .button--outline {
+    border-color: color-mix(in oklch, var(--foreground) 28%, transparent);
+  }
+
+  .button--outline:hover:not(:disabled, [aria-disabled='true']) {
+    border-color: color-mix(in oklch, var(--foreground) 55%, transparent);
   }
 
   /* White outline button for use on photos and dark backgrounds. */
@@ -232,6 +277,30 @@
    */
   .project-content > :where(p, ul, ol, h2, h3, h4, blockquote, table, hr) {
     @apply mx-auto max-w-(--container-prose);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Scroll reveal (.reveal): content rises gently into place as it scrolls into view, the old site's
+ * sal.js "slide-up" as a CSS scroll-driven animation (no JavaScript, runs off the main thread).
+ * Only a transform: it never causes layout shifts, never delays the LCP and never leaves text
+ * half-transparent (which would also fail contrast checks). Off with prefers-reduced-motion and in
+ * browsers without scroll-driven animations. Put it on blocks below the first screen, not on the hero.
+ * ------------------------------------------------------------------------- */
+
+@keyframes reveal-rise {
+  from {
+    translate: 0 var(--reveal-distance, 1.5rem);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 90%;
+    }
   }
 }
 

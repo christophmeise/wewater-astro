@@ -43,9 +43,9 @@ const icons: AnimatedIconName[] = ['pin', 'map', 'todo', 'people'];
   <ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4" role="list">
     {
       tiles.map((tile, i) => (
-        <li class="flex flex-col gap-3">
+        <li class="dot-tile flex flex-col gap-3">
           <AnimatedIcon name={icons[i % icons.length] ?? 'pin'} />
-          <p class="tile-title relative font-semibold">{tile.title}</p>
+          <p class="dot-title font-semibold">{tile.title}</p>
           {tile.text.split(/\n{2,}/).map((para) => (
             <p class="text-muted">{para}</p>
           ))}
@@ -55,22 +55,3 @@ const icons: AnimatedIconName[] = ['pin', 'map', 'todo', 'people'];
   </ul>
 </section>
 
-<style>
-  /* Small brand-blue dot in front of the tile title, as on the old site. */
-  .tile-title::before {
-    content: '';
-    position: absolute;
-    top: 0.55em;
-    left: -0.9rem;
-    width: 0.45rem;
-    height: 0.45rem;
-    border-radius: 9999px;
-    background: var(--accent);
-  }
-
-  @media (width < 40rem) {
-    .tile-title {
-      margin-left: 0.9rem;
-    }
-  }
-</style>

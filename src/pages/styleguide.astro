@@ -373,7 +373,7 @@ const colors = [
       </div>
 
       <div class="grid gap-10 lg:grid-cols-2">
-        <div class="flex flex-col gap-4">
+        <div class="flex min-w-0 flex-col gap-4">
           <h3 class="heading-3">LinkCard</h3>
           <p class="text-muted text-sm"> A card that is one link (instead of social media embeds). Props: <code>href</code>, <code>icon</code>, <code>title</code>, <code>text</code>, <code>external</code> + <code>newTabLabel</code>. </p>
           <LinkCard href="https://www.instagram.com/wewater_org/" icon="instagram" title="Instagram" text="instagram.com/wewater_org" external newTabLabel="(öffnet in neuem Tab)" class="max-w-sm" />
@@ -424,3 +424,10 @@ const colors = [
     </section>
   </div>
 </BaseLayout>
+
+<style>
+  /* Long component and prop names wrap on phones instead of widening the page. */
+  code {
+    overflow-wrap: anywhere;
+  }
+</style>
