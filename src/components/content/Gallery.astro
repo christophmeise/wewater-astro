@@ -1,8 +1,9 @@
 ---
 /**
- * Photo gallery: a grid of thumbnails (two columns on phones, `columns` from tablet up). Clicking a
- * photo opens it large in a native <dialog> lightbox, a swipeable scroll-snap strip with prev/next
- * buttons, arrow keys and Esc. Without JavaScript the thumbnails link to the large image.
+ * Photo gallery: a grid of thumbnails (two columns on phones, about `columns` from tablet up, see
+ * the layout notes below). Clicking a photo opens it large in a native <dialog> lightbox, a
+ * swipeable scroll-snap strip with prev/next buttons, arrow keys and Esc. Without JavaScript the
+ * thumbnails link to the large image.
  *
  *   <Gallery
  *     columns={3}
@@ -36,10 +37,12 @@ const t = useTranslations(getLocale(Astro.currentLocale));
 
 /*
  * Grid layout without a lonely photo in the last row. `columns` is a wish: from tablet up the
- * gallery uses up to 3 columns in a blog post's text column and up to 4 on project pages, picks
- * the count that leaves the fewest empty cells, and may show the first photo large (2 x 2 cells)
- * when that fills the grid exactly (e.g. 5 photos: one large and four small; 13: one large and
- * twelve small). Phones show two columns; with an odd count the first photo spans both.
+ * gallery uses up to 3 columns in a blog post's text column and up to 4 on project pages, avoids
+ * a single photo in the last row and empty cells, and may show the first photo large (2 x 2
+ * cells) when that fills the grid exactly (e.g. 5 photos: one large and four small; 13: one large
+ * and twelve small; 4 photos: one row on project pages, 2 x 2 in posts). Phones show two columns;
+ * with an odd count the first photo spans both. Galleries with per-photo captions never get a
+ * large first photo.
  */
 const n = images.length;
 const maxCols = ((Astro.locals as { contentMaxWidth?: number }).contentMaxWidth ?? 1200) < 900 ? 3 : 4;
