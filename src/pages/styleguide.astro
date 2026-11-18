@@ -15,9 +15,18 @@ import Logo from '@/components/ui/Logo.astro';
 import PlainHeader from '@/components/ui/PlainHeader.astro';
 import Section from '@/components/ui/Section.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import CategoryChips from '@/components/pages/CategoryChips.astro';
+import PostCard from '@/components/pages/PostCard.astro';
+import ProjectCard from '@/components/pages/ProjectCard.astro';
+import StatusChip from '@/components/pages/StatusChip.astro';
+import { getPosts, getProjects } from '@/lib/content';
 import { buttonVariants, chipVariants } from '@heroui/styles';
 
 const iconNames = Object.keys(icons) as IconName[];
+const [samplePost] = await getPosts('de');
+const projects = await getProjects('de');
+const sampleProject = projects[0];
+const completedProject = projects.find((p) => p.data.status === 'completed');
 
 const colors = [
   ['background', 'bg-background', 'Page background'],
@@ -139,7 +148,7 @@ const colors = [
 
     <section class="flex flex-col gap-6" aria-labelledby="sg-cards">
       <h2 id="sg-cards" class="heading-2">Cards</h2>
-      <p class="max-w-(--container-prose)"> <code>&lt;Card&gt;</code>: image, chip or eyebrow, title, meta, description. With <code>href</code> the whole card is one link. Props: <code>title</code>, <code>href</code>, <code>image</code>, <code>imageAlt</code>, <code>eyebrow</code>, <code>chip</code>, <code>meta</code>, <code>description</code>, <code>titleTag</code>, <code>variant</code>. Slots: default, <code>footer</code>. </p>
+      <p class="max-w-(--container-prose)"> <code>&lt;Card&gt;</code>: image, chip or eyebrow, title, meta, description. With <code>href</code> the whole card is one link. Props: <code>title</code>, <code>href</code>, <code>image</code>, <code>imageAlt</code>, <code>eyebrow</code>, <code>chip</code>, <code>meta</code>, <code>description</code>, <code>titleTag</code>, <code>variant</code>, <code>size</code> (<code>lg</code>: featured card), <code>sizes</code> (image width outside the 3-column grid), <code>priority</code> (eager image, only for the first card at the top of a page). Slots: default, <code>footer</code>, <code>chips</code> (custom chips above the title). </p>
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card
           href="/blog/"
@@ -155,6 +164,31 @@ const colors = [
           </Fragment>
         </Card>
         <Card variant="secondary" title="Card without image" description="Secondary variant on white, e.g. for teasers in a sidebar." />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-content-cards">
+      <h2 id="sg-content-cards" class="heading-2">Post and project cards</h2>
+      <p class="max-w-(--container-prose)"> <code>&lt;PostCard post=&#123;post&#125; /&gt;</code> and <code>&lt;ProjectCard project=&#123;project&#125; /&gt;</code> (<code>src/components/pages/</code>), built on <code>&lt;Card&gt;</code>: hero image, chips, title, date in the entry's language, the whole card one link. Post chips: the first three categories with their colour dot (<code>&lt;CategoryChips&gt;</code>). Project chip: the status with a static icon (<code>&lt;StatusChip&gt;</code>). Props: <code>titleTag</code>, <code>sizes</code>, <code>priority</code>; PostCard also <code>size="lg"</code> (featured, with excerpt). In a grid: <code>&lt;ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"&gt;</code> with each card in <code>&lt;li class="flex"&gt;</code>. </p>
+      {
+        samplePost && sampleProject && (
+          <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <li class="flex">
+              <PostCard post={samplePost} />
+            </li>
+            <li class="flex">
+              <ProjectCard project={sampleProject} />
+            </li>
+            <li class="flex">
+              <ProjectCard project={completedProject ?? sampleProject} />
+            </li>
+          </ul>
+        )
+      }
+      <div class="flex flex-wrap items-center gap-3">
+        {samplePost && <CategoryChips categories={samplePost.data.categories} locale="de" />}
+        <StatusChip status="in-progress" locale="de" />
+        <StatusChip status="completed" locale="de" />
       </div>
     </section>
 

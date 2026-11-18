@@ -1,0 +1,42 @@
+---
+/**
+ * Project teaser, built on <Card>: hero image, status chip ("In Arbeit" / "Abgeschlossen" with a
+ * static icon), title, date. The whole card links to the project.
+ *
+ *   <ProjectCard project={project} />
+ *   <ProjectCard project={project} sizes="(min-width: 75rem) 36rem, (min-width: 48rem) 50vw, 100vw" />
+ */
+import Card from '@/components/ui/Card.astro';
+import { formatDate } from '@/lib/format';
+import { projectUrl, type Project } from '@/lib/content';
+import StatusChip from './StatusChip.astro';
+
+interface Props {
+  project: Project;
+  /** Heading level of the title. Default h3. */
+  titleTag?: 'h2' | 'h3' | 'h4' | undefined;
+  /** `sizes` of the image for layouts other than the 3-column grid. */
+  sizes?: string | undefined;
+  /** Eager, high-priority image (the first card at the top of a page). */
+  priority?: boolean | undefined;
+  class?: string | undefined;
+}
+
+const { project, titleTag, sizes, priority, class: className } = Astro.props;
+const { data } = project;
+---
+
+<Card
+  href={projectUrl(project)}
+  image={data.hero}
+  title={data.title}
+  titleTag={titleTag}
+  sizes={sizes}
+  priority={priority}
+  class:list={['w-full', className]}
+>
+  <StatusChip slot="chips" status={data.status} locale={data.lang} />
+  <p class="text-muted text-sm">
+    <time datetime={data.date.toISOString()}>{formatDate(data.date, data.lang)}</time>
+  </p>
+</Card>
