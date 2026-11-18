@@ -1,176 +1,154 @@
 /*
- * Global design tokens and base typography.
- * Ported from the old site's src/semantic/site/globals/site.variables,
- * site.overrides and src/styles/global.less.
+ * WeWater design system: entry stylesheet.
  *
- * Breakpoints (use these exact values in component media queries):
- *   mobile          width <= 767px
- *   tablet          768px - 1023px
- *   desktop         width >= 1024px
- *   desktop large   width >= 1200px  (container is fixed at 1200px)
+ * Built on Tailwind CSS v4 and HeroUI v3's framework-agnostic styles (@heroui/styles):
+ * components use HeroUI's BEM classes (.button, .card, .chip, ...) and Tailwind utilities.
+ * No React and no runtime JavaScript are involved; everything compiles to static CSS.
+ *
+ * Tokens (colours, type scale, spacing, radii) live in ./tokens.css.
+ * Only the HeroUI component styles we actually use are imported below, to keep CSS small.
+ * When you start using another HeroUI component, add its import here.
  */
 
-:root {
-  /* Brand colours */
-  --color-primary: #5abee6; /* backgrounds, decoration, large display text */
-  --color-primary-text: #1878a8; /* same hue, 4.9:1 on white: small text, links, button backgrounds */
-  --color-dark: #000d3e; /* main text colour, "secondary" in the old theme */
-  --color-bright: #fff;
-  --color-extra-1: #e6955a; /* orange */
-  --color-extra-2: #7e5ae6; /* violet */
-  --color-extra-3: #74e3a2; /* green */
-  --color-bg: #fff;
-  --color-bg-secondary: #f6f9fc;
+@layer theme, base, components, utilities;
 
-  /* Typography */
-  --font-body: var(--font-poppins), 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+@import 'tailwindcss';
 
-  /* Shape */
-  --radius: 25px;
-  --radius-small: 15px;
-  --shadow: 0 5px 12px 0 rgb(0 13 62 / 15%), 0 10px 30px 0 rgb(0 13 62 / 8.5%);
-  --shadow-lg: 0 1rem 3rem rgb(0 13 62 / 17.5%);
+/* HeroUI base, theme bridge and default theme (overridden by tokens.css). */
+@import '@heroui/styles/base' layer(base);
+@import '@heroui/styles/themes/shared/theme.css' layer(theme);
+@import '@heroui/styles/themes/default' layer(theme);
 
-  /* Layout */
-  --container: 1200px;
-  --gutter: 1rem;
+/* HeroUI components in use. */
+@import '@heroui/styles/components/button.css' layer(components);
+@import '@heroui/styles/components/card.css' layer(components);
+@import '@heroui/styles/components/chip.css' layer(components);
+@import '@heroui/styles/components/link.css' layer(components);
+@import '@heroui/styles/components/separator.css' layer(components);
+@import '@heroui/styles/components/surface.css' layer(components);
+@import '@heroui/styles/components/avatar.css' layer(components);
+
+@import '@heroui/styles/utilities';
+@import '@heroui/styles/variants';
+
+/* Long-form content (blog posts, projects, legal pages): <div class="prose">. */
+@plugin '@tailwindcss/typography';
+
+/* WeWater tokens: must come after HeroUI's theme so they win. */
+@import './tokens.css';
+
+/* ---------------------------------------------------------------------------
+ * Base element styles
+ * ------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    /* 100% = the reader's chosen size (16px by default). Never set a px root size. */
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: var(--header-height);
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans text-base antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading text-balance;
+    hyphens: auto;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/* ---------------------------------------------------------------------------
+ * Typography roles. Use these classes instead of ad-hoc font sizes.
+ *   .text-display  hero headline (h1 on pages with a hero image)
+ *   .heading-1     page title (h1 without a hero)
+ *   .heading-2     section title (h2)
+ *   .heading-3     card / sub-section title (h3)
+ *   .eyebrow       small coloured kicker above a section title
+ *   .lead          intro paragraph below a title
+ * ------------------------------------------------------------------------- */
 
-html {
-  font-size: 14px; /* Semantic UI base size; rem values in components assume this */
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
+@layer components {
+  .text-display {
+    @apply font-heading text-display leading-none font-semibold tracking-tighter text-balance;
+  }
 
-body {
-  margin: 0;
-  background: var(--color-bg);
-  color: var(--color-dark);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.4285em;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+  .heading-1 {
+    @apply font-heading text-4xl leading-tight font-semibold tracking-tight text-balance;
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: calc(2rem - 0.1428em) 0 1rem;
-  font-family: var(--font-body);
-  font-weight: 700;
-  line-height: 1.2857em;
-  hyphens: auto;
-}
+  .heading-2 {
+    @apply font-heading text-3xl leading-tight font-medium tracking-tight text-balance;
+  }
 
-:is(h1, h2, h3, h4, h5, h6):first-child {
-  margin-top: 0;
-}
+  .heading-3 {
+    @apply font-heading text-xl leading-snug font-semibold text-balance;
+  }
 
-h1 {
-  font-size: 72px;
-  letter-spacing: -0.05em;
-}
+  .eyebrow {
+    @apply text-link text-sm font-semibold tracking-wide;
+  }
 
-h2 {
-  color: var(--color-dark);
-  font-size: 38px;
-  font-weight: 500;
-  line-height: 43px;
-  letter-spacing: -0.025em;
-}
+  .lead {
+    @apply text-muted text-lg leading-relaxed text-pretty;
+  }
 
-h3 {
-  /* The old site used the light brand blue here; it fails contrast at 18px. */
-  color: var(--color-primary-text);
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 23px;
-}
+  /* Page container: 1200px max, fluid side padding. */
+  .container-page {
+    @apply mx-auto w-full max-w-(--container-page) px-(--gutter);
+  }
 
-h4 {
-  color: var(--color-dark);
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 23px;
-}
+  /* Vertical rhythm between page sections. */
+  .section {
+    @apply py-(--space-section);
+  }
 
-p {
-  margin: 0 0 1em;
-  color: var(--color-dark);
-  font-size: 15px;
-  line-height: 20px;
-}
+  .section--muted {
+    @apply bg-background-secondary;
+  }
 
-p:last-child {
-  margin-bottom: 0;
-}
+  .visually-hidden {
+    @apply sr-only;
+  }
 
-a {
-  color: var(--color-primary-text);
-  text-decoration: none;
-}
+  .skip-link {
+    @apply bg-foreground text-background fixed top-2 left-2 z-50 -translate-y-24 rounded-xl px-4 py-3 font-medium transition-transform focus:translate-y-0;
+  }
 
-a:hover {
-  text-decoration: underline;
-}
+  /* Brand primary button: brand blue with navy text (8.8:1 contrast). */
+  .button--primary {
+    @apply font-semibold;
+  }
 
-img,
-video,
-svg {
-  max-width: 100%;
-  height: auto;
-}
-
-:focus-visible {
-  outline: 3px solid var(--color-primary-text);
-  outline-offset: 2px;
-}
-
-.container {
-  width: min(100% - 2 * var(--gutter), var(--container));
-  margin-inline: auto;
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.skip-link {
-  position: absolute;
-  top: -100px;
-  left: 1rem;
-  z-index: 1000;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-small);
-  background: var(--color-dark);
-  color: var(--color-bright);
-}
-
-.skip-link:focus {
-  top: 1rem;
-}
-
-@media (width <= 767px) {
-  h2 {
-    font-size: 32px;
-    line-height: 40px;
-    word-break: break-word;
+  /* White outline button for use on photos and dark backgrounds. */
+  .button--inverted {
+    --button-bg: transparent;
+    --button-bg-hover: color-mix(in oklch, var(--white) 15%, transparent);
+    --button-fg: var(--white);
+    box-shadow: inset 0 0 0 2px var(--white);
+    @apply font-semibold;
   }
 }
 

@@ -2,6 +2,7 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite';
 
 const LOCALES = ['de', 'en', 'fr'];
 const DEFAULT_LOCALE = 'de';
@@ -51,9 +52,15 @@ export default defineConfig({
     layout: 'constrained',
   },
 
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
   integrations: [
     mdx(),
     sitemap({
+      // Internal pages that must not be indexed.
+      filter: (page) => !page.includes('/styleguide/'),
       i18n: {
         defaultLocale: DEFAULT_LOCALE,
         locales: { de: 'de', en: 'en', fr: 'fr' },

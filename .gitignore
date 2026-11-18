@@ -8,3 +8,6 @@ playwright-report/
 .env
 .DS_Store
 tests/__screenshots__/
+
+# Agent worktrees (local only)
+.claude/worktrees/
