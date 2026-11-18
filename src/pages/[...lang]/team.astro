@@ -61,7 +61,7 @@ const paragraphs = (text: string) => text.split(/\n\s*\n/).map((p) => p.trim()).
     {
       members.map(({ data }) => (
         <Card image={data.photo} imageAlt={data.photoAlt} eyebrow={data.role[locale]} title={data.name} titleTag="h2">
-          <div class="text-muted flex flex-col gap-3">
+          <div class="text-foreground flex flex-col gap-3">
             {paragraphs(data.description[locale]).map((p) => (
               <p>{p}</p>
             ))}

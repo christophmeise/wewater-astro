@@ -124,7 +124,7 @@ const items = await Promise.all(
   </ul>
   {caption && <figcaption class="text-muted text-center text-sm">{caption}</figcaption>}
 
-  <dialog class="gallery-dialog bg-foreground/95 m-0 h-dvh max-h-none w-dvw max-w-none p-0 text-white" aria-label={t('content.gallery.label')}>
+  <dialog class="gallery-dialog bg-foreground m-0 h-dvh max-h-none w-dvw max-w-none p-0 text-white" aria-label={t('content.gallery.label')}>
     <div class="flex h-full w-full snap-x snap-mandatory overflow-x-auto" data-track>
       {
         items.map((item) => (
