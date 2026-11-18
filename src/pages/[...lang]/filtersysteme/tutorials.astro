@@ -1,0 +1,54 @@
+---
+/**
+ * AQQAcube tutorials: /filtersysteme/tutorials/ (+ /en/, /fr/). Five YouTube videos as click-to-load
+ * facades; English has its own videos, French uses the German ones (see tutorials.ts).
+ * The posters are stills from our own AQQAcube footage (not YouTube's thumbnails), so the page
+ * requests nothing from YouTube until a video is played.
+ */
+import posterDisinfection from '@/assets/pages/tutorials/poster-disinfection.jpg';
+import posterInstallation from '@/assets/pages/tutorials/poster-installation.jpg';
+import posterIntro from '@/assets/pages/tutorials/poster-intro.jpg';
+import posterMaintenance from '@/assets/pages/tutorials/poster-maintenance.jpg';
+import posterOperation from '@/assets/pages/tutorials/poster-operation.jpg';
+import YouTubeVideo from '@/components/pages/YouTubeVideo.astro';
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const VIDEOS = [
+  { key: 'intro', poster: posterIntro },
+  { key: 'installation', poster: posterInstallation },
+  { key: 'operation', poster: posterOperation },
+  { key: 'maintenance', poster: posterMaintenance },
+  { key: 'disinfection', poster: posterDisinfection },
+] as const;
+const videos = VIDEOS.map(({ key, poster }) => ({
+  title: t(`tutorials.video.${key}.title`),
+  id: t(`tutorials.video.${key}.id`),
+  poster,
+}));
+---
+
+<BaseLayout title={t('tutorials.seo.title')} description={t('tutorials.seo.description')}>
+  <PlainHeader eyebrow={t('nav.filtersystems')} title={t('tutorials.title')} lead={t('tutorials.lead')} />
+
+  <Section>
+    <p class="mx-auto max-w-(--container-prose) text-center text-lg">{t('tutorials.intro')}</p>
+    <ul class="grid gap-x-8 gap-y-12 md:grid-cols-2">
+      {
+        videos.map((video) => (
+          <li class="flex flex-col gap-4">
+            <h2 class="heading-3">{video.title}</h2>
+            <YouTubeVideo id={video.id} title={video.title} playLabel={t('tutorials.play')} poster={video.poster} />
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+</BaseLayout>
