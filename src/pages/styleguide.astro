@@ -4,8 +4,20 @@
  * Not linked from the site, excluded from the sitemap, noindex.
  * When you add a component or token to the design system, add an example here.
  */
+import heroImage from '@/assets/site/hero-home.jpg';
+import LanguageSwitcher from '@/components/layout/LanguageSwitcher.astro';
+import Button from '@/components/ui/Button.astro';
+import Card from '@/components/ui/Card.astro';
+import HeroOverlay from '@/components/ui/HeroOverlay.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { icons, type IconName } from '@/components/ui/icons';
+import Logo from '@/components/ui/Logo.astro';
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { buttonVariants, chipVariants } from '@heroui/styles';
+
+const iconNames = Object.keys(icons) as IconName[];
 
 const colors = [
   ['background', 'bg-background', 'Page background'],
@@ -22,7 +34,7 @@ const colors = [
 ---
 
 <BaseLayout title="Styleguide" noindex alternates={{}}>
-  <div class="container-page section flex flex-col gap-16">
+  <div class="container-page flex flex-col gap-16 pt-[calc(var(--header-height)+var(--space-section))]">
     <header class="flex flex-col gap-3">
       <p class="eyebrow">WeWater design system</p>
       <h1 class="heading-1">Styleguide</h1>
@@ -40,10 +52,7 @@ const colors = [
       <p class="heading-3">Card title (heading-3)</p>
       <p class="eyebrow">Eyebrow above a section title</p>
       <p class="lead max-w-(--container-prose)">Lead paragraph. Introduces a section in one or two sentences.</p>
-      <p class="max-w-(--container-prose)">
-        Body text at 16px with a 1.65 line height. Hinter WeWater steht ein engagiertes, überwiegend ehrenamtliches Team.
-        Um unsere Projekte weltweit umzusetzen, sind wir auf Spenden angewiesen. <a class="link" href="/spenden/">Ein Link im Text</a>.
-      </p>
+      <p class="max-w-(--container-prose)"> Body text at 16px with a 1.65 line height. Hinter WeWater steht ein engagiertes, überwiegend ehrenamtliches Team. Um unsere Projekte weltweit umzusetzen, sind wir auf Spenden angewiesen. <a class="link" href="/spenden/">Ein Link im Text</a>. </p>
     </section>
 
     <section class="flex flex-col gap-6" aria-labelledby="sg-colors">
@@ -88,16 +97,132 @@ const colors = [
       </div>
     </section>
 
+    <section class="flex flex-col gap-6" aria-labelledby="sg-button">
+      <h2 id="sg-button" class="heading-2">Button component</h2>
+      <p class="max-w-(--container-prose)"> <code>&lt;Button&gt;</code> (<code>src/components/ui/Button.astro</code>) wraps the HeroUI button: <code>href</code> renders a link, otherwise a <code>&lt;button type="button"&gt;</code>. Props: <code>variant</code> (primary, secondary, tertiary, outline, ghost, inverted), <code>size</code> (sm, md, lg), <code>icon</code>, <code>fullWidth</code>, <code>iconOnly</code> (needs <code>aria-label</code>). </p>
+      <div class="flex flex-wrap items-center gap-3">
+        <Button href="/spenden/" icon="tint">Ich will helfen!</Button>
+        <Button href="/blog/" variant="secondary" icon="newspaper">Alle News</Button>
+        <Button variant="outline" icon="mail">Kontakt</Button>
+        <Button variant="ghost" iconOnly icon="chevron-right" aria-label="Weiter" />
+        <Button size="lg" href="/spenden/">Large</Button>
+      </div>
+      <div class="bg-foreground flex flex-wrap gap-3 rounded-3xl p-6">
+        <Button variant="inverted" href="/projekte/" icon="grid">Alle Projekte</Button>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-icons">
+      <h2 id="sg-icons" class="heading-2">Icons</h2>
+      <p class="max-w-(--container-prose)"> <code>&lt;Icon name="…" /&gt;</code> renders inline SVG at build time: 1em high, <code>currentColor</code>. Decorative by default; pass <code>label</code> when the icon stands alone. Add icons in <code>src/components/ui/icons.ts</code>. </p>
+      <ul class="grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-3">
+        {
+          iconNames.map((name) => (
+            <li class="bg-background-secondary flex items-center gap-3 rounded-2xl p-3 text-sm">
+              <Icon name={name} class="text-link text-2xl" />
+              <code>{name}</code>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-logo">
+      <h2 id="sg-logo" class="heading-2">Logo</h2>
+      <p class="max-w-(--container-prose)"> <code>&lt;Logo alt="…" class="size-14" /&gt;</code>: optimised WebP (1x/2x). Size with <code>size-*</code> up to 4rem. Use <code>alt=""</code> inside a link that is already named. </p>
+      <div class="flex items-end gap-6">
+        <Logo alt="WeWater" class="size-16" />
+        <Logo alt="WeWater" class="size-14" />
+        <Logo alt="WeWater" class="size-12" />
+      </div>
+    </section>
+
     <section class="flex flex-col gap-6" aria-labelledby="sg-cards">
       <h2 id="sg-cards" class="heading-2">Cards</h2>
-      <div class="grid gap-6 md:grid-cols-3">
-        <article class="card">
-          <div class="card__header">
-            <h3 class="card__title heading-3">Card title</h3>
-            <p class="card__description">Card description in muted text.</p>
-          </div>
-          <div class="card__content"><p>Content of the card.</p></div>
-        </article>
+      <p class="max-w-(--container-prose)"> <code>&lt;Card&gt;</code>: image, chip or eyebrow, title, meta, description. With <code>href</code> the whole card is one link. Props: <code>title</code>, <code>href</code>, <code>image</code>, <code>imageAlt</code>, <code>eyebrow</code>, <code>chip</code>, <code>meta</code>, <code>description</code>, <code>titleTag</code>, <code>variant</code>. Slots: default, <code>footer</code>. </p>
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card
+          href="/blog/"
+          image={heroImage}
+          chip={{ label: 'Projekt-Update', color: 'accent' }}
+          title="50 % weniger Krankheiten in Uvira"
+          meta="12. März 2026 · 4 Min. Lesezeit"
+          description="Was sauberes Trinkwasser für eine Schule im Osten des Kongo verändert hat."
+        />
+        <Card href="/projekte/" image={heroImage} eyebrow="AQQAcube · DR Kongo" title="Sauberes Wasser für Süd-Kivu">
+          <Fragment slot="footer">
+            <span class={chipVariants({ color: 'success' }).base()}><span class="chip__label">Abgeschlossen</span></span>
+          </Fragment>
+        </Card>
+        <Card variant="secondary" title="Card without image" description="Secondary variant on white, e.g. for teasers in a sidebar." />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-section">
+      <h2 id="sg-section" class="heading-2">Section</h2>
+      <p class="max-w-(--container-prose)"> <code>&lt;Section muted&gt;</code>: fluid vertical spacing, page container and a gap between children. <code>muted</code> gives the grey-blue band; <code>class</code> replaces the inner layout (e.g. a grid). </p>
+    </section>
+  </div>
+
+  <Section muted class="grid gap-6 md:grid-cols-2">
+    <p class="heading-3">A muted section</p>
+    <p>Children sit in the page container; here as a two-column grid.</p>
+  </Section>
+
+  <div class="container-page flex flex-col gap-16 py-(--space-section)">
+    <section class="flex flex-col gap-6" aria-labelledby="sg-hero">
+      <h2 id="sg-hero" class="heading-2">HeroOverlay</h2>
+      <p class="max-w-(--container-prose)"> Photo or video hero with the wave; the fixed header sits on top of it. Props: <code>image</code>, <code>imageMobile</code>, <code>video</code>, <code>eyebrow</code>, <code>title</code>, <code>lead</code> (or slots of the same name), <code>actions</code> slot, <code>size</code> (screen, large, medium), <code>align</code>, <code>position</code>, <code>width</code>, <code>overlay</code>, <code>inset</code>, <code>wave</code>, <code>priority</code>. The page hero keeps <code>priority</code> (eager, high fetch priority); heroes lower on a page set <code>priority={'{false}'}</code>. </p>
+    </section>
+  </div>
+
+  <HeroOverlay
+    image={heroImage}
+    size="medium"
+    priority={false}
+    titleTag="p"
+    eyebrow="size=medium"
+    title="Wasser weltweit klarmachen."
+    lead="Full-bleed hero with the gradient overlay and the wave."
+  >
+    <Fragment slot="actions">
+      <Button href="/spenden/" icon="tint">Ich will helfen!</Button>
+      <Button href="/blog/" variant="inverted" icon="newspaper">Alle News</Button>
+    </Fragment>
+  </HeroOverlay>
+
+  <HeroOverlay
+    image={heroImage}
+    inset
+    size="medium"
+    position="bottom"
+    overlay="dark"
+    priority={false}
+    titleTag="p"
+    eyebrow="inset, position=bottom, overlay=dark"
+    title="Blog post header"
+  />
+
+  <div class="container-page flex flex-col gap-16 py-(--space-section)">
+    <section class="flex flex-col gap-6" aria-labelledby="sg-plain">
+      <h2 id="sg-plain" class="heading-2">PlainHeader</h2>
+      <p class="max-w-(--container-prose)"> Centred title for pages without a photo (FAQ, Impressum, …). Leaves room for the fixed header. Props: <code>eyebrow</code>, <code>title</code>, <code>lead</code>, <code>titleTag</code>; default slot below. </p>
+      <div class="border-border rounded-3xl border pb-8">
+        <PlainHeader titleTag="p" eyebrow="Hilfe" title="FAQ" lead="Häufig gestellte Fragen" />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-6" aria-labelledby="sg-header">
+      <h2 id="sg-header" class="heading-2">Header, mobile menu, language switcher, footer</h2>
+      <ul class="flex max-w-(--container-prose) list-disc flex-col gap-2 ps-5">
+        <li> <strong>Header</strong> (top of this page): fixed and translucent over heroes. From <code>lg</code> (1024px) the desktop bar with the Filtersysteme mega-menu (hover or keyboard focus, Escape closes); below it the mobile bar. </li>
+        <li> <strong>Mobile menu</strong>: burger <code>&lt;button aria-expanded&gt;</code>, full-screen list. Without JavaScript it shows as a plain link list. </li>
+        <li> <strong>Language switcher</strong>: <code>&lt;details&gt;</code> with plain links to this page in each language (BaseLayout <code>alternates</code>); missing translations link to that language's home page. </li>
+        <li><strong>Footer</strong> (bottom of this page): wave, social links, three link columns, legal links.</li>
+        <li>Navigation items live in <code>src/components/layout/navigation.ts</code>, texts in <code>nav.ts</code> / <code>footer.ts</code>.</li>
+      </ul>
+      <div class="bg-background-secondary w-full max-w-sm rounded-3xl px-4">
+        <LanguageSwitcher locale="de" alternates={{}} placement="inline" />
       </div>
     </section>
   </div>
