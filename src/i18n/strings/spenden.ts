@@ -42,7 +42,7 @@ export default defineStrings({
   'spenden.options.payment': {
     de: 'Zahlungsarten: PayPal, Kreditkarte, Banküberweisung',
     en: 'Payment methods: PayPal, credit card, bank transfer',
-    fr: 'Moyens de paiement : PayPal, carte bancaire, virement bancaire',
+    fr: 'Moyens de paiement : PayPal, carte bancaire, virement bancaire',
   },
 
   // Donation widget: why donate, impact, use of funds, tax
@@ -207,12 +207,12 @@ export default defineStrings({
   'spenden.monthly.paypalText': {
     de: 'Klicke dafür einfach auf diesen Spenden-Button, gib den gewünschten Betrag ein und setze das Häkchen bei “monatliche Spende”. PayPal akzeptiert zahlreiche Zahlungsmöglichkeiten. Vielen Dank für deine Unterstützung!',
     en: 'Simply click on this donation button, enter the desired amount and check the box "monthly donation". PayPal accepts many payment methods. Thank you for your support!',
-    fr: 'Cliquez simplement sur ce bouton de don, saisissez le montant souhaité et cochez la case "don mensuel". PayPal accepte de nombreux modes de paiement. Merci de votre soutien !',
+    fr: 'Cliquez simplement sur ce bouton de don, saisissez le montant souhaité et cochez la case "don mensuel". PayPal accepte de nombreux modes de paiement. Merci de votre soutien !',
   },
   'spenden.monthly.standingOrder': {
     de: 'Du richtest einen Dauerauftrag bei deiner Bank ein. Das machst du so:',
     en: 'You set up a standing order with your bank. This is how to do it:',
-    fr: 'Vous établissez un virement permanent auprès de votre banque. Vous pouvez faire ainsi :',
+    fr: 'Vous établissez un virement permanent auprès de votre banque. Vous pouvez faire ainsi :',
   },
   'spenden.monthly.copyDetails': {
     de: 'Du kopierst dir die unten genannten Kontodaten oder schreibst sie ab.',
@@ -222,7 +222,7 @@ export default defineStrings({
   'spenden.monthly.standingOrderText': {
     de: 'Dann richtest du bei deiner Bank einen Dauerauftrag ein. Gib bitte Vor- und Nachnamen und den Verwendungszweck deiner Spende (z.B. monatliche Spende) an. Vielen Dank für deine Unterstützung!',
     en: 'Then set up a standing order with your bank. Enter your first and last name and the purpose of your donation (e.g. monthly donation). Thank you for your support!',
-    fr: 'Ensuite, mettez en place un virement permanent avec votre banque. Veuillez indiquer votre nom et prénom ainsi que l\'objet de votre don (par exemple "don mensuel"). Merci de votre soutien !',
+    fr: 'Ensuite, mettez en place un virement permanent avec votre banque. Veuillez indiquer votre nom et prénom ainsi que l\'objet de votre don (par exemple "don mensuel"). Merci de votre soutien !',
   },
 
   // Shared by the donation sub-pages

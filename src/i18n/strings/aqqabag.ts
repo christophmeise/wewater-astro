@@ -15,7 +15,7 @@ export default defineStrings({
   'aqqabag.text1': {
     de: 'Die Anwendung ist sehr einfach: Es wird Wasser aus einem See oder einem Fluss mit einer Membran gefiltert. Das Besondere am AQQAbag ist die bisher unerreichte Qualität des Wassers bei gleichzeitig niedrigen Kosten.',
     en: 'The application is very simple: water from a lake or river is filtered with a membrane. The special feature of the AQQAbag is the previously unattained quality of the water at very low cost.',
-    fr: "L'utilisation est très simple : l'eau d'un lac ou d'une rivière est filtrée par une membrane. La particularité de ce système de filtration est la qualité sans précédent de l'eau à prix peu coûteux.",
+    fr: "L'utilisation est très simple : l'eau d'un lac ou d'une rivière est filtrée par une membrane. La particularité de ce système de filtration est la qualité sans précédent de l'eau à prix peu coûteux.",
   },
   'aqqabag.text2': {
     de: 'Der AQQAbag verstopft nicht und muss nicht gewartet werden, er ist leicht, handlich und kann unbegrenzt gelagert werden. Damit ist der AQQAbag das ideale Produkt, um Menschen vorübergehend mit sauberem Wasser zu versorgen – sei es im Krisenfall, für Menschen, für die noch keine dauerhafte Lösung bereit steht oder für Reisende. Der AQQAbag wurde über mehrere Monate erfolgreich getestet und seine Wirkung von Laboren bestätigt.',

@@ -10,7 +10,7 @@ export default defineStrings({
   'unterstuetzen.seo.description': {
     de: 'Kindern helfen ohne Geld zu spenden? Das geht. Hier siehst du, wie du uns auch ohne eine Geldspende unterstützen kannst. 💧🚰💦💙',
     en: "Help children without donating money? It's possible. Here you can see how you can support us without donating money. 💧🚰💦💙",
-    fr: "Aider les enfants sans donner d'argent ? C'est possible. Vous pouvez voir ici comment nous soutenir sans donner de l'argent. 💧🚰💦💙",
+    fr: "Aider les enfants sans donner d'argent ? C'est possible. Vous pouvez voir ici comment nous soutenir sans donner de l'argent. 💧🚰💦💙",
   },
   'unterstuetzen.title': { de: 'Dein 6-Punkte-Plan', en: 'Your 6-point plan', fr: 'Votre plan en 6 points' },
   'unterstuetzen.lead': {
@@ -21,7 +21,7 @@ export default defineStrings({
   'unterstuetzen.intro': {
     de: 'Manchmal ist man etwas knapp bei Kasse – wir kennen das. Doch es gibt diverse Möglichkeiten, wie du uns ohne eine finanzielle Spende unterstützen kannst. Schau mal in diese Liste. Sicher findest du etwas, womit du WeWater helfen kannst. Vielen, vielen Dank!',
     en: 'Sometimes one can be a bit short of cash - we know that. But there are various other ways you can support us, even without donating money. Have a look at this list. There is probably something you can do for us. Many, many thanks!',
-    fr: "Parfois, on peut être un peu à court d'argent. Nous le savons bien nous-mêmes. Mais il existe plusieurs façons de nous supporter sans obligatoirement donner soutien financièrement. Jetez un coup d'œil sur cette liste. Peut-être que vous y trouverez quelque chose à faire pour aider la cause de WeWater. Merci beaucoup !",
+    fr: "Parfois, on peut être un peu à court d'argent. Nous le savons bien nous-mêmes. Mais il existe plusieurs façons de nous supporter sans obligatoirement donner soutien financièrement. Jetez un coup d'œil sur cette liste. Peut-être que vous y trouverez quelque chose à faire pour aider la cause de WeWater. Merci beaucoup !",
   },
   'unterstuetzen.like.title': {
     de: 'Like unsere Facebook-Seite',
@@ -51,7 +51,7 @@ export default defineStrings({
   'unterstuetzen.status.quote': {
     de: 'Ich unterstütze wewater.org. Spende auch du für sauberes Trinkwasser!',
     en: 'I support wewater.org. You too can donate for clean drinking water!',
-    fr: "Je soutiens wewater.org. Vous aussi, vous pouvez faire un don pour de l'eau potable propre !",
+    fr: "Je soutiens wewater.org. Vous aussi, vous pouvez faire un don pour de l'eau potable propre !",
   },
   'unterstuetzen.contacts.title': {
     de: 'Liefere uns wertvolle Kontakte',
@@ -61,12 +61,12 @@ export default defineStrings({
   'unterstuetzen.contacts.text': {
     de: 'Jeder kennt jemanden, der einen kennt... der einen kennt. Wir sind dankbar über jeden Kontakt, der uns auf unserem Weg helfen kann. Das können zum Beispiel Menschen mit Know-how sein, Menschen mit guten Beziehungen in die Medien oder Menschen, die bereit sind für unser Engagement zu spenden. Schreib uns an <mailLink>hi@wewater.org</mailLink>. Oder empfiehle uns direkt weiter. Vielen Dank!',
     en: 'Everyone knows someone who knows someone... who knows someone. We are grateful for every contact who can help us on our way. This could be people with know-how, people with good connections to the media or people who are willing to donate to our cause. Write to us at <mailLink>hi@wewater.org</mailLink>. Or recommend us directly. Thank you!',
-    fr: "Tout le monde connaît quelqu'un qui connaît quelqu'un... qui connaît quelqu'un. Nous sommes reconnaissants pour tout contact qui peut nous aider sur notre chemin. Il peut s'agir de personnes à compétences particulières, de personnes ayant de bonnes relations dans les médias ou de personnes prêtes à faire des dons pour notre cause. Écrivez-nous à <mailLink>hi@wewater.org</mailLink>. Ou recommandez-nous directement. Merci beaucoup !",
+    fr: "Tout le monde connaît quelqu'un qui connaît quelqu'un... qui connaît quelqu'un. Nous sommes reconnaissants pour tout contact qui peut nous aider sur notre chemin. Il peut s'agir de personnes à compétences particulières, de personnes ayant de bonnes relations dans les médias ou de personnes prêtes à faire des dons pour notre cause. Écrivez-nous à <mailLink>hi@wewater.org</mailLink>. Ou recommandez-nous directement. Merci beaucoup !",
   },
   'unterstuetzen.involve.title': { de: 'Bring dich ein', en: 'Get involved', fr: 'Impliquez-vous' },
   'unterstuetzen.involve.text': {
     de: 'Bei unserer ehrenamtlichen Arbeit für WeWater brauchen wir Designer, Programmierer, Logistik-Experten... Menschen, die Lust und Spaß daran haben sich zu engagieren. Was kannst du gut? Wir können jede Hilfe und jedes Talent gebrauchen, also schreib uns an <mailLink>hi@wewater.org</mailLink>. Jede Unterstützung ist herzlich willkommen!',
     en: 'In our volunteer work for WeWater, we need designers, programmers, logistics experts... People who want to get involved and have fun doing it. What are you good at? We can use all the help and talent we can get, so drop us a line at <mailLink>hi@wewater.org</mailLink>. Any and all support is greatly appreciated!',
-    fr: "Dans le cadre de notre travail bénévole pour WeWater, nous avons besoin de concepteurs, programmeurs, d'experts en logistique... Des personnes qui veulent s'impliquer et qui y prennent du plaisir. Dans quel domaine êtes-vous doué ? Nous avons besoin de toute l'aide possible et de tous les talents que nous pouvons obtenir. Ecrivez-nous à <mailLink>hi@wewater.org</mailLink>. Tout soutien est grandement apprécié !",
+    fr: "Dans le cadre de notre travail bénévole pour WeWater, nous avons besoin de concepteurs, programmeurs, d'experts en logistique... Des personnes qui veulent s'impliquer et qui y prennent du plaisir. Dans quel domaine êtes-vous doué ? Nous avons besoin de toute l'aide possible et de tous les talents que nous pouvons obtenir. Ecrivez-nous à <mailLink>hi@wewater.org</mailLink>. Tout soutien est grandement apprécié !",
   },
 });
