@@ -148,8 +148,16 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
     </ul>
   </Section>
 
-  <Section muted aria-labelledby="home-news">
-    <CardRow id="home-news-list" label={t('home.news.title')} previousLabel={t('home.news.previous')} nextLabel={t('home.news.next')}>
+  {/* Full width: the row of posts runs to the window edges and aligns itself with the container. */}
+  <Section muted container={false} class="flex flex-col gap-8" aria-labelledby="home-news">
+    <CardRow
+      id="home-news-list"
+      label={t('home.news.title')}
+      previousLabel={t('home.news.previous')}
+      nextLabel={t('home.news.next')}
+      pagesLabel={t('home.news.pages')}
+      pageLabel={t('home.news.page')}
+    >
       <header slot="header" class="flex flex-col gap-3">
         <p class="eyebrow">{t('home.news.eyebrow')}</p>
         <h2 id="home-news" class="heading-2">{t('home.news.title')}</h2>
@@ -162,7 +170,7 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR',
         ))
       }
     </CardRow>
-    <div class="flex justify-center">
+    <div class="container-page flex justify-center">
       <Button href={localizePath('/blog/', locale)} variant="outline" icon="newspaper">{t('blog.allPosts')}</Button>
     </div>
   </Section>

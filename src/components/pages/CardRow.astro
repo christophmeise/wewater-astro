@@ -1,16 +1,26 @@
 ---
 /**
- * Horizontally scrolling row of cards (CSS scroll-snap), replacing the old Swiper sliders.
- * Without JavaScript it is a plain scrollable list (swipe, trackpad, scrollbar, Tab through the
- * card links). With JavaScript, previous/next buttons next to the header scroll by one screen.
+ * Horizontally scrolling row of cards (CSS scroll-snap), replacing the old Swiper sliders. Laid out
+ * like Apple's product carousels: the header and the first card line up with the page container,
+ * the row itself runs to the edges of the window, and at the end the last card lines up with the
+ * container's right edge.
  *
- *   <CardRow label="Updates zu den Projekten" previousLabel="Vorherige Beiträge" nextLabel="Nächste Beiträge">
- *     <header slot="header">…eyebrow and h2…</header>
- *     {posts.map((post) => <li class="flex"><PostCard post={post} sizes="…" /></li>)}
- *   </CardRow>
+ *   <Section muted container={false}>
+ *     <CardRow label="Updates zu den Projekten" previousLabel="Vorherige Beiträge" nextLabel="Nächste Beiträge"
+ *       pagesLabel="Beiträge durchblättern" pageLabel="Ab Beitrag {n} anzeigen">
+ *       <header slot="header">…eyebrow and h2…</header>
+ *       {posts.map((post) => <li class="flex"><PostCard post={post} sizes="…" /></li>)}
+ *     </CardRow>
+ *   </Section>
  *
- * Children are the <li> items. One card per ~85% of the width on phones, two from tablet,
+ * Place it full-width (not inside .container-page): it brings its own container alignment.
+ * Children are the <li> items: one card per ~85% of the container on phones, two from tablet,
  * three from desktop.
+ *
+ * Without JavaScript it is a plain scrollable list (swipe, trackpad, scrollbar, Tab through the card
+ * links). With JavaScript the scrollbar is hidden and replaced by previous/next buttons (one page of
+ * cards per click, disabled at the ends) and pagination dots below the row (Swiper's "dynamic
+ * bullets": the current one large in the middle, two smaller ones on each side).
  */
 import Button from '@/components/ui/Button.astro';
 
@@ -21,14 +31,18 @@ interface Props {
   label: string;
   previousLabel: string;
   nextLabel: string;
+  /** Accessible name of the group of pagination dots. */
+  pagesLabel: string;
+  /** Accessible name of one dot; {n} is replaced by the number of the first card it shows. */
+  pageLabel: string;
   class?: string | undefined;
 }
 
-const { id = 'card-row', label, previousLabel, nextLabel, class: className } = Astro.props;
+const { id = 'card-row', label, previousLabel, nextLabel, pagesLabel, pageLabel, class: className } = Astro.props;
 ---
 
-<div class:list={['flex flex-col gap-8', className]} data-card-row>
-  <div class="flex items-end justify-between gap-6">
+<div class:list={['flex flex-col gap-6 md:gap-8', className]} data-card-row>
+  <div class="container-page flex items-end justify-between gap-6">
     <slot name="header" />
     <div class="card-row-buttons hidden shrink-0 gap-2">
       <Button variant="outline" iconOnly icon="chevron-left" aria-label={previousLabel} aria-controls={id} data-prev />
@@ -37,27 +51,103 @@ const { id = 'card-row', label, previousLabel, nextLabel, class: className } = A
   </div>
   <ul
     id={id}
-    class="card-row -mx-(--gutter) -my-6 grid snap-x snap-mandatory auto-cols-[85%] grid-flow-col gap-6 overflow-x-auto scroll-px-(--gutter) px-(--gutter) py-6 md:auto-cols-[calc((100%-1.5rem)/2)] lg:auto-cols-[calc((100%-3rem)/3)]"
+    class="card-row -my-6 grid snap-x snap-mandatory auto-cols-[85%] grid-flow-col gap-6 overflow-x-auto py-6 md:auto-cols-[calc((100%-1.5rem)/2)] lg:auto-cols-[calc((100%-3rem)/3)]"
     aria-label={label}
     data-track
   >
     <slot />
   </ul>
+  <div class="card-row-dots" role="group" aria-label={pagesLabel} data-dots data-page-label={pageLabel} hidden>
+    <div class="card-row-dots__strip" data-strip></div>
+  </div>
 </div>
 
 <style>
-  /* Buttons only make sense with the script below. */
+  /* Buttons and dots only make sense with the script below. */
   :global(.js) .card-row-buttons {
     display: flex;
   }
 
-  /* The padding (cancelled by negative margins) keeps card shadows from being clipped. */
   .card-row {
+    /* Left edge of the page container's content: the first card and the snap points line up with it. */
+    --card-row-inset: calc(max(0px, (100% - var(--container-page)) / 2) + var(--gutter));
+    position: relative;
+    padding-inline: var(--card-row-inset);
+    scroll-padding-inline: var(--card-row-inset);
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    /* The vertical padding (cancelled by negative margins) keeps card shadows from being clipped. */
     scrollbar-width: thin;
+  }
+
+  /* With JavaScript the buttons and dots replace the scrollbar. */
+  :global(.js) .card-row {
+    scrollbar-width: none;
+  }
+
+  :global(.js) .card-row::-webkit-scrollbar {
+    display: none;
   }
 
   .card-row > :global(li) {
     scroll-snap-align: start;
+  }
+
+  /* Pagination dots: 1.5rem targets (WCAG target size), five visible, the strip slides under a window. */
+  .card-row-dots {
+    --dot: 1.5rem;
+    align-self: center;
+    width: calc(5 * var(--dot));
+    overflow: hidden;
+  }
+
+  .card-row-dots__strip {
+    display: flex;
+    transform: translateX(calc((2 - var(--active, 0)) * var(--dot)));
+    transition: transform 200ms var(--ease-smooth, ease);
+  }
+
+  .card-row-dots__strip > :global(button) {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--dot);
+    height: var(--dot);
+    border-radius: 9999px;
+    cursor: pointer;
+  }
+
+  /* The visible dot, scaled by its distance to the current one. */
+  .card-row-dots__strip > :global(button)::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: color-mix(in oklch, var(--foreground) 30%, transparent);
+    transform: scale(var(--scale, 0.33));
+    transition:
+      transform 200ms var(--ease-smooth, ease),
+      background-color 200ms;
+  }
+
+  .card-row-dots__strip > :global(button:hover)::before {
+    background: color-mix(in oklch, var(--foreground) 55%, transparent);
+  }
+
+  .card-row-dots__strip > :global(button[aria-current='true'])::before {
+    background: var(--link);
+  }
+
+  .card-row-dots__strip > :global(button[data-distance='0']) {
+    --scale: 1;
+  }
+
+  .card-row-dots__strip > :global(button[data-distance='1']) {
+    --scale: 0.66;
+  }
+
+  .card-row-dots__strip > :global(button[data-distance='far']) {
+    visibility: hidden;
   }
 </style>
 
@@ -66,17 +156,90 @@ const { id = 'card-row', label, previousLabel, nextLabel, class: className } = A
     const track = row.querySelector<HTMLElement>('[data-track]');
     const prev = row.querySelector<HTMLButtonElement>('[data-prev]');
     const next = row.querySelector<HTMLButtonElement>('[data-next]');
-    if (!track || !prev || !next) continue;
-    const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
-    const step = (dir: number) => track.scrollBy({ left: dir * track.clientWidth * 0.9, behavior });
-    const update = () => {
-      prev.disabled = track.scrollLeft <= 1;
-      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 1;
-    };
-    prev.addEventListener('click', () => step(-1));
-    next.addEventListener('click', () => step(1));
-    track.addEventListener('scroll', update, { passive: true });
+    const dots = row.querySelector<HTMLElement>('[data-dots]');
+    const strip = row.querySelector<HTMLElement>('[data-strip]');
+    if (!track || !prev || !next || !dots || !strip) continue;
+
+    const items = [...track.children] as HTMLElement[];
+    const pageLabel = dots.dataset['pageLabel'] ?? '{n}';
+    const behavior = (): ScrollBehavior =>
+      matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+
+    /** Scroll positions that put a card at the container's left edge (the last ones collapse into the end). */
+    let positions: number[] = [0];
+    /** How many cards fit side by side in the container: one click of the arrows moves by that many. */
+    let perPage = 1;
+    let active = -1;
+
+    function measure() {
+      const inset = parseFloat(getComputedStyle(track!).paddingInlineStart) || 0;
+      const max = track!.scrollWidth - track!.clientWidth;
+      const starts = items.map((item) => Math.min(Math.max(item.offsetLeft - inset, 0), max));
+      positions = starts.filter((pos, i) => i === 0 || pos - starts[i - 1]! > 1);
+      const content = track!.clientWidth - 2 * inset;
+      const origin = items[0]?.offsetLeft ?? 0;
+      perPage = Math.max(1, items.filter((item) => item.offsetLeft - origin + item.offsetWidth <= content + 1).length);
+      if (strip!.children.length !== positions.length) buildDots();
+      dots!.hidden = positions.length < 2;
+      active = -1;
+      update();
+    }
+
+    function buildDots() {
+      strip!.replaceChildren(
+        ...positions.map((_, i) => {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.setAttribute('aria-controls', track!.id);
+          dot.setAttribute('aria-label', pageLabel.replace('{n}', String(i + 1)));
+          dot.addEventListener('click', () => goTo(i));
+          return dot;
+        }),
+      );
+    }
+
+    function currentIndex(): number {
+      const left = track!.scrollLeft;
+      let best = 0;
+      for (let i = 1; i < positions.length; i++) {
+        if (Math.abs(positions[i]! - left) < Math.abs(positions[best]! - left)) best = i;
+      }
+      return best;
+    }
+
+    function goTo(index: number) {
+      const target = positions[Math.min(Math.max(index, 0), positions.length - 1)] ?? 0;
+      track!.scrollTo({ left: target, behavior: behavior() });
+    }
+
+    function update() {
+      const left = track!.scrollLeft;
+      prev!.disabled = left <= 1;
+      next!.disabled = left >= track!.scrollWidth - track!.clientWidth - 1;
+      const index = currentIndex();
+      if (index === active) return;
+      active = index;
+      strip!.style.setProperty('--active', String(index));
+      [...strip!.children].forEach((dot, i) => {
+        const distance = Math.abs(i - index);
+        (dot as HTMLElement).dataset['distance'] = distance > 2 ? 'far' : String(distance);
+        if (i === index) dot.setAttribute('aria-current', 'true');
+        else dot.removeAttribute('aria-current');
+      });
+    }
+
+    let frame = 0;
+    track.addEventListener(
+      'scroll',
+      () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+    prev.addEventListener('click', () => goTo(currentIndex() - perPage));
+    next.addEventListener('click', () => goTo(currentIndex() + perPage));
     // Also when the row is first laid out (e.g. inside content-visibility: auto) or resized.
-    new ResizeObserver(update).observe(track);
+    new ResizeObserver(measure).observe(track);
   }
 </script>

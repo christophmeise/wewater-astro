@@ -108,6 +108,8 @@ export default defineStrings({
   'home.news.title': { de: 'Updates zu den Projekten', en: 'Updates on the projects', fr: 'Mises à jour sur les projets' },
   'home.news.previous': { de: 'Vorherige Beiträge', en: 'Previous posts', fr: 'Articles précédents' },
   'home.news.next': { de: 'Nächste Beiträge', en: 'Next posts', fr: 'Articles suivants' },
+  'home.news.pages': { de: 'Beiträge durchblättern', en: 'Browse the posts', fr: 'Parcourir les articles' },
+  'home.news.page': { de: 'Ab Beitrag {n} anzeigen', en: 'Show from post {n}', fr: "Afficher à partir de l'article {n}" },
 
   // Water donation as a gift (shop)
   'home.gift.eyebrow': { de: 'Geschenkidee', en: 'Gift idea', fr: 'Idée cadeau' },
