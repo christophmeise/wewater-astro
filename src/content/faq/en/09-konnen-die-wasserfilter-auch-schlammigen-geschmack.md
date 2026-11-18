@@ -1,5 +1,5 @@
 ---
-question: Können die Wasserfilter auch “schlammigen Geschmack“ herausfiltern?
+question: Können die Wasserfilter auch „schlammigen Geschmack“ herausfiltern?
 section: Produkte
 order: 90
 lang: en

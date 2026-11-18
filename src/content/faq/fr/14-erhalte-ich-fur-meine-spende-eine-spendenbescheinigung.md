@@ -6,10 +6,10 @@ lang: fr
 contentLang: de
 ---
 
-Na klar bekommst du eine Spendenbescheinigung.
+Ja. Die WeWater gemeinnützige UG ist laut Anlage zum Körperschaftsteuerbescheid 2024 des Finanzamts für Körperschaften I (Bredtschneiderstraße 5, 14057 Berlin) vom 03.07.2026 nach § 5 Abs. 1 Nr. 9 KStG von der Körperschaftsteuer befreit und dient ausschließlich und unmittelbar steuerbegünstigten gemeinnützigen Zwecken.
 
-Die WeWater gemeinnützige UG ist laut Bescheid vom 02.01.2019 vom Finanzamt für Körperschaften I (Bredtschneiderstraße 5, 14057 Berlin) nach § 60a Abs. 1 AO als gemeinnützig anerkannt.
+**Spenden bis 300 Euro** kannst du ohne gesonderte Spendenbescheinigung steuerlich geltend machen (§ 50 Abs. 4 Satz 1 Nr. 2 Buchst. b EStDV). Das gilt für jede einzelne Spende, auch für monatliche Spenden. Als Nachweis genügen dein Kontoauszug und [dieses Dokument](/docs/Bestaetigung_ueber_Zuwendungen_fuer_Finanzamt_WeWater_11_26.pdf). Wichtig: Gib bei jeder Überweisung den Verwendungszweck an (z. B. monatliche Spende, einmalige Spende). So können wir deine Spende richtig zuordnen.
 
-**Spenden bis zu 300 Euro** (neu seit 01.01.2021, vorher 200€) jährlich kannst du ohne Spendenquittung (§ 50 Abs. 2 Nr. 2 Buchst. b EStDV) steuerlich geltend machen. Dafür reichst du einfach deinen Kontoauszug zusammen mit diesem Dokument für Spenden bis 31.12.2020 (Link anklicken) oder diesem Dokument für Spenden ab 01.01.2021 (Link anklicken) beim Finanzamt ein. Wichtig: Gib bei jeder Spende per Überweisung den Verwendungszweck an (z.B. monatliche Spende, einmalige Spende, Spende für Projekt xy). So können wir deine Spende richtig zuordnen.
+**Für Spenden über 300 Euro** stellen wir dir gern eine Spendenbescheinigung aus. Schreib uns dafür eine E-Mail an [hi@wewater.org](mailto:hi@wewater.org) mit deinem vollständigen Namen und deiner Anschrift. Wir senden dir die Bescheinigung dann per Mail zu.
 
-**Für Spenden über 300 Euro ab 01.01.2021 bzw. über 200 Euro bis 31.12.2020 jährlich** benötigst du eine Spendenbescheinigung von uns, um sie steuerlich geltend zu machen. Bitte schreib uns eine E-Mail an hi@wewater.org mit deinem vollständigen Namen und deiner Anschrift. Wir senden dir dann deine Spendenbescheinigung per Mail zu.
+Mehr dazu findest du auf unserer [Spendenseite](/fr/spenden/).

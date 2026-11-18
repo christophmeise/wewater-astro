@@ -3,7 +3,7 @@ title: Press – WeWater in Media
 lang: en
 ---
 
-Our charitable work is regularly reported on in the media. Here you can find an excerpt of coverage about WeWater. Our contact information for media inquiries [can be found here](/en/presse/).
+Our charitable work is regularly reported on in the media. Here you can find an excerpt of coverage about WeWater. Our contact information for media inquiries [can be found here](#presse-contact).
 
 - Ausgabe 03/20 – Stadtwerke *Nienburg unterstützen Trinkwasser-Projekt in Uganda* – [Kundenmagazin der Stadtwerke Nienburg](/docs/EnergieAktuell_3_ww.pdf) (PDF, 619 KB)
 - Ausgabe 02/20 – Stadtwerke *Nienburg unterstützen Trinkwasser-Projekt in Uganda* – [Kundenmagazin der Stadtwerke Nienburg](/docs/EnergieAktuell_2_ww.pdf) (PDF, 515 KB)

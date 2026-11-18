@@ -3,7 +3,7 @@ title: Pressespiegel – WeWater in den Medien
 lang: de
 ---
 
-Über unsere gemeinnützige Arbeit wird regelmäßig in den Medien berichtet. Hier findest du einen Auszug der Berichterstattung über WeWater. Unsere Kontaktdaten für Medien-Anfragen [gibt es hier](/presse/).
+Über unsere gemeinnützige Arbeit wird regelmäßig in den Medien berichtet. Hier findest du einen Auszug der Berichterstattung über WeWater. Unsere Kontaktdaten für Medien-Anfragen [gibt es hier](#presse-contact).
 
 - Ausgabe 03/20 – Stadtwerke *Nienburg unterstützen Trinkwasser-Projekt in Uganda* – [Kundenmagazin der Stadtwerke Nienburg](/docs/EnergieAktuell_3_ww.pdf) (PDF, 619 KB)
 - Ausgabe 02/20 – Stadtwerke *Nienburg unterstützen Trinkwasser-Projekt in Uganda* – [Kundenmagazin der Stadtwerke Nienburg](/docs/EnergieAktuell_2_ww.pdf) (PDF, 515 KB)

@@ -3,7 +3,7 @@ title: Revue de presse – WeWater dans les médias
 lang: fr
 ---
 
-Les médias rendent régulièrement compte de nos activités caritatives. Vous trouverez ici des extraits de la couverture médiatique de WeWater. Nos coordonnées pour les demandes des médias [se trouvent ici](/fr/presse/).
+Les médias rendent régulièrement compte de nos activités caritatives. Vous trouverez ici des extraits de la couverture médiatique de WeWater. Nos coordonnées pour les demandes des médias [se trouvent ici](#presse-contact).
 
 - Ausgabe 03/20 – Stadtwerke *Nienburg unterstützen Trinkwasser-Projekt in Uganda* – [Kundenmagazin der Stadtwerke Nienburg](/docs/EnergieAktuell_3_ww.pdf) (PDF, 619 KB)
 - Ausgabe 02/20 – Stadtwerke *Nienburg unterstützen Trinkwasser-Projekt in Uganda* – [Kundenmagazin der Stadtwerke Nienburg](/docs/EnergieAktuell_2_ww.pdf) (PDF, 515 KB)
