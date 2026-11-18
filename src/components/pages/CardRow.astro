@@ -1,0 +1,82 @@
+---
+/**
+ * Horizontally scrolling row of cards (CSS scroll-snap), replacing the old Swiper sliders.
+ * Without JavaScript it is a plain scrollable list (swipe, trackpad, scrollbar, Tab through the
+ * card links). With JavaScript, previous/next buttons next to the header scroll by one screen.
+ *
+ *   <CardRow label="Updates zu den Projekten" previousLabel="Vorherige Beiträge" nextLabel="Nächste Beiträge">
+ *     <header slot="header">…eyebrow and h2…</header>
+ *     {posts.map((post) => <li class="flex"><PostCard post={post} sizes="…" /></li>)}
+ *   </CardRow>
+ *
+ * Children are the <li> items. One card per ~85% of the width on phones, two from tablet,
+ * three from desktop.
+ */
+import Button from '@/components/ui/Button.astro';
+
+interface Props {
+  /** id of the list (unique on the page). */
+  id?: string | undefined;
+  /** Accessible name of the list. */
+  label: string;
+  previousLabel: string;
+  nextLabel: string;
+  class?: string | undefined;
+}
+
+const { id = 'card-row', label, previousLabel, nextLabel, class: className } = Astro.props;
+---
+
+<div class:list={['flex flex-col gap-8', className]} data-card-row>
+  <div class="flex items-end justify-between gap-6">
+    <slot name="header" />
+    <div class="card-row-buttons hidden shrink-0 gap-2">
+      <Button variant="outline" iconOnly icon="chevron-left" aria-label={previousLabel} aria-controls={id} data-prev />
+      <Button variant="outline" iconOnly icon="chevron-right" aria-label={nextLabel} aria-controls={id} data-next />
+    </div>
+  </div>
+  <ul
+    id={id}
+    class="card-row -mx-(--gutter) -my-6 grid snap-x snap-mandatory auto-cols-[85%] grid-flow-col gap-6 overflow-x-auto scroll-px-(--gutter) px-(--gutter) py-6 md:auto-cols-[calc((100%-1.5rem)/2)] lg:auto-cols-[calc((100%-3rem)/3)]"
+    aria-label={label}
+    data-track
+  >
+    <slot />
+  </ul>
+</div>
+
+<style>
+  /* Buttons only make sense with the script below. */
+  :global(.js) .card-row-buttons {
+    display: flex;
+  }
+
+  /* The padding (cancelled by negative margins) keeps card shadows from being clipped. */
+  .card-row {
+    scrollbar-width: thin;
+  }
+
+  .card-row > :global(li) {
+    scroll-snap-align: start;
+  }
+</style>
+
+<script>
+  for (const row of document.querySelectorAll<HTMLElement>('[data-card-row]')) {
+    const track = row.querySelector<HTMLElement>('[data-track]');
+    const prev = row.querySelector<HTMLButtonElement>('[data-prev]');
+    const next = row.querySelector<HTMLButtonElement>('[data-next]');
+    if (!track || !prev || !next) continue;
+    const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    const step = (dir: number) => track.scrollBy({ left: dir * track.clientWidth * 0.9, behavior });
+    const update = () => {
+      prev.disabled = track.scrollLeft <= 1;
+      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 1;
+    };
+    prev.addEventListener('click', () => step(-1));
+    next.addEventListener('click', () => step(1));
+    track.addEventListener('scroll', update, { passive: true });
+    // Also when the row is first laid out (e.g. inside content-visibility: auto) or resized.
+    new ResizeObserver(update).observe(track);
+  }
+</script>

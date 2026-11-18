@@ -17,6 +17,16 @@
       "visual": false
     },
     {
+      "path": "/blog/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
+      "path": "/projekte/",
+      "lighthouse": true,
+      "visual": false
+    },
+    {
       "path": "/team/",
       "lighthouse": true,
       "visual": false
