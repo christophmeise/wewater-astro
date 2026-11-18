@@ -90,12 +90,12 @@ const contactCard = cardVariants({ variant: 'secondary' });
         </h2>
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {releases.map((post) => (
-            <Card
-              href={postUrl(post)}
-              image={post.data.hero}
-              title={post.data.title}
-              meta={dateFormat.format(post.data.date)}
-            />
+            <Card href={postUrl(post)} image={post.data.hero} title={post.data.title}>
+              {/* At the bottom of the card, so the dates of one row line up (as on the blog cards). */}
+              <p class="text-muted mt-auto text-sm">
+                <time datetime={post.data.date.toISOString()}>{dateFormat.format(post.data.date)}</time>
+              </p>
+            </Card>
           ))}
         </div>
       </Section>
