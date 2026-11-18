@@ -5,9 +5,10 @@
  * compared with the live site. Phase 3 ports the real home page and its strings.
  */
 import heroImage from '@/assets/site/hero-home.jpg';
+import Button from '@/components/ui/Button.astro';
 import HeroOverlay from '@/components/ui/HeroOverlay.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { getLocale, localeStaticPaths, useTranslations } from '@/i18n';
+import { getLocale, localeStaticPaths, localizePath, useTranslations } from '@/i18n';
 
 export const getStaticPaths = localeStaticPaths;
 
@@ -32,48 +33,9 @@ const copy = {
 ---
 
 <BaseLayout title={t('site.name')}>
-  <HeroOverlay image={heroImage} width={10}>
-    <h1 class="hero-headline home-title">{t('site.name')}</h1>
-    <p class="hero-headline hero-headline--inverted home-claim">{copy.claim}</p>
-    <p class="hero-subheadline hero-subheadline--inverted home-text">{copy.text}</p>
+  <HeroOverlay image={heroImage} eyebrow={t('site.name')} title={copy.claim} lead={copy.text}>
+    <Fragment slot="actions">
+      <Button href={localizePath('/spenden/', locale)} size="lg" icon="tint">{t('nav.cta')}</Button>
+    </Fragment>
   </HeroOverlay>
 </BaseLayout>
-
-<style>
-  .home-title {
-    margin: 0;
-    font-size: 72px;
-    font-weight: 400;
-    line-height: 94px;
-    letter-spacing: -0.05em;
-  }
-
-  .home-claim {
-    font-size: 48px;
-    font-weight: 500;
-    line-height: 63px;
-    letter-spacing: -0.025em;
-  }
-
-  .home-text {
-    max-width: 80%;
-    font-size: 18px;
-    line-height: 23px;
-  }
-
-  @media (width <= 767px) {
-    .home-title {
-      font-size: 48px;
-      line-height: 60px;
-    }
-
-    .home-claim {
-      font-size: 32px;
-      line-height: 40px;
-    }
-
-    .home-text {
-      max-width: none;
-    }
-  }
-</style>

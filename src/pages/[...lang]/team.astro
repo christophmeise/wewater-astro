@@ -23,10 +23,8 @@ const headline = {
 ---
 
 <BaseLayout title={t('nav.team')}>
-  <PlainHeader>
-    <h1 class="hero-headline">{headline}</h1>
-  </PlainHeader>
+  <PlainHeader eyebrow={t('nav.team')} title={headline} />
   <Section>
-    <p>{t('site.description')}</p>
+    <p class="max-w-(--container-prose)">{t('site.description')}</p>
   </Section>
 </BaseLayout>
