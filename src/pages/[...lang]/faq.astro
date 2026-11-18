@@ -1,0 +1,135 @@
+---
+/**
+ * FAQ page: /faq/, /en/faq/, /fr/faq/.
+ * Questions come from src/content/faq/<lang>/ (one file per question), grouped by `section` in
+ * the order of their `order` field, shown as an accordion of native <details> elements (no JS)
+ * with HeroUI's accordion styles. A sidebar teases "Wer wir sind", donations and the newsletter.
+ * Emits FAQPage structured data built from the same questions and answers.
+ */
+import { getCollection, render } from 'astro:content';
+import { accordionVariants } from '@heroui/styles';
+import JsonLd from '@/components/JsonLd.astro';
+import NewsletterForm from '@/components/pages/NewsletterForm.astro';
+import Button from '@/components/ui/Button.astro';
+import Card from '@/components/ui/Card.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PlainHeader from '@/components/ui/PlainHeader.astro';
+import Section from '@/components/ui/Section.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getLocale, localeStaticPaths, localizePath, useTranslations } from '@/i18n';
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const site = Astro.site ?? new URL('https://www.wewater.org');
+
+const entries = (await getCollection('faq', (entry) => entry.data.lang === locale)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+// Group by section, keeping the order in which sections first appear.
+const groups = new Map<string, typeof entries>();
+for (const entry of entries) {
+  groups.set(entry.data.section, [...(groups.get(entry.data.section) ?? []), entry]);
+}
+
+const items = await Promise.all(
+  entries.map(async (entry) => ({
+    entry,
+    Content: (await render(entry)).Content,
+    // Untranslated answers (en/fr still show the German text) are marked lang="de".
+    lang: entry.data.contentLang && entry.data.contentLang !== locale ? entry.data.contentLang : undefined,
+  })),
+);
+const itemsBySection = [...groups].map(([section, sectionEntries]) => {
+  const sectionItems = items.filter((item) => sectionEntries.includes(item.entry));
+  const langs = new Set(sectionItems.map((item) => item.lang));
+  // The section name is German too when every question in it is.
+  const lang = langs.size === 1 ? [...langs][0] : undefined;
+  return { section, lang, items: sectionItems, id: `faq-${section.toLowerCase().replace(/[^a-z0-9]+/g, '-')}` };
+});
+const hasUntranslated = items.some((item) => item.lang);
+
+// FAQPage structured data: answer HTML with absolute links.
+const absolutize = (html: string) => html.replace(/href="\/(?!\/)/g, `href="${site.origin}/`);
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  inLanguage: locale,
+  mainEntity: entries.map((entry) => ({
+    '@type': 'Question',
+    name: entry.data.question,
+    acceptedAnswer: { '@type': 'Answer', text: absolutize(entry.rendered?.html ?? entry.body ?? '').trim() },
+  })),
+};
+
+const accordion = accordionVariants({ variant: 'surface' });
+---
+
+<BaseLayout title={t('faq.title')} description={t('faq.description')}>
+  <JsonLd data={faqJsonLd} />
+  <PlainHeader title={t('faq.title')} lead={t('faq.lead')} />
+
+  <Section class="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
+    <div class="flex flex-col gap-12">
+      {hasUntranslated && <p class="text-muted">{t('faq.untranslated')}</p>}
+      {
+        itemsBySection.map(({ section, lang, items: sectionItems, id }) => (
+          <section class="flex flex-col gap-5" aria-labelledby={id}>
+            <h2 id={id} class="heading-2" lang={lang}>
+              {section}
+            </h2>
+            <div class:list={[accordion.base(), 'shadow-surface']}>
+              {sectionItems.map(({ entry, Content, lang: entryLang }) => (
+                <details class:list={[accordion.item(), 'faq-item group']} name="faq" lang={entryLang}>
+                  <summary
+                    class:list={[accordion.trigger(), 'gap-4 px-5 text-base md:px-6 [&::-webkit-details-marker]:hidden']}
+                    data-slot="accordion-trigger"
+                  >
+                    <span>{entry.data.question}</span>
+                    <Icon
+                      name="chevron-right"
+                      class:list={[accordion.indicator(), 'text-link group-open:rotate-90']}
+                    />
+                  </summary>
+                  <div class:list={[accordion.bodyInner(), 'px-5 md:px-6']}>
+                    <div class="prose text-foreground max-w-none">
+                      <Content />
+                    </div>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+
+    <aside class="flex flex-col gap-6" aria-label={t('faq.sidebar.label')}>
+      <Card variant="secondary" title={t('faq.about.title')} titleTag="h2" description={t('faq.about.text')}>
+        <Fragment slot="footer">
+          <Button href={localizePath('/', locale)} variant="secondary" size="sm" icon="arrow-right">
+            {t('faq.about.cta')}
+          </Button>
+        </Fragment>
+      </Card>
+      <Card variant="secondary" title={t('faq.donate.title')} titleTag="h2" description={t('faq.donate.text')}>
+        <Fragment slot="footer">
+          <Button href={localizePath('/spenden/', locale)} size="sm" icon="tint">{t('nav.cta')}</Button>
+        </Fragment>
+      </Card>
+      <Card variant="secondary" title={t('newsletter.title')} titleTag="h2">
+        <NewsletterForm locale={locale} id="faq-newsletter" />
+      </Card>
+    </aside>
+  </Section>
+</BaseLayout>
+
+<style>
+  /* The open last question keeps square bottom corners on its trigger (HeroUI keys this on aria-expanded). */
+  .faq-item[open] > summary {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+</style>
