@@ -13,6 +13,7 @@ const DEFAULT_LOCALE = 'de';
  * Builds that must not be indexed (src/lib/indexing.ts) also send X-Robots-Tag: noindex on every
  * response, so PDFs and images stay out of search too. Netlify merges dist/_headers with the
  * headers in netlify.toml.
+ * @type {import('astro').AstroIntegration}
  */
 const noindexHeader = {
   name: 'wewater:noindex-header',
