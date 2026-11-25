@@ -1,6 +1,6 @@
 # WeWater website
 
-Static website for [wewater.org](https://www.wewater.org), built with Astro 7. There is no CMS: every page, blog post, project and team member is a file in this repo. Maintainers change the site by editing these files (usually by asking Claude), opening a pull request and merging it after the checks pass. Netlify deploys `main` to wewater.org.
+Static website for [wewater.org](https://www.wewater.org), built with Astro 7. There is no CMS: every page, blog post, project and team member is a file in this repo. Maintainers change the site by editing these files (usually by asking Claude), opening a pull request and merging it after the checks pass. Netlify deploys `main` to preview.wewater.org until the new site replaces the live wewater.org.
 
 The rebuild plan and status are in [PLAN.md](PLAN.md).
 
@@ -199,4 +199,5 @@ CI fails if any page in `tests/routes.json` drops below 100 in Lighthouse perfor
 
 - Every pull request gets a Netlify deploy preview. Previews are not indexed by search engines; `src/pages/robots.txt.ts` handles that.
 - Merging to `main` deploys to production.
+- Until cutover, preview.wewater.org and the deploy previews ask for a password (`netlify/edge-functions/password.ts`, password in the `SITE_PASSWORD` variable in Netlify). `npm run dev` doesn't.
 - The CI workflow (`.github/workflows/ci.yml`) runs check, build, internal link check, Lighthouse (mobile and desktop) and the visual comparison. The visual comparison is informational until the rebuild is signed off.

@@ -11,6 +11,8 @@
 # Until cutover, this site runs as preview.wewater.org next to the live wewater.org. Keep it out of
 # search engines (noindex tag and header, no canonical; see src/lib/indexing.ts).
 # AT CUTOVER: delete this block so wewater.org gets indexed.
+# The preview is also password-protected by netlify/edge-functions/password.ts (password in the
+# SITE_PASSWORD variable in the Netlify UI). AT CUTOVER: delete that file and the variable too.
 [context.production.environment]
   SITE_NOINDEX = "true"
 
