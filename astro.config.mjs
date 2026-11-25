@@ -3,9 +3,26 @@ import { defineConfig, fontProviders } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import { appendFile } from 'node:fs/promises';
+import { allowIndexing } from './src/lib/indexing.ts';
 
 const LOCALES = ['de', 'en', 'fr'];
 const DEFAULT_LOCALE = 'de';
+
+/**
+ * Builds that must not be indexed (src/lib/indexing.ts) also send X-Robots-Tag: noindex on every
+ * response, so PDFs and images stay out of search too. Netlify merges dist/_headers with the
+ * headers in netlify.toml.
+ */
+const noindexHeader = {
+  name: 'wewater:noindex-header',
+  hooks: {
+    'astro:build:done': async ({ dir }) => {
+      if (allowIndexing) return;
+      await appendFile(new URL('_headers', dir), '/*\n  X-Robots-Tag: noindex\n');
+    },
+  },
+};
 
 export default defineConfig({
   site: 'https://www.wewater.org',
@@ -57,6 +74,7 @@ export default defineConfig({
   },
 
   integrations: [
+    noindexHeader,
     mdx(),
     sitemap({
       // Internal pages that must not be indexed.

@@ -8,6 +8,12 @@
   NODE_VERSION = "24"
   ASTRO_TELEMETRY_DISABLED = "1"
 
+# Until cutover, this site runs as preview.wewater.org next to the live wewater.org. Keep it out of
+# search engines (noindex tag and header, no canonical; see src/lib/indexing.ts).
+# AT CUTOVER: delete this block so wewater.org gets indexed.
+[context.production.environment]
+  SITE_NOINDEX = "true"
+
 # ---------------------------------------------------------------------------
 # Redirects. Content redirects (old cross-language URLs, old WordPress permalinks) are in
 # public/_redirects (written by scripts/migrate-wp); these are the fixed ones from the old site.

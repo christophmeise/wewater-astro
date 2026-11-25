@@ -235,8 +235,10 @@ The content schemas and `astro check` catch mistakes before a deploy. Every chan
 
 ## Open items for WeWater (before cutover)
 
-**Connect Netlify and analytics**
-- Import `christophmeise/wewater-astro` in Netlify (build settings come from `netlify.toml`) and check the deploy preview.
+**Netlify and analytics**
+- The Netlify project is `wewater-updated` (team steven-hille's team). It builds from `netlify.toml` and is being set up at preview.wewater.org.
+- The code lives at `wewaterorg/wewater-astro` (private). Netlify still deploys from `christophmeise/wewater-astro` until the project is relinked to the WeWater repo.
+- preview.wewater.org runs next to the live site, so it is kept out of search engines: `SITE_NOINDEX` in `netlify.toml` adds a noindex tag and header and drops the canonical (see `src/lib/indexing.ts`).
 - Analytics (decision 2): no analytics script is installed yet. Choose a cookieless tool (Plausible or Netlify Analytics); adding its script also needs its origin in the CSP in `netlify.toml`.
 
 **Legal review**
@@ -254,7 +256,7 @@ The content schemas and `astro check` catch mistakes before a deploy. Every chan
 - Team: Raphaela Küppers and Frank Paschen have no portrait or bio.
 
 **Cutover (phase 7)**
-1. Point wewater.org at the Netlify site.
+1. Point wewater.org at the Netlify site, and delete the `[context.production.environment]` block with `SITE_NOINDEX` from `netlify.toml` so wewater.org gets indexed.
 2. Keep wewaterbackend.org online read-only for a while, so old PDF links in emails and on betterplace keep working.
 3. Watch for 404s and add redirects to `public/_redirects`.
 4. Retire WordPress and delete `scripts/migrate-wp/`.

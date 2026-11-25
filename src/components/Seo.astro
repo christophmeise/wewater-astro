@@ -7,6 +7,7 @@
  * Posts and projects pass only the translations that actually exist.
  */
 import { LOCALES, LOCALE_TAGS, DEFAULT_LOCALE, localizePath, unlocalizePath, type Locale } from '@/i18n';
+import { allowIndexing } from '@/lib/indexing';
 
 interface Props {
   title: string;
@@ -21,6 +22,9 @@ interface Props {
 const { title, description, locale, image, type = 'website', noindex = false } = Astro.props;
 const site = Astro.site ?? new URL('https://www.wewater.org');
 const canonical = new URL(Astro.url.pathname, site).href;
+// No canonical on noindex pages: a canonical pointing at www.wewater.org from a noindex page
+// (e.g. on preview.wewater.org) sends search engines mixed signals.
+const indexable = !noindex && allowIndexing;
 
 const basePath = unlocalizePath(Astro.url.pathname);
 const alternates: Partial<Record<Locale, string>> =
@@ -33,8 +37,8 @@ const fullTitle = title === 'WeWater' ? title : `${title} | WeWater`;
 
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
-{!noindex && <link rel="canonical" href={canonical} />}
-{noindex && <meta name="robots" content="noindex" />}
+{indexable && <link rel="canonical" href={canonical} />}
+{!indexable && <meta name="robots" content="noindex" />}
 {
   Object.entries(alternates).map(([l, path]) => (
     <link rel="alternate" hreflang={LOCALE_TAGS[l as Locale]} href={new URL(path, site).href} />
